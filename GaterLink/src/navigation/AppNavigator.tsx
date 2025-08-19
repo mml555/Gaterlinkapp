@@ -4,6 +4,7 @@ import TabNavigator from './TabNavigator';
 import RequestDetailsScreen from '../screens/main/RequestDetailsScreen';
 import ChatScreen from '../screens/main/ChatScreen';
 import SettingsScreen from '../screens/main/SettingsScreen';
+import NewRequestScreen from '../screens/main/NewRequestScreen';
 import { SCREENS } from '../constants';
 
 export type AppStackParamList = {
@@ -11,6 +12,9 @@ export type AppStackParamList = {
   [SCREENS.REQUEST_DETAILS]: { requestId: string };
   [SCREENS.CHAT]: { chatRoomId: string; requestId?: string };
   [SCREENS.SETTINGS]: undefined;
+  NewRequest: undefined;
+  SavedDoors: undefined;
+  ScanHistory: undefined;
 };
 
 const Stack = createStackNavigator<AppStackParamList>();
@@ -45,6 +49,13 @@ const AppNavigator: React.FC = () => {
         options={{
           headerShown: true,
           title: 'Settings',
+        }}
+      />
+      <Stack.Screen
+        name="NewRequest"
+        component={NewRequestScreen}
+        options={{
+          headerShown: false,
         }}
       />
     </Stack.Navigator>
