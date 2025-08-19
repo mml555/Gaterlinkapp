@@ -48,6 +48,8 @@
 #import "RNKeychainSpecJSI.h"
 #import "RNPermissionsSpec/RNPermissionsSpec.h"
 #import "RNPermissionsSpecJSI.h"
+#import "rnreanimated/rnreanimated.h"
+#import "rnreanimatedJSI.h"
 #import "rnscreens/rnscreens.h"
 #import "rnscreensJSI.h"
 #import "RNVectorIconsSpec/RNVectorIconsSpec.h"

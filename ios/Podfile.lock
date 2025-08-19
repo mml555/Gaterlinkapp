@@ -1723,7 +1723,7 @@ PODS:
     - SocketRocket
   - react-native-biometrics (3.0.1):
     - React-Core
-  - react-native-safe-area-context (5.6.0):
+  - react-native-safe-area-context (5.6.1):
     - React-Core
   - react-native-worklets-core (1.6.2):
     - boost
@@ -2893,7 +2893,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: e402e7a0535b2213c50727553621480fe8cd8ade
   React-microtasksnativemodule: a63ce5595016996a9bac1f10c70a7a7fe6506649
   react-native-biometrics: 43ed5b828646a7862dbc7945556446be00798e7d
-  react-native-safe-area-context: 12c7daa0ea4fa4eeb513fc273fac6b47aa332bd6
+  react-native-safe-area-context: 2243039f43d10cb1ea30ec5ac57fc6d1448413f4
   react-native-worklets-core: d391ea8721aba0b2dbf28d539dc8356e633c04e1
   React-NativeModulesApple: b3766e1f87b08064ebc459b9e1538da2447ca874
   React-oscompat: 34f3d3c06cadcbc470bc4509c717fb9b919eaa8b
@@ -2938,6 +2938,6 @@ SPEC CHECKSUMS:
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 00013dd9cde63a2d98e8002fcc4f5ddb66c10782
 
-PODFILE CHECKSUM: caf88c1bd483053eae3601ef5eeeea7dc102a55a
+PODFILE CHECKSUM: b5a9fe2ccad8928880766cc4b0902701adcdd4e2
 
 COCOAPODS: 1.16.2
