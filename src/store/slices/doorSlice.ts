@@ -136,7 +136,14 @@ const doorSlice = createSlice({
       })
       .addCase(fetchDoors.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.doors = action.payload;
+        // Transform Door[] to include missing fields
+        state.doors = action.payload.map(door => ({
+          ...door,
+          isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          accessCount: 0,
+        }));
       })
       .addCase(fetchDoors.rejected, (state, action) => {
         state.isLoading = false;
@@ -166,10 +173,14 @@ const doorSlice = createSlice({
       })
       .addCase(saveDoor.fulfilled, (state, action) => {
         state.isLoading = false;
-        const savedDoor = action.payload;
-        const existingIndex = state.savedDoors.findIndex(door => door.id === savedDoor.id);
-        if (existingIndex === -1) {
-          state.savedDoors.push(savedDoor);
+        const doorId = action.payload;
+        // Find the door in the doors array and add it to savedDoors
+        const door = state.doors.find(d => d.id === doorId);
+        if (door) {
+          const existingIndex = state.savedDoors.findIndex(savedDoor => savedDoor.id === doorId);
+          if (existingIndex === -1) {
+            state.savedDoors.push(door);
+          }
         }
       })
       .addCase(saveDoor.rejected, (state, action) => {

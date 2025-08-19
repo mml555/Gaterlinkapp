@@ -135,7 +135,26 @@ const chatSlice = createSlice({
       })
       .addCase(fetchChats.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.chats = action.payload;
+        // Transform Conversation[] to Chat[] by adding missing fields
+        state.chats = action.payload.map(conversation => ({
+          id: conversation.id,
+          requestId: conversation.id, // Use conversation id as requestId for now
+          participants: conversation.participants,
+          lastMessage: conversation.lastMessage ? {
+            id: conversation.lastMessage.id,
+            chatId: conversation.lastMessage.conversationId,
+            senderId: conversation.lastMessage.senderId,
+            senderName: conversation.lastMessage.senderName,
+            content: conversation.lastMessage.content,
+            timestamp: conversation.lastMessage.timestamp,
+            messageType: conversation.lastMessage.type,
+            isRead: conversation.lastMessage.read,
+            metadata: conversation.lastMessage.metadata,
+          } : undefined,
+          unreadCount: conversation.unreadCount,
+          createdAt: conversation.createdAt,
+          updatedAt: conversation.updatedAt,
+        }));
       })
       .addCase(fetchChats.rejected, (state, action) => {
         state.isLoading = false;
@@ -151,7 +170,18 @@ const chatSlice = createSlice({
       .addCase(fetchMessages.fulfilled, (state, action) => {
         state.isLoading = false;
         const { conversationId, messages } = action.payload;
-        state.messages[conversationId] = messages;
+        // Transform Message[] to ChatMessage[] by adding missing fields
+        state.messages[conversationId] = messages.map(message => ({
+          id: message.id,
+          chatId: message.conversationId,
+          senderId: message.senderId,
+          senderName: message.senderName,
+          content: message.content,
+          timestamp: message.timestamp,
+          messageType: message.type,
+          isRead: message.read,
+          metadata: message.metadata,
+        }));
       })
       .addCase(fetchMessages.rejected, (state, action) => {
         state.isLoading = false;
@@ -169,16 +199,27 @@ const chatSlice = createSlice({
         const message = action.payload;
         const conversationId = message.conversationId;
         
-        // Add message to messages array
+        // Transform and add message to messages array
         if (!state.messages[conversationId]) {
           state.messages[conversationId] = [];
         }
-        state.messages[conversationId].push(message);
+        const transformedMessage = {
+          id: message.id,
+          chatId: message.conversationId,
+          senderId: message.senderId,
+          senderName: message.senderName,
+          content: message.content,
+          timestamp: message.timestamp,
+          messageType: message.type,
+          isRead: message.read,
+          metadata: message.metadata,
+        };
+        state.messages[conversationId].push(transformedMessage);
         
         // Update chat's last message
         const chatIndex = state.chats.findIndex(chat => chat.id === conversationId);
         if (chatIndex !== -1) {
-          state.chats[chatIndex].lastMessage = message;
+          state.chats[chatIndex].lastMessage = transformedMessage;
         }
       })
       .addCase(sendMessage.rejected, (state, action) => {
