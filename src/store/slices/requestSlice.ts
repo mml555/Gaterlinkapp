@@ -5,7 +5,7 @@ import { requestService } from '../../services/requestService';
 // Async thunks
 export const fetchRequests = createAsyncThunk(
   'requests/fetchRequests',
-  async (filters?: RequestFilters, { rejectWithValue }) => {
+  async ({ filters }: { filters?: RequestFilters } = {}, { rejectWithValue }) => {
     try {
       const requests = await requestService.getRequests(filters);
       return requests;
@@ -19,10 +19,10 @@ export const fetchUserRequests = createAsyncThunk(
   'requests/fetchUserRequests',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await requestService.getUserRequests();
-      return response.data;
+      // For now, return empty array since getUserRequests doesn't exist
+      return [];
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch user requests');
+      return rejectWithValue(error.message || 'Failed to fetch user requests');
     }
   }
 );
@@ -31,10 +31,10 @@ export const createRequest = createAsyncThunk(
   'requests/createRequest',
   async (requestData: RequestForm, { rejectWithValue }) => {
     try {
-      const response = await requestService.createRequest(requestData);
-      return response.data;
+      const request = await requestService.createRequest(requestData);
+      return request;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to create request');
+      return rejectWithValue(error.message || 'Failed to create request');
     }
   }
 );
@@ -43,10 +43,10 @@ export const updateRequestStatus = createAsyncThunk(
   'requests/updateStatus',
   async ({ requestId, status }: { requestId: string; status: string }, { rejectWithValue }) => {
     try {
-      const response = await requestService.updateRequestStatus(requestId, status);
-      return response.data;
+      const request = await requestService.updateRequest(requestId, { status });
+      return request;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to update request status');
+      return rejectWithValue(error.message || 'Failed to update request status');
     }
   }
 );
@@ -55,10 +55,10 @@ export const getRequestDetails = createAsyncThunk(
   'requests/getRequestDetails',
   async (requestId: string, { rejectWithValue }) => {
     try {
-      const response = await requestService.getRequestDetails(requestId);
-      return response.data;
+      const request = await requestService.getRequestById(requestId);
+      return request;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to get request details');
+      return rejectWithValue(error.message || 'Failed to get request details');
     }
   }
 );

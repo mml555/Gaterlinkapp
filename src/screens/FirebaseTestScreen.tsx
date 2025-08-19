@@ -66,7 +66,7 @@ const FirebaseTestScreen: React.FC = () => {
               {Object.entries(testResults).map(([test, result]) => (
                 <View key={test} style={styles.resultItem}>
                   <Text style={styles.resultLabel}>{test}:</Text>
-                  <Text style={styles.resultValue}>{result}</Text>
+                  <Text style={styles.resultValue}>{String(result)}</Text>
                 </View>
               ))}
             </Card.Content>

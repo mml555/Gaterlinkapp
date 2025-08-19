@@ -5,53 +5,55 @@ import { chatService } from '../../services/chatService';
 // Async thunks
 export const fetchChats = createAsyncThunk(
   'chat/fetchChats',
-  async (_, { rejectWithValue }) => {
+  async (userId: string, { rejectWithValue }) => {
     try {
-      const response = await chatService.getChats();
-      return response.data;
+      const conversations = await chatService.getConversations(userId);
+      return conversations;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch chats');
+      return rejectWithValue(error.message || 'Failed to fetch chats');
     }
   }
 );
 
 export const fetchMessages = createAsyncThunk(
   'chat/fetchMessages',
-  async (chatId: string, { rejectWithValue }) => {
+  async (conversationId: string, { rejectWithValue }) => {
     try {
-      const response = await chatService.getMessages(chatId);
-      return { chatId, messages: response.data };
+      const messages = await chatService.getMessages(conversationId);
+      return { conversationId, messages };
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch messages');
+      return rejectWithValue(error.message || 'Failed to fetch messages');
     }
   }
 );
 
 export const sendMessage = createAsyncThunk(
   'chat/sendMessage',
-  async ({ chatId, content, messageType = 'text', attachments }: {
-    chatId: string;
+  async ({ conversationId, senderId, senderName, content, type = 'text', metadata }: {
+    conversationId: string;
+    senderId: string;
+    senderName: string;
     content: string;
-    messageType?: string;
-    attachments?: any[];
+    type?: 'text' | 'image' | 'file';
+    metadata?: any;
   }, { rejectWithValue }) => {
     try {
-      const response = await chatService.sendMessage(chatId, content, messageType, attachments);
-      return response.data;
+      const message = await chatService.sendMessage(conversationId, senderId, senderName, content, type, metadata);
+      return message;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to send message');
+      return rejectWithValue(error.message || 'Failed to send message');
     }
   }
 );
 
 export const markMessagesAsRead = createAsyncThunk(
   'chat/markAsRead',
-  async (chatId: string, { rejectWithValue }) => {
+  async ({ conversationId, userId }: { conversationId: string; userId: string }, { rejectWithValue }) => {
     try {
-      await chatService.markMessagesAsRead(chatId);
-      return chatId;
+      await chatService.markMessagesAsRead(conversationId, userId);
+      return conversationId;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to mark messages as read');
+      return rejectWithValue(error.message || 'Failed to mark messages as read');
     }
   }
 );
@@ -148,8 +150,8 @@ const chatSlice = createSlice({
       })
       .addCase(fetchMessages.fulfilled, (state, action) => {
         state.isLoading = false;
-        const { chatId, messages } = action.payload;
-        state.messages[chatId] = messages;
+        const { conversationId, messages } = action.payload;
+        state.messages[conversationId] = messages;
       })
       .addCase(fetchMessages.rejected, (state, action) => {
         state.isLoading = false;
@@ -165,16 +167,16 @@ const chatSlice = createSlice({
       .addCase(sendMessage.fulfilled, (state, action) => {
         state.isLoading = false;
         const message = action.payload;
-        const chatId = message.chatId;
+        const conversationId = message.conversationId;
         
         // Add message to messages array
-        if (!state.messages[chatId]) {
-          state.messages[chatId] = [];
+        if (!state.messages[conversationId]) {
+          state.messages[conversationId] = [];
         }
-        state.messages[chatId].push(message);
+        state.messages[conversationId].push(message);
         
         // Update chat's last message
-        const chatIndex = state.chats.findIndex(chat => chat.id === chatId);
+        const chatIndex = state.chats.findIndex(chat => chat.id === conversationId);
         if (chatIndex !== -1) {
           state.chats[chatIndex].lastMessage = message;
         }
@@ -192,17 +194,17 @@ const chatSlice = createSlice({
       })
       .addCase(markMessagesAsRead.fulfilled, (state, action) => {
         state.isLoading = false;
-        const chatId = action.payload;
+        const conversationId = action.payload;
         
         // Mark all messages in the chat as read
-        if (state.messages[chatId]) {
-          state.messages[chatId].forEach(message => {
+        if (state.messages[conversationId]) {
+          state.messages[conversationId].forEach(message => {
             message.isRead = true;
           });
         }
         
         // Update chat's unread count
-        const chatIndex = state.chats.findIndex(chat => chat.id === chatId);
+        const chatIndex = state.chats.findIndex(chat => chat.id === conversationId);
         if (chatIndex !== -1) {
           state.chats[chatIndex].unreadCount = 0;
         }

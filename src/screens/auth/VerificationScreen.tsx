@@ -217,7 +217,9 @@ const VerificationScreen: React.FC = () => {
             {code.map((digit, index) => (
               <RNTextInput
                 key={index}
-                ref={(ref) => (inputRefs.current[index] = ref)}
+                ref={(ref) => {
+                  inputRefs.current[index] = ref;
+                }}
                 style={[
                   styles.codeInput,
                   { borderColor: error ? theme.colors.error : theme.colors.outline },

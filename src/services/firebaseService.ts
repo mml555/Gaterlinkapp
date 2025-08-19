@@ -14,6 +14,7 @@ import {
   Timestamp,
   QuerySnapshot,
   DocumentData,
+  Query,
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
@@ -57,7 +58,7 @@ class FirebaseService {
     limitCount?: number
   ): Promise<T[]> {
     try {
-      let q = collection(db, collectionName);
+      let q: Query<DocumentData> = collection(db, collectionName);
 
       // Apply conditions
       if (conditions && conditions.length > 0) {
@@ -183,7 +184,7 @@ class FirebaseService {
     orderByField?: string,
     orderDirection: 'asc' | 'desc' = 'desc'
   ): () => void {
-    let q = collection(db, collectionName);
+    let q: Query<DocumentData> = collection(db, collectionName);
 
     // Apply conditions
     if (conditions && conditions.length > 0) {

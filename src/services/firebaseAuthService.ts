@@ -60,12 +60,27 @@ class FirebaseAuthService {
       });
 
       // Create user document in Firestore
+      const [firstName, ...lastNameParts] = userData.name.split(' ');
+      const lastName = lastNameParts.join(' ') || '';
+      
       const user: User = {
         id: firebaseUser.uid,
-        name: userData.name,
         email: userData.email,
-        role: userData.role || UserRole.CUSTOMER,
-        avatar: this.generateAvatar(userData.name),
+        firstName,
+        lastName,
+        role: (userData.role as UserRole) || UserRole.CUSTOMER,
+        profilePicture: this.generateAvatar(userData.name),
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        biometricEnabled: false,
+        notificationSettings: {
+          pushEnabled: true,
+          emailEnabled: true,
+          smsEnabled: false,
+          soundEnabled: true,
+          badgeEnabled: true,
+        },
       };
 
       await this.createUserDocument(user);
