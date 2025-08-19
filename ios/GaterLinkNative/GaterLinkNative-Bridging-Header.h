@@ -8,14 +8,7 @@
 #ifndef GaterLinkNative_Bridging_Header_h
 #define GaterLinkNative_Bridging_Header_h
 
-// Import React Native headers
-#import <React/RCTBundleURLProvider.h>
-#import <React/RCTRootView.h>
-#import <React/RCTViewManager.h>
-#import <React/RCTBridgeModule.h>
-
-// Import any other Objective-C headers you need to expose to Swift
-// For example, if you have custom native modules:
-// #import "YourCustomModule.h"
+// Minimal bridging header - React Native headers will be available through the framework
+// Add specific imports here if needed for custom native modules
 
 #endif /* GaterLinkNative_Bridging_Header_h */

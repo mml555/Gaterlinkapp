@@ -9,7 +9,7 @@ import {
   Text as RNText,
 } from 'react-native';
 import { Text, Button, Card, IconButton, Switch } from 'react-native-paper';
-// import { CameraScreen } from 'react-native-camera-kit';
+import { CameraScreen } from 'react-native-camera-kit';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
@@ -284,11 +284,17 @@ const QRScannerScreen: React.FC = () => {
         </View>
       )}
       
-      <View style={styles.camera}>
-        <Text style={{ color: '#FFFFFF', textAlign: 'center' }}>
-          Camera functionality not available
-        </Text>
-      </View>
+      <CameraScreen
+        scanBarcode
+        onReadCode={handleQRCodeRead}
+        showFrame
+        laserColor="#007AFF"
+        frameColor="#007AFF"
+        style={styles.camera}
+        cameraType="back"
+        flashMode="auto"
+        onError={handleScanError}
+      />
       
       <View style={styles.controls}>
         <View style={styles.scanArea}>

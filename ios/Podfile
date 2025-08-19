@@ -2,6 +2,7 @@ platform :ios, '16.0' # iOS 16 required for React Native 0.81.0 React-graphics
 
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 
+# Use static frameworks to avoid multiple commands producing same frameworks
 use_frameworks! :linkage => :static
 
 # Add permissions configuration
@@ -14,9 +15,9 @@ target 'GaterLinkNative' do
     :fabric_enabled => false   # Keep Old Arch since using Reanimated 3.19.1
   )
 
-  # Firebase 12+ (using default subspecs, no modular headers)
-  pod 'Firebase/Auth'
-  pod 'Firebase/Firestore'
+  # Firebase 12+ with modular headers to avoid compilation issues
+  pod 'Firebase/Auth', :modular_headers => true
+  pod 'Firebase/Firestore', :modular_headers => true
 
   # React Native Permissions - will be handled by the main package
 
@@ -27,6 +28,33 @@ target 'GaterLinkNative' do
     (installer.pods_project.targets + installer.generated_projects.flat_map(&:targets)).each do |t|
       t.build_configurations.each do |cfg|
         cfg.build_settings['ENABLE_USER_SCRIPT_SANDBOXING'] = 'NO'
+        # Add additional settings to resolve modular header issues
+        cfg.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+        cfg.build_settings['DEFINES_MODULE'] = 'YES'
+        
+        # Fix for Xcode 16.4 module compilation issues
+        cfg.build_settings['SWIFT_VERSION'] = '5.0'
+        cfg.build_settings['CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER'] = 'NO'
+        cfg.build_settings['CLANG_WARN_DOCUMENTATION_COMMENTS'] = 'NO'
+        
+        # Fix Firebase module redefinition
+        cfg.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+        cfg.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FIRAuth_VERSION=12.1.0'
+        cfg.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FIRFirestore_VERSION=12.1.0'
+        
+        # Fix bridging header issues
+        cfg.build_settings['SWIFT_OBJC_BRIDGING_HEADER'] = 'GaterLinkNative/GaterLinkNative-Bridging-Header.h'
+        cfg.build_settings['SWIFT_OBJC_INTERFACE_HEADER_NAME'] = 'GaterLinkNative-Swift.h'
+      end
+    end
+    
+    # Fix Firebase module redefinition specifically
+    installer.pods_project.targets.each do |target|
+      if target.name.start_with?('Firebase')
+        target.build_configurations.each do |config|
+          config.build_settings['DEFINES_MODULE'] = 'YES'
+          config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+        end
       end
     end
   end

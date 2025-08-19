@@ -150,6 +150,13 @@
 			buildRules = (
 			);
 			dependencies = (
+				ADE1D2C22E553E9C00D5C7CC /* PBXTargetDependency */,
+				ADE1D2C02E553E9700D5C7CC /* PBXTargetDependency */,
+				ADE1D2BE2E553E9200D5C7CC /* PBXTargetDependency */,
+				ADE1D2BC2E553E8E00D5C7CC /* PBXTargetDependency */,
+				ADE1D2BA2E553E8B00D5C7CC /* PBXTargetDependency */,
+				ADE1D2B82E553E8600D5C7CC /* PBXTargetDependency */,
+				ADE1D2B62E553E8200D5C7CC /* PBXTargetDependency */,
 			);
 			name = GaterLinkNative;
 			productName = GaterLinkNative;
@@ -289,6 +296,37 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		ADE1D2B62E553E8200D5C7CC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = ADE1D2B52E553E8200D5C7CC /* FirebaseCore */;
+		};
+		ADE1D2B82E553E8600D5C7CC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = ADE1D2B72E553E8600D5C7CC /* FirebaseAuth */;
+		};
+		ADE1D2BA2E553E8B00D5C7CC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = ADE1D2B92E553E8B00D5C7CC /* FirebaseFirestore */;
+		};
+		ADE1D2BC2E553E8E00D5C7CC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = ADE1D2BB2E553E8E00D5C7CC /* FirebaseDatabase */;
+		};
+		ADE1D2BE2E553E9200D5C7CC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = ADE1D2BD2E553E9200D5C7CC /* FirebaseMessaging */;
+		};
+		ADE1D2C02E553E9700D5C7CC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = ADE1D2BF2E553E9700D5C7CC /* FirebaseFunctions */;
+		};
+		ADE1D2C22E553E9C00D5C7CC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = ADE1D2C12E553E9C00D5C7CC /* FirebaseAppCheck */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
@@ -553,6 +591,41 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		ADE1D2B52E553E8200D5C7CC /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ADF3F28E2E551DFE00C8754D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		ADE1D2B72E553E8600D5C7CC /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ADF3F28E2E551DFE00C8754D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		ADE1D2B92E553E8B00D5C7CC /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ADF3F28E2E551DFE00C8754D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		ADE1D2BB2E553E8E00D5C7CC /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ADF3F28E2E551DFE00C8754D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+		ADE1D2BD2E553E9200D5C7CC /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ADF3F28E2E551DFE00C8754D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+		ADE1D2BF2E553E9700D5C7CC /* FirebaseFunctions */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ADF3F28E2E551DFE00C8754D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFunctions;
+		};
+		ADE1D2C12E553E9C00D5C7CC /* FirebaseAppCheck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ADF3F28E2E551DFE00C8754D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAppCheck;
+		};
 		ADF3F28F2E551DFE00C8754D /* FirebaseAI */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = ADF3F28E2E551DFE00C8754D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

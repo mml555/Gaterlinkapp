@@ -13,6 +13,8 @@ const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
   whitelist: ['auth', 'doors'], // Only persist auth and doors
+  serialize: true,
+  deserialize: true,
 };
 
 // Create persisted reducers
@@ -31,9 +33,26 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
+        // Ignore these action types
+        ignoredActions: [
+          'persist/PERSIST', 
+          'persist/REHYDRATE',
+          'persist/PAUSE',
+          'persist/PURGE',
+          'persist/REGISTER',
+          'persist/FLUSH',
+        ],
+        // Ignore these field paths in all actions
+        ignoredActionPaths: ['payload.createdAt', 'payload.updatedAt', 'payload.lastLoginAt'],
+        // Ignore these paths in the state
+        ignoredPaths: ['auth.user.createdAt', 'auth.user.updatedAt', 'auth.user.lastLoginAt'],
+      },
+      immutableCheck: {
+        // Ignore these paths in the state
+        ignoredPaths: ['auth.user.createdAt', 'auth.user.updatedAt', 'auth.user.lastLoginAt'],
       },
     }),
+  devTools: __DEV__,
 });
 
 export const persistor = persistStore(store);

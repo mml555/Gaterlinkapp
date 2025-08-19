@@ -68,6 +68,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "jest": "^30.0.5",
     "prettier": "^3.6.2",
+    "qrcode": "^1.5.4",
     "react-test-renderer": "19.1.0",
     "typescript": "^5.9.2"
   },

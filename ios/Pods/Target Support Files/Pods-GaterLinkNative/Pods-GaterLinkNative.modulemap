@@ -1,4 +1,4 @@
-module Pods_GaterLinkNative {
+framework module Pods_GaterLinkNative {
   umbrella header "Pods-GaterLinkNative-umbrella.h"
 
   export *

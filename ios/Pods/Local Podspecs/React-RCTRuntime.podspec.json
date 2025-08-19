@@ -16,10 +16,12 @@
   "compiler_flags": "",
   "header_dir": "React",
   "module_name": "RCTRuntime",
+  "header_mappings_dir": "./",
   "pod_target_xcconfig": {
     "OTHER_CFLAGS": "$(inherited) ",
     "DEFINES_MODULE": "YES",
     "CLANG_CXX_LANGUAGE_STANDARD": "c++20",
+    "PUBLIC_HEADERS_FOLDER_PATH": "RCTRuntime.framework/Headers/React",
     "HEADER_SEARCH_PATHS": [
       "\"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimeexecutor/React_runtimeexecutor.framework/Headers\"",
       "\"${PODS_CONFIGURATION_BUILD_DIR}/React-runtimeexecutor/React_runtimeexecutor.framework/Headers/platform/ios\"",

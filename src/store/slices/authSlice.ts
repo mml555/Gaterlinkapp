@@ -2,12 +2,28 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { AuthState, User, LoginCredentials, RegisterData } from '../../types';
 import { authService } from '../../services/authService';
 
+// Helper function to serialize dates in user objects
+const serializeUserDates = (user: any): any => {
+  if (!user) return user;
+  
+  return {
+    ...user,
+    createdAt: user.createdAt instanceof Date ? user.createdAt.toISOString() : user.createdAt,
+    updatedAt: user.updatedAt instanceof Date ? user.updatedAt.toISOString() : user.updatedAt,
+    lastLoginAt: user.lastLoginAt instanceof Date ? user.lastLoginAt.toISOString() : user.lastLoginAt,
+  };
+};
+
 // Async thunks
 export const login = createAsyncThunk(
   'auth/login',
   async (credentials: LoginCredentials, { rejectWithValue }) => {
     try {
       const response = await authService.login(credentials);
+      // Serialize dates before storing in Redux
+      if (response.success && response.data && response.data.user) {
+        response.data.user = serializeUserDates(response.data.user);
+      }
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Login failed');
@@ -20,6 +36,10 @@ export const register = createAsyncThunk(
   async (userData: RegisterData, { rejectWithValue }) => {
     try {
       const response = await authService.register(userData);
+      // Serialize dates before storing in Redux
+      if (response.success && response.data && response.data.user) {
+        response.data.user = serializeUserDates(response.data.user);
+      }
       return response;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Registration failed');
@@ -44,6 +64,10 @@ export const getCurrentUser = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const user = await authService.getCurrentUser();
+      // Serialize dates before storing in Redux
+      if (user.success && user.data) {
+        user.data = serializeUserDates(user.data);
+      }
       return user;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to get user');
@@ -56,6 +80,10 @@ export const updateProfile = createAsyncThunk(
   async (userData: Partial<User>, { rejectWithValue }) => {
     try {
       const user = await authService.updateProfile(userData);
+      // Serialize dates before storing in Redux
+      if (user.success && user.data) {
+        user.data = serializeUserDates(user.data);
+      }
       return user;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Profile update failed');
@@ -97,7 +125,9 @@ const authSlice = createSlice({
     },
     updateUser: (state, action: PayloadAction<Partial<User>>) => {
       if (state.user) {
-        state.user = { ...state.user, ...action.payload };
+        // Serialize any date fields in the update
+        const serializedUpdate = serializeUserDates(action.payload);
+        state.user = { ...state.user, ...serializedUpdate };
       }
     },
   },

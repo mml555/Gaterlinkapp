@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "04CDA3EDAB45EF6A63A16AC2B65B87F2"
-               BuildableName = "libPods-GaterLinkNative.a"
+               BuildableName = "Pods_GaterLinkNative.framework"
                BlueprintName = "Pods-GaterLinkNative"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
