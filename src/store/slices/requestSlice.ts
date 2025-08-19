@@ -7,10 +7,10 @@ export const fetchRequests = createAsyncThunk(
   'requests/fetchRequests',
   async (filters?: RequestFilters, { rejectWithValue }) => {
     try {
-      const response = await requestService.getRequests(filters);
-      return response.data;
+      const requests = await requestService.getRequests(filters);
+      return requests;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch requests');
+      return rejectWithValue(error.message || 'Failed to fetch requests');
     }
   }
 );

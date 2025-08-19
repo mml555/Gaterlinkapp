@@ -3,38 +3,38 @@ import { AuthState, User, LoginCredentials, RegisterData } from '../../types';
 import { authService } from '../../services/authService';
 
 // Async thunks
-export const loginUser = createAsyncThunk(
+export const login = createAsyncThunk(
   'auth/login',
   async (credentials: LoginCredentials, { rejectWithValue }) => {
     try {
       const response = await authService.login(credentials);
-      return response.data;
+      return response;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Login failed');
+      return rejectWithValue(error.message || 'Login failed');
     }
   }
 );
 
-export const registerUser = createAsyncThunk(
+export const register = createAsyncThunk(
   'auth/register',
   async (userData: RegisterData, { rejectWithValue }) => {
     try {
       const response = await authService.register(userData);
-      return response.data;
+      return response;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Registration failed');
+      return rejectWithValue(error.message || 'Registration failed');
     }
   }
 );
 
-export const logoutUser = createAsyncThunk(
+export const logout = createAsyncThunk(
   'auth/logout',
   async (_, { rejectWithValue }) => {
     try {
       await authService.logout();
       return null;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Logout failed');
+      return rejectWithValue(error.message || 'Logout failed');
     }
   }
 );
@@ -43,22 +43,22 @@ export const getCurrentUser = createAsyncThunk(
   'auth/getCurrentUser',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await authService.getCurrentUser();
-      return response.data;
+      const user = await authService.getCurrentUser();
+      return user;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to get user');
+      return rejectWithValue(error.message || 'Failed to get user');
     }
   }
 );
 
-export const updateUserProfile = createAsyncThunk(
+export const updateProfile = createAsyncThunk(
   'auth/updateProfile',
   async (userData: Partial<User>, { rejectWithValue }) => {
     try {
-      const response = await authService.updateProfile(userData);
-      return response.data;
+      const user = await authService.updateProfile(userData);
+      return user;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Profile update failed');
+      return rejectWithValue(error.message || 'Profile update failed');
     }
   }
 );
@@ -67,10 +67,10 @@ export const enableBiometric = createAsyncThunk(
   'auth/enableBiometric',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await authService.enableBiometric();
-      return response.data;
+      const success = await authService.enableBiometric();
+      return success;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || 'Biometric setup failed');
+      return rejectWithValue(error.message || 'Biometric setup failed');
     }
   }
 );

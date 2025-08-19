@@ -162,6 +162,17 @@ export interface RegisterData {
   phone?: string;
 }
 
+export interface RequestForm {
+  requesterId: string;
+  requesterName: string;
+  requesterEmail: string;
+  doorId: string;
+  doorName: string;
+  type: 'temporary' | 'permanent';
+  duration?: string;
+  reason?: string;
+}
+
 // API Response Types
 export interface ApiResponse<T> {
   success: boolean;
