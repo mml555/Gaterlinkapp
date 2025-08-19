@@ -1,55 +1,55 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { ActivityIndicator, Text, useTheme } from 'react-native-paper';
-// import Animated, {
-//   useSharedValue,
-//   useAnimatedStyle,
-//   withRepeat,
-//   withTiming,
-//   withSequence,
-// } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withRepeat,
+  withTiming,
+  withSequence,
+} from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const LoadingScreen: React.FC = () => {
   const theme = useTheme();
-  // const scale = useSharedValue(1);
-  // const opacity = useSharedValue(0.8);
+  const scale = useSharedValue(1);
+  const opacity = useSharedValue(0.8);
 
-  // useEffect(() => {
-  //   scale.value = withRepeat(
-  //     withSequence(
-  //       withTiming(1.2, { duration: 800 }),
-  //       withTiming(1, { duration: 800 })
-  //     ),
-  //     -1,
-  //     false
-  //   );
+  useEffect(() => {
+    scale.value = withRepeat(
+      withSequence(
+        withTiming(1.2, { duration: 800 }),
+        withTiming(1, { duration: 800 })
+      ),
+      -1,
+      false
+    );
 
-  //   opacity.value = withRepeat(
-  //     withSequence(
-  //       withTiming(1, { duration: 800 }),
-  //       withTiming(0.8, { duration: 800 })
-  //     ),
-  //     -1,
-  //     false
-  //   );
-  // }, []);
+    opacity.value = withRepeat(
+      withSequence(
+        withTiming(1, { duration: 800 }),
+        withTiming(0.8, { duration: 800 })
+      ),
+      -1,
+      false
+    );
+  }, []);
 
-  // const animatedStyle = useAnimatedStyle(() => {
-  //   return {
-  //     transform: [{ scale: scale.value }],
-  //     opacity: opacity.value,
-  //   };
-  // });
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+      opacity: opacity.value,
+    };
+  });
 
   return (
     <View
       style={[styles.container, { backgroundColor: theme.colors.primary }]}
     >
       <View style={styles.content}>
-        <View style={styles.logoContainer}>
+        <Animated.View style={[styles.logoContainer, animatedStyle]}>
           <Icon name="door-open" size={80} color="#FFFFFF" />
-        </View>
+        </Animated.View>
         
         <Text variant="headlineMedium" style={styles.appName}>
           GaterLink
