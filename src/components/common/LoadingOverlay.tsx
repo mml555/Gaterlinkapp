@@ -13,12 +13,17 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
 }) => {
   const theme = useTheme();
 
+  if (!visible) {
+    return null;
+  }
+
   return (
     <Modal
       transparent
       visible={visible}
       animationType="fade"
       statusBarTranslucent
+      presentationStyle="overFullScreen"
     >
       <View style={styles.container}>
         <View style={[styles.content, { backgroundColor: theme.colors.surface }]}>

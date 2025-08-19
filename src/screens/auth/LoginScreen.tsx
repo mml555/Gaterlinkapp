@@ -91,7 +91,7 @@ const LoginScreen: React.FC = () => {
     }
 
     try {
-              await dispatch(login({ email, password }) as any);
+      await dispatch(login({ email, password }) as any);
       showMessage({
         message: 'Welcome back!',
         type: 'success',
@@ -130,14 +130,30 @@ const LoginScreen: React.FC = () => {
     }
   };
 
+  const handleEmailChange = (text: string) => {
+    setEmail(text);
+    if (emailError) {
+      validateEmail(text);
+    }
+  };
+
+  const handlePasswordChange = (text: string) => {
+    setPassword(text);
+    if (passwordError) {
+      validatePassword(text);
+    }
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
     >
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
         <Surface style={styles.surface} elevation={0}>
           <View style={styles.logoContainer}>
@@ -155,17 +171,18 @@ const LoginScreen: React.FC = () => {
             <TextInput
               label="Email"
               value={email}
-              onChangeText={(text) => {
-                setEmail(text);
-                validateEmail(text);
-              }}
+              onChangeText={handleEmailChange}
               mode="outlined"
               keyboardType="email-address"
               autoCapitalize="none"
               autoComplete="email"
+              autoCorrect={false}
+              spellCheck={false}
               error={!!emailError}
               left={<TextInput.Icon icon="email" />}
               style={styles.input}
+              editable={!isLoading}
+              pointerEvents={isLoading ? 'none' : 'auto'}
             />
             <HelperText type="error" visible={!!emailError}>
               {emailError}
@@ -174,23 +191,25 @@ const LoginScreen: React.FC = () => {
             <TextInput
               label="Password"
               value={password}
-              onChangeText={(text) => {
-                setPassword(text);
-                validatePassword(text);
-              }}
+              onChangeText={handlePasswordChange}
               mode="outlined"
               secureTextEntry={!showPassword}
               autoCapitalize="none"
               autoComplete="password"
+              autoCorrect={false}
+              spellCheck={false}
               error={!!passwordError}
               left={<TextInput.Icon icon="lock" />}
               right={
                 <TextInput.Icon
                   icon={showPassword ? 'eye-off' : 'eye'}
                   onPress={() => setShowPassword(!showPassword)}
+                  disabled={isLoading}
                 />
               }
               style={styles.input}
+              editable={!isLoading}
+              pointerEvents={isLoading ? 'none' : 'auto'}
             />
             <HelperText type="error" visible={!!passwordError}>
               {passwordError}
@@ -200,6 +219,7 @@ const LoginScreen: React.FC = () => {
               <TouchableOpacity
                 style={styles.rememberMe}
                 onPress={() => setRememberMe(!rememberMe)}
+                disabled={isLoading}
               >
                 <Checkbox status={rememberMe ? 'checked' : 'unchecked'} />
                 <Text variant="bodyMedium">Remember me</Text>
@@ -207,6 +227,7 @@ const LoginScreen: React.FC = () => {
 
               <TouchableOpacity
                 onPress={() => navigation.navigate('ForgotPassword')}
+                disabled={isLoading}
               >
                 <Text variant="bodyMedium" style={styles.forgotPassword}>
                   Forgot Password?
@@ -232,6 +253,7 @@ const LoginScreen: React.FC = () => {
                 icon="face-recognition"
                 style={styles.biometricButton}
                 contentStyle={styles.buttonContent}
+                disabled={isLoading}
               >
                 Sign in with Face ID / Touch ID
               </Button>
@@ -245,6 +267,7 @@ const LoginScreen: React.FC = () => {
               }}
               style={styles.biometricButton}
               contentStyle={styles.buttonContent}
+              disabled={isLoading}
             >
               Test Firebase Connection
             </Button>
@@ -259,7 +282,10 @@ const LoginScreen: React.FC = () => {
 
             <View style={styles.footer}>
               <Text variant="bodyMedium">Don't have an account? </Text>
-              <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+              <TouchableOpacity 
+                onPress={() => navigation.navigate('Register')}
+                disabled={isLoading}
+              >
                 <Text
                   variant="bodyMedium"
                   style={[styles.link, { color: theme.colors.primary }]}

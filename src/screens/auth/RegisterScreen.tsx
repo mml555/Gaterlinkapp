@@ -96,6 +96,14 @@ const RegisterScreen: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const updateField = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
   const handleRegister = async () => {
     if (!validateForm()) {
       showMessage({
@@ -142,10 +150,12 @@ const RegisterScreen: React.FC = () => {
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
     >
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
       >
         <Surface style={styles.surface} elevation={0}>
           <View style={styles.logoContainer}>
@@ -169,6 +179,8 @@ const RegisterScreen: React.FC = () => {
                   mode="outlined"
                   error={!!errors.firstName}
                   left={<TextInput.Icon icon="account" />}
+                  editable={!isLoading}
+                  pointerEvents={isLoading ? 'none' : 'auto'}
                 />
                 <HelperText type="error" visible={!!errors.firstName}>
                   {errors.firstName}
@@ -182,6 +194,8 @@ const RegisterScreen: React.FC = () => {
                   onChangeText={(text) => updateField('lastName', text)}
                   mode="outlined"
                   error={!!errors.lastName}
+                  editable={!isLoading}
+                  pointerEvents={isLoading ? 'none' : 'auto'}
                 />
                 <HelperText type="error" visible={!!errors.lastName}>
                   {errors.lastName}
@@ -197,9 +211,13 @@ const RegisterScreen: React.FC = () => {
               keyboardType="email-address"
               autoCapitalize="none"
               autoComplete="email"
+              autoCorrect={false}
+              spellCheck={false}
               error={!!errors.email}
               left={<TextInput.Icon icon="email" />}
               style={styles.input}
+              editable={!isLoading}
+              pointerEvents={isLoading ? 'none' : 'auto'}
             />
             <HelperText type="error" visible={!!errors.email}>
               {errors.email}
@@ -215,6 +233,8 @@ const RegisterScreen: React.FC = () => {
               error={!!errors.phone}
               left={<TextInput.Icon icon="phone" />}
               style={styles.input}
+              editable={!isLoading}
+              pointerEvents={isLoading ? 'none' : 'auto'}
             />
             <HelperText type="error" visible={!!errors.phone}>
               {errors.phone}
@@ -228,15 +248,20 @@ const RegisterScreen: React.FC = () => {
               secureTextEntry={!showPassword}
               autoCapitalize="none"
               autoComplete="password-new"
+              autoCorrect={false}
+              spellCheck={false}
               error={!!errors.password}
               left={<TextInput.Icon icon="lock" />}
               right={
                 <TextInput.Icon
                   icon={showPassword ? 'eye-off' : 'eye'}
                   onPress={() => setShowPassword(!showPassword)}
+                  disabled={isLoading}
                 />
               }
               style={styles.input}
+              editable={!isLoading}
+              pointerEvents={isLoading ? 'none' : 'auto'}
             />
             <HelperText type="error" visible={!!errors.password}>
               {errors.password}
@@ -250,15 +275,20 @@ const RegisterScreen: React.FC = () => {
               secureTextEntry={!showConfirmPassword}
               autoCapitalize="none"
               autoComplete="password-new"
+              autoCorrect={false}
+              spellCheck={false}
               error={!!errors.confirmPassword}
               left={<TextInput.Icon icon="lock-check" />}
               right={
                 <TextInput.Icon
                   icon={showConfirmPassword ? 'eye-off' : 'eye'}
                   onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                  disabled={isLoading}
                 />
               }
               style={styles.input}
+              editable={!isLoading}
+              pointerEvents={isLoading ? 'none' : 'auto'}
             />
             <HelperText type="error" visible={!!errors.confirmPassword}>
               {errors.confirmPassword}
@@ -267,6 +297,7 @@ const RegisterScreen: React.FC = () => {
             <TouchableOpacity
               style={styles.termsContainer}
               onPress={() => setAgreeToTerms(!agreeToTerms)}
+              disabled={isLoading}
             >
               <Checkbox
                 status={agreeToTerms ? 'checked' : 'unchecked'}
@@ -300,7 +331,10 @@ const RegisterScreen: React.FC = () => {
 
             <View style={styles.footer}>
               <Text variant="bodyMedium">Already have an account? </Text>
-              <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+              <TouchableOpacity 
+                onPress={() => navigation.navigate('Login')}
+                disabled={isLoading}
+              >
                 <Text
                   variant="bodyMedium"
                   style={[styles.link, { color: theme.colors.primary }]}
