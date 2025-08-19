@@ -1,36 +1,30 @@
 import React from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { NavigationContainer } from '@react-navigation/native';
+import { StatusBar } from 'react-native';
 import { Provider as PaperProvider } from 'react-native-paper';
-import { Provider as StoreProvider } from 'react-redux';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import FlashMessage from 'react-native-flash-message';
+import TestScreen from './src/screens/TestScreen';
 
-import { store } from './src/store';
-import { theme } from './src/utils/theme';
-import RootNavigator from './src/navigation/RootNavigator';
-import { AuthProvider } from './src/contexts/AuthContext';
-import { NotificationProvider } from './src/contexts/NotificationContext';
+// Simple theme for now
+const theme = {
+  colors: {
+    primary: '#007AFF',
+    background: '#FFFFFF',
+    surface: '#FFFFFF',
+    onBackground: '#000000',
+    onSurface: '#000000',
+    onSurfaceVariant: '#666666',
+  },
+};
 
-export default function App() {
+function App(): React.JSX.Element {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <StoreProvider store={store}>
-        <PaperProvider theme={theme}>
-          <SafeAreaProvider>
-            <AuthProvider>
-              <NotificationProvider>
-                <NavigationContainer>
-                  <StatusBar style="auto" />
-                  <RootNavigator />
-                  <FlashMessage position="top" />
-                </NavigationContainer>
-              </NotificationProvider>
-            </AuthProvider>
-          </SafeAreaProvider>
-        </PaperProvider>
-      </StoreProvider>
-    </GestureHandlerRootView>
+    <PaperProvider theme={theme}>
+      <SafeAreaProvider>
+        <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+        <TestScreen />
+      </SafeAreaProvider>
+    </PaperProvider>
   );
 }
+
+export default App;

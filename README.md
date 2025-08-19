@@ -1,135 +1,131 @@
-# 🏠 GaterLink App
+# GaterLink 
 
-A comprehensive door access management system built with React Native, designed to provide seamless access control, real-time communication, and secure authentication for iPhone users.
+A comprehensive door access management system built with React Native CLI.
 
 ## 🚀 Features
 
-### 🔐 **Authentication & Security**
-- **Email/Password Login** with Firebase Auth
-- **Biometric Authentication** (Face ID/Touch ID)
-- **Role-based Access Control** (Customer vs Admin)
-- **Secure Storage** with React Native Keychain
+- **Authentication**: Firebase Authentication with email/password
+- **Door Management**: Control and monitor door access
+- **Access Requests**: Manage temporary and permanent access requests
+- **Real-time Chat**: Communicate with team members
+- **QR Code Scanning**: Scan QR codes for door access
+- **Biometric Authentication**: Fingerprint and Face ID support
+- **Push Notifications**: Real-time notifications for access events
 
-### 🏠 **Door Access Management**
-- **QR Code Scanning** with real-time camera integration
-- **Saved Doors Management** with quick access
-- **Access Request System** with status tracking
-- **Request History** and analytics
+## 📱 Platform Support
 
-### 💬 **Real-Time Communication**
-- **In-App Chat System** with WebSocket integration
-- **Push Notifications** for instant updates
-- **Message History** with file sharing capabilities
+- **iOS**: Native iOS app with Xcode
+- **Android**: Native Android app (coming soon)
 
-### 👨‍💼 **Admin Dashboard**
-- **Request Management** with filtering and search
-- **User Management** and analytics
-- **Performance Metrics** and reporting
+## 🛠 Tech Stack
 
-### 📱 **iOS-Specific Features**
-- **Native iOS Integration** with Share Sheet
-- **Haptic Feedback** and smooth animations
-- **Background App Refresh** support
-- **iOS Security Features** (Keychain, biometrics)
+- **React Native**: 0.81.0
+- **TypeScript**: Full type safety
+- **Firebase**: Authentication, Firestore, Analytics
+- **Redux Toolkit**: State management
+- **React Navigation**: Navigation system
+- **React Native Paper**: Material Design components
+- **React Native Vector Icons**: Icon library
 
-## 📱 Requirements
+## 🚀 Getting Started
 
-- iOS 15.0+
-- React Native 0.72+
-- Node.js 18+
-- Xcode 14.0+
+### Prerequisites
 
-## 🛠 Installation
+- Node.js >= 18
+- Xcode 15+ (for iOS development)
+- CocoaPods
+- React Native CLI
 
-1. Clone the repository:
-```bash
-git clone https://github.com/mml555/Gaterlinkapp.git
-cd Gaterlinkapp
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd GaterLinkNative
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Install iOS dependencies**
+   ```bash
+   cd ios && pod install && cd ..
+   ```
+
+4. **Configure Firebase**
+   - Create a Firebase project
+   - Enable Authentication and Firestore
+   - Update `src/config/firebase.ts` with your Firebase config
+
+5. **Run the app**
+   ```bash
+   # iOS
+   npm run ios
+   
+   # Android (coming soon)
+   npm run android
+   ```
+
+## 📁 Project Structure
+
+```
+src/
+├── components/          # Reusable UI components
+├── config/             # Configuration files (Firebase, etc.)
+├── contexts/           # React contexts
+├── navigation/         # Navigation configuration
+├── screens/            # App screens
+│   ├── auth/          # Authentication screens
+│   └── main/          # Main app screens
+├── services/           # API and business logic services
+├── store/              # Redux store and slices
+├── types/              # TypeScript type definitions
+└── utils/              # Utility functions and themes
 ```
 
-2. Install dependencies:
-```bash
-npm install
-# or
-yarn install
-```
+## 🔧 Available Scripts
 
-3. Install iOS dependencies:
-```bash
-cd ios && pod install && cd ..
-```
+- `npm start` - Start Metro bundler
+- `npm run ios` - Run on iOS simulator
+- `npm run android` - Run on Android emulator
+- `npm run lint` - Run ESLint
+- `npm run lint:fix` - Fix ESLint errors
+- `npm run type-check` - Run TypeScript type checking
+- `npm run pod-install` - Install iOS dependencies
 
-4. Run the app:
-```bash
-# iOS
-npx react-native run-ios
-# or
-yarn ios
-```
+## 🔐 Firebase Setup
 
-## 🏗 Project Structure
+1. Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
+2. Enable Authentication (Email/Password)
+3. Enable Firestore Database
+4. Copy your Firebase config to `src/config/firebase.ts`
 
-```
-Gaterlinkapp/
-├── src/
-│   ├── components/          # Reusable UI components
-│   ├── screens/            # Screen components
-│   ├── navigation/         # Navigation configuration
-│   ├── services/           # API and external services
-│   ├── store/              # State management (Redux/Context)
-│   ├── utils/              # Helper functions and utilities
-│   ├── types/              # TypeScript type definitions
-│   └── assets/             # Images, fonts, and other assets
-├── ios/                    # iOS native code
-├── android/                # Android native code (future)
-├── __tests__/              # Test files
-└── docs/                   # Documentation
-```
+## 📱 Building for Production
 
-## 🔧 Development
+### iOS
+1. Open `ios/GaterLinkNative.xcworkspace` in Xcode
+2. Select your target device/simulator
+3. Click the Run button or press Cmd+R
 
-### Code Style
-- Follow React Native best practices
-- Use TypeScript for type safety
-- Follow ESLint and Prettier configurations
-- Write meaningful commit messages
-
-### Testing
-- Write unit tests for business logic
-- Test UI components with React Native Testing Library
-- Test API services and authentication
-- Ensure accessibility compliance
-
-### Performance
-- Monitor app performance with Flipper
-- Optimize bundle size and loading times
-- Implement proper caching strategies
-- Use React Native Reanimated for smooth animations
-
-## 🔒 Security & Privacy
-
-- **Input Sanitization** for all user inputs
-- **Schema Validation** for API requests
-- **Secure Storage** for sensitive data
-- **Biometric Authentication** integration
-- **Data Encryption** for sensitive information
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+### Android (coming soon)
+1. Open Android Studio
+2. Import the `android` folder
+3. Build and run the project
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-## 📞 Support
+## 📄 License
 
-For support, email support@gaterlinkapp.com or create an issue in this repository.
+This project is licensed under the MIT License.
 
----
+## 🆘 Support
 
-Built with ❤️ for iPhone users
+For support, email support@gaterlink.com or create an issue in the repository.

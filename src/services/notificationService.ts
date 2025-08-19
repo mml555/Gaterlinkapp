@@ -1,4 +1,5 @@
-import * as Notifications from 'expo-notifications';
+// TODO: Replace with React Native notifications
+// import * as Notifications from 'expo-notifications';
 
 export interface NotificationData {
   id: string;

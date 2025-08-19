@@ -302,7 +302,7 @@ export interface LoginForm {
   rememberMe: boolean;
 }
 
-export interface RequestForm {
+export interface RequestFormData {
   title: string;
   description: string;
   category: RequestCategory;
