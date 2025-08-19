@@ -1,47 +1,38 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { Platform } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { Platform, Alert } from 'react-native';
 import PushNotification from 'react-native-push-notification';
 import { addNotification } from '../store/slices/notificationSlice';
-import { notificationService } from '../services/notificationService';
 
 interface NotificationContextType {
+  pushToken: string | null;
   registerForPushNotifications: () => Promise<string | null>;
-  sendLocalNotification: (title: string, body: string, data?: any) => void;
-  getNotificationPermissions: () => Promise<boolean>;
+  sendLocalNotification: (title: string, body: string, data?: any) => Promise<void>;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
-export const useNotifications = () => {
-  const context = useContext(NotificationContext);
-  if (context === undefined) {
-    throw new Error('useNotifications must be used within a NotificationProvider');
-  }
-  return context;
-};
-
 interface NotificationProviderProps {
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
-  const dispatch = useDispatch();
   const [pushToken, setPushToken] = useState<string | null>(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    // Configure push notification
+    // Configure push notifications
     PushNotification.configure({
       // (optional) Called when Token is generated (iOS and Android)
-      onRegister: function (token) {
+      onRegister: function (token: { os: string; token: string }) {
         console.log('TOKEN:', token);
-        setPushToken(token);
+        setPushToken(token.token);
         // For now, skip token registration since registerPushToken doesn't exist
-        console.log('Push token received:', token);
+        console.log('Push token received:', token.token);
       },
 
       // (required) Called when a remote or local notification is opened or received
-      onNotification: function (notification) {
+      onNotification: function (notification: any) {
         console.log('NOTIFICATION:', notification);
         
         // Add to Redux store
@@ -56,11 +47,13 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         }));
 
         // Process the notification
-        notification.finish();
+        if (notification.finish) {
+          notification.finish();
+        }
       },
 
       // (optional) Called when the user fails to register for remote notifications. Typically occurs when APNS is having issues, or the device is a simulator. (iOS)
-      onRegistrationError: function(err) {
+      onRegistrationError: function(err: any) {
         console.error(err.message, err);
       },
 
@@ -93,7 +86,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
           importance: 4,
           vibrate: true,
         },
-        (created) => console.log(`Channel created: ${created}`)
+        (created: boolean) => console.log(`Channel created: ${created}`)
       );
     }
 
@@ -106,7 +99,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     try {
       if (Platform.OS === 'ios') {
         // For iOS, request permissions
-        PushNotification.requestPermissions().then((permissions) => {
+        PushNotification.requestPermissions().then((permissions: any) => {
           console.log('Permissions:', permissions);
         });
       }
@@ -125,36 +118,21 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         channelId: 'default',
         title: title,
         message: body,
-        data: data,
         playSound: true,
         soundName: 'default',
         importance: 'high',
         priority: 'high',
+        ...(data && { userInfo: data }),
       });
     } catch (error) {
       console.error('Error sending local notification:', error);
     }
   };
 
-  const getNotificationPermissions = async (): Promise<boolean> => {
-    try {
-      if (Platform.OS === 'ios') {
-        // For iOS, we can check permissions
-        return true; // Simplified for now
-      } else {
-        // For Android, permissions are typically granted by default
-        return true;
-      }
-    } catch (error) {
-      console.error('Error getting notification permissions:', error);
-      return false;
-    }
-  };
-
   const value: NotificationContextType = {
+    pushToken,
     registerForPushNotifications,
     sendLocalNotification,
-    getNotificationPermissions,
   };
 
   return (
@@ -162,4 +140,12 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
       {children}
     </NotificationContext.Provider>
   );
+};
+
+export const useNotification = (): NotificationContextType => {
+  const context = useContext(NotificationContext);
+  if (context === undefined) {
+    throw new Error('useNotification must be used within a NotificationProvider');
+  }
+  return context;
 };

@@ -23,13 +23,13 @@ const FirebaseTestScreen: React.FC = () => {
       setStatus('Testing Authentication...');
       const userCredential = await signInAnonymously(auth);
       console.log('Auth test successful:', userCredential.user.uid);
-      setTestResults(prev => ({ ...prev, auth: '✅ Success' }));
+      setTestResults((prev: Record<string, string>) => ({ ...prev, auth: '✅ Success' }));
 
       // Test Firestore
       setStatus('Testing Firestore...');
       const querySnapshot = await getDocs(collection(db, 'users'));
       console.log('Firestore test successful:', querySnapshot.size, 'documents found');
-      setTestResults(prev => ({ ...prev, firestore: '✅ Success' }));
+      setTestResults((prev: Record<string, string>) => ({ ...prev, firestore: '✅ Success' }));
 
       setStatus('✅ Firebase configuration is working!');
     } catch (err: any) {

@@ -20,7 +20,6 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-// import * as LocalAuthentication from 'expo-local-authentication';
 import { showMessage } from 'react-native-flash-message';
 
 import { AuthNavigationProp } from '../../types/navigation';
