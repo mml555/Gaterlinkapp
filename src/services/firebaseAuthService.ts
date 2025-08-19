@@ -10,7 +10,12 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
-import { User, LoginCredentials, AuthResponse } from './authService';
+import { User, LoginCredentials, UserRole } from '../types';
+
+interface AuthResponse {
+  user: User;
+  token: string;
+}
 
 class FirebaseAuthService {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
@@ -59,7 +64,7 @@ class FirebaseAuthService {
         id: firebaseUser.uid,
         name: userData.name,
         email: userData.email,
-        role: userData.role || 'user',
+        role: userData.role || UserRole.CUSTOMER,
         avatar: this.generateAvatar(userData.name),
       };
 

@@ -22,7 +22,7 @@ import { showMessage } from 'react-native-flash-message';
 
 import { AuthNavigationProp } from '../../types/navigation';
 import { RootState } from '../../store';
-import { registerUser } from '../../store/slices/authSlice';
+import { register } from '../../store/slices/authSlice';
 import Logo from '../../components/common/Logo';
 import LoadingOverlay from '../../components/common/LoadingOverlay';
 
@@ -108,7 +108,7 @@ const RegisterScreen: React.FC = () => {
 
     try {
       const { confirmPassword, ...registerData } = formData;
-      await dispatch(registerUser(registerData) as any);
+              await dispatch(register(registerData) as any);
       
       showMessage({
         message: 'Registration successful!',

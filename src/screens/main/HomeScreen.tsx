@@ -24,6 +24,7 @@ import { showMessage } from 'react-native-flash-message';
 import { HomeNavigationProp } from '../../types/navigation';
 import { RootState } from '../../store';
 import { UserRole } from '../../types';
+import { authService } from '../../services/authService';
 
 const HomeScreen: React.FC = () => {
   const theme = useTheme();
@@ -84,16 +85,27 @@ const HomeScreen: React.FC = () => {
   const onRefresh = async () => {
     setRefreshing(true);
     try {
-      // TODO: Refresh data
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Refresh user data and recent requests
+      const [userResponse, requestsResponse] = await Promise.all([
+        authService.getCurrentUser(),
+        // Add request service call here when implemented
+        new Promise(resolve => setTimeout(resolve, 500)), // Placeholder
+      ]);
+
+      if (userResponse.success) {
+        // Update user data in Redux store
+        // dispatch(updateUser(userResponse.data));
+      }
+
       showMessage({
         message: 'Updated successfully',
         type: 'success',
         icon: 'success',
       });
-    } catch (error) {
+    } catch (error: any) {
       showMessage({
         message: 'Failed to refresh',
+        description: error.message || 'Please try again',
         type: 'danger',
         icon: 'danger',
       });
@@ -128,7 +140,7 @@ const HomeScreen: React.FC = () => {
           <View style={styles.welcomeContent}>
             <Avatar.Text
               size={60}
-              label={user?.firstName?.[0] + user?.lastName?.[0] || 'U'}
+              label={(user?.firstName?.[0] || '') + (user?.lastName?.[0] || '') || 'U'}
               style={styles.avatar}
             />
             <View style={styles.welcomeText}>

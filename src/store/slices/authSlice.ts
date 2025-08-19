@@ -104,50 +104,54 @@ const authSlice = createSlice({
   extraReducers: (builder) => {
     // Login
     builder
-      .addCase(loginUser.pending, (state) => {
+      .addCase(login.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(loginUser.fulfilled, (state, action) => {
+      .addCase(login.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.isAuthenticated = true;
-        state.user = action.payload.user;
-        state.biometricEnabled = action.payload.user.biometricEnabled;
+        if (action.payload.success && action.payload.data) {
+          state.isAuthenticated = true;
+          state.user = action.payload.data.user;
+          state.biometricEnabled = action.payload.data.user.biometricEnabled;
+        }
       })
-      .addCase(loginUser.rejected, (state, action) => {
+      .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });
 
     // Register
     builder
-      .addCase(registerUser.pending, (state) => {
+      .addCase(register.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(registerUser.fulfilled, (state, action) => {
+      .addCase(register.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.isAuthenticated = true;
-        state.user = action.payload.user;
-        state.biometricEnabled = action.payload.user.biometricEnabled;
+        if (action.payload.success && action.payload.data) {
+          state.isAuthenticated = true;
+          state.user = action.payload.data.user;
+          state.biometricEnabled = action.payload.data.user.biometricEnabled;
+        }
       })
-      .addCase(registerUser.rejected, (state, action) => {
+      .addCase(register.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });
 
     // Logout
     builder
-      .addCase(logoutUser.pending, (state) => {
+      .addCase(logout.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(logoutUser.fulfilled, (state) => {
+      .addCase(logout.fulfilled, (state) => {
         state.isLoading = false;
         state.isAuthenticated = false;
         state.user = null;
         state.biometricEnabled = false;
       })
-      .addCase(logoutUser.rejected, (state, action) => {
+      .addCase(logout.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });
@@ -160,9 +164,11 @@ const authSlice = createSlice({
       })
       .addCase(getCurrentUser.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.isAuthenticated = true;
-        state.user = action.payload;
-        state.biometricEnabled = action.payload.biometricEnabled;
+        if (action.payload.success && action.payload.data) {
+          state.isAuthenticated = true;
+          state.user = action.payload.data;
+          state.biometricEnabled = action.payload.data.biometricEnabled;
+        }
       })
       .addCase(getCurrentUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -173,15 +179,17 @@ const authSlice = createSlice({
 
     // Update profile
     builder
-      .addCase(updateUserProfile.pending, (state) => {
+      .addCase(updateProfile.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(updateUserProfile.fulfilled, (state, action) => {
+      .addCase(updateProfile.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.user = action.payload;
+        if (action.payload.success && action.payload.data) {
+          state.user = action.payload.data;
+        }
       })
-      .addCase(updateUserProfile.rejected, (state, action) => {
+      .addCase(updateProfile.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload as string;
       });

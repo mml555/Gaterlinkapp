@@ -22,6 +22,7 @@ import { showMessage } from 'react-native-flash-message';
 import { AuthNavigationProp } from '../../types/navigation';
 import Logo from '../../components/common/Logo';
 import LoadingOverlay from '../../components/common/LoadingOverlay';
+import { authService } from '../../services/authService';
 
 const ForgotPasswordScreen: React.FC = () => {
   const theme = useTheme();

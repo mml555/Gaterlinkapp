@@ -25,7 +25,7 @@ import { showMessage } from 'react-native-flash-message';
 
 import { AuthNavigationProp } from '../../types/navigation';
 import { RootState } from '../../store';
-import { loginUser } from '../../store/slices/authSlice';
+import { login } from '../../store/slices/authSlice';
 import Logo from '../../components/common/Logo';
 import LoadingOverlay from '../../components/common/LoadingOverlay';
 
@@ -93,7 +93,7 @@ const LoginScreen: React.FC = () => {
     }
 
     try {
-      await dispatch(loginUser({ email, password }) as any);
+              await dispatch(login({ email, password }) as any);
       showMessage({
         message: 'Welcome back!',
         type: 'success',
