@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Text, Card, Button, Chip, Surface } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { theme } from '../../utils/theme';
 
 const DoorsScreen: React.FC = () => {
@@ -81,7 +81,7 @@ const DoorsScreen: React.FC = () => {
                     <Text style={styles.doorLocation}>{door.location}</Text>
                   </View>
                   <View style={styles.doorStatus}>
-                    <MaterialIcons
+                    <Icon
                       name={door.status === 'unlocked' ? 'lock-open' : 'lock'}
                       size={24}
                       color={getStatusColor(door.status)}

@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { ActivityIndicator, Text, useTheme } from 'react-native-paper';
-import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -44,9 +43,8 @@ const LoadingScreen: React.FC = () => {
   });
 
   return (
-    <LinearGradient
-      colors={[theme.colors.primary, theme.colors.primaryContainer]}
-      style={styles.container}
+    <View
+      style={[styles.container, { backgroundColor: theme.colors.primary }]}
     >
       <View style={styles.content}>
         <Animated.View style={[styles.logoContainer, animatedStyle]}>
@@ -68,7 +66,7 @@ const LoadingScreen: React.FC = () => {
           style={styles.loader}
         />
       </View>
-    </LinearGradient>
+    </View>
   );
 };
 

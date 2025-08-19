@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Text, Card, Button, Chip, Surface } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { theme } from '../../utils/theme';
 
 const RequestsScreen: React.FC = () => {
@@ -95,11 +95,11 @@ const RequestsScreen: React.FC = () => {
 
                 <View style={styles.requestDetails}>
                   <View style={styles.detailRow}>
-                    <MaterialIcons name="schedule" size={16} color={theme.colors.onSurfaceVariant} />
+                    <Icon name="clock-outline" size={16} color={theme.colors.onSurfaceVariant} />
                     <Text style={styles.detailText}>Requested: {request.requestedAt}</Text>
                   </View>
                   <View style={styles.detailRow}>
-                    <MaterialIcons name="access-time" size={16} color={theme.colors.onSurfaceVariant} />
+                    <Icon name="access-time" size={16} color={theme.colors.onSurfaceVariant} />
                     <Text style={styles.detailText}>Duration: {request.duration}</Text>
                   </View>
                 </View>

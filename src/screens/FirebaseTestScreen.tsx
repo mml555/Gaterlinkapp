@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Text, Card, Button, Surface } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialIcons } from '@expo/vector-icons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { theme } from '../utils/theme';
 import { auth, db } from '../config/firebase';
 import { signInAnonymously } from 'firebase/auth';
@@ -86,19 +86,19 @@ const FirebaseTestScreen: React.FC = () => {
           <Card.Content>
             <Text style={styles.infoTitle}>Firebase Services</Text>
             <View style={styles.serviceItem}>
-              <MaterialIcons name="security" size={20} color={theme.colors.primary} />
+              <Icon name="shield-check" size={20} color={theme.colors.primary} />
               <Text style={styles.serviceText}>Authentication</Text>
             </View>
             <View style={styles.serviceItem}>
-              <MaterialIcons name="storage" size={20} color={theme.colors.primary} />
+              <Icon name="database" size={20} color={theme.colors.primary} />
               <Text style={styles.serviceText}>Firestore Database</Text>
             </View>
             <View style={styles.serviceItem}>
-              <MaterialIcons name="cloud-upload" size={20} color={theme.colors.primary} />
+              <Icon name="cloud-upload" size={20} color={theme.colors.primary} />
               <Text style={styles.serviceText}>Storage</Text>
             </View>
             <View style={styles.serviceItem}>
-              <MaterialIcons name="analytics" size={20} color={theme.colors.primary} />
+              <Icon name="chart-line" size={20} color={theme.colors.primary} />
               <Text style={styles.serviceText}>Analytics</Text>
             </View>
           </Card.Content>

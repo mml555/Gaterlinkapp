@@ -28,6 +28,7 @@ class DoorService {
       status: 'locked',
       accessLevel: 'admin',
       lastAccess: '2 min ago',
+      qrCode: 'qr_code_1_1234567890',
     },
     {
       id: '2',
@@ -36,6 +37,7 @@ class DoorService {
       status: 'unlocked',
       accessLevel: 'user',
       lastAccess: '5 min ago',
+      qrCode: 'qr_code_2_1234567891',
     },
     {
       id: '3',
@@ -44,6 +46,7 @@ class DoorService {
       status: 'locked',
       accessLevel: 'admin',
       lastAccess: '1 hour ago',
+      qrCode: 'qr_code_3_1234567892',
     },
     {
       id: '4',
@@ -52,6 +55,7 @@ class DoorService {
       status: 'locked',
       accessLevel: 'guest',
       lastAccess: '3 hours ago',
+      qrCode: 'qr_code_4_1234567893',
     },
   ];
 

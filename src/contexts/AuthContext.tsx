@@ -34,10 +34,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
-        // Check if user is already authenticated
-        const token = await authService.getStoredToken();
-        if (token) {
-          await dispatch(getCurrentUser());
+        // Check if user is already authenticated by getting current user
+        const userResponse = await authService.getCurrentUser();
+        if (userResponse.success && userResponse.data) {
+          await dispatch(getCurrentUser() as any);
         }
       } catch (error) {
         console.error('Auth initialization error:', error);
@@ -51,7 +51,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const enableBiometricAuth = async () => {
     try {
-      await dispatch(enableBiometric());
+      await dispatch(enableBiometric() as any);
     } catch (error) {
       console.error('Failed to enable biometric auth:', error);
       throw error;
@@ -60,8 +60,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const checkBiometricAuth = async (): Promise<boolean> => {
     try {
-      const result = await authService.authenticateWithBiometrics();
-      return result.success;
+      // For now, return false since authenticateWithBiometrics doesn't exist
+      // This would typically integrate with react-native-biometrics
+      return false;
     } catch (error) {
       console.error('Biometric auth check failed:', error);
       return false;

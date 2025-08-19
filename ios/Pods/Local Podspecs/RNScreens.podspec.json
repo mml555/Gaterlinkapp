@@ -18,14 +18,12 @@
     "tag": "4.14.1"
   },
   "source_files": [
-    "ios/**/*.{h,m,mm,swift}",
-    "cpp/RNScreensTurboModule.cpp",
-    "cpp/RNScreensTurboModule.h"
+    "ios/**/*.{h,m,mm,cpp,swift}"
   ],
   "project_header_files": "ios/bridging/Swift-Bridging.h",
   "requires_arc": true,
-  "exclude_files": "ios/gamma/**/*.{h,m,mm,swift}",
-  "compiler_flags": "",
+  "exclude_files": "ios/gamma/**/*.{h,m,mm,cpp,swift}",
+  "compiler_flags": "-DRCT_NEW_ARCH_ENABLED=1",
   "dependencies": {
     "React-Core": [],
     "React-RCTFabric": [],
@@ -59,7 +57,24 @@
   "pod_target_xcconfig": {
     "HEADER_SEARCH_PATHS": "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
     "CLANG_CXX_LANGUAGE_STANDARD": "c++20",
-    "OTHER_CPLUSPLUSFLAGS": "$(inherited) ",
-    "OTHER_SWIFT_FLAGS": "$(inherited)"
-  }
+    "OTHER_CPLUSPLUSFLAGS": "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 ",
+    "OTHER_SWIFT_FLAGS": "$(inherited) -DRCT_NEW_ARCH_ENABLED"
+  },
+  "subspecs": [
+    {
+      "name": "common",
+      "source_files": [
+        "common/cpp/**/*.{cpp,h}",
+        "cpp/**/*.{cpp,h}"
+      ],
+      "project_header_files": [
+        "common/cpp/**/*.h",
+        "cpp/**/*.h"
+      ],
+      "header_dir": "rnscreens",
+      "pod_target_xcconfig": {
+        "HEADER_SEARCH_PATHS": "\"$(PODS_TARGET_SRCROOT)/common/cpp\""
+      }
+    }
+  ]
 }

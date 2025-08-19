@@ -1,0 +1,1 @@
+../../../../../build/generated/ios/rncamerakit_specs/rncamerakit_specs.h

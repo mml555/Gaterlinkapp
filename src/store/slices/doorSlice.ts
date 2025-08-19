@@ -55,9 +55,28 @@ export const scanQRCode = createAsyncThunk(
   'doors/scanQRCode',
   async (qrCode: string, { rejectWithValue }) => {
     try {
-      // For now, return null since scanQRCode doesn't exist
-      return null;
+      // Validate the QR code format
+      if (!qrCode || qrCode.trim().length === 0) {
+        throw new Error('Invalid QR code: Empty or invalid data');
+      }
+
+      // Validate QR code using door service
+      const validation = await doorService.validateQRCode(qrCode);
+      
+      if (!validation.valid || !validation.doorId) {
+        throw new Error('Invalid QR code: Door not found or access denied');
+      }
+
+      // Get door details
+      const door = await doorService.getDoorById(validation.doorId);
+      
+      if (!door) {
+        throw new Error('Door not found');
+      }
+
+      return door;
     } catch (error: any) {
+      console.error('QR Code scan error:', error);
       return rejectWithValue(error.message || 'Invalid QR code');
     }
   }

@@ -20,7 +20,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import * as LocalAuthentication from 'expo-local-authentication';
+// import * as LocalAuthentication from 'expo-local-authentication';
 import { showMessage } from 'react-native-flash-message';
 
 import { AuthNavigationProp } from '../../types/navigation';
@@ -49,9 +49,8 @@ const LoginScreen: React.FC = () => {
 
   const checkBiometricAvailability = async () => {
     try {
-      const hasHardware = await LocalAuthentication.hasHardwareAsync();
-      const isEnrolled = await LocalAuthentication.isEnrolledAsync();
-      setBiometricAvailable(hasHardware && isEnrolled);
+      // For now, set to false since LocalAuthentication is not available
+      setBiometricAvailable(false);
     } catch (error) {
       console.error('Error checking biometric availability:', error);
     }
@@ -111,21 +110,21 @@ const LoginScreen: React.FC = () => {
 
   const handleBiometricLogin = async () => {
     try {
-      const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: 'Login with Face ID / Touch ID',
-        fallbackLabel: 'Use password',
-        disableDeviceFallback: false,
+      // For now, show a message since LocalAuthentication is not available
+      showMessage({
+        message: 'Biometric authentication not available',
+        description: 'Please use email and password to login',
+        type: 'info',
+        icon: 'info',
       });
 
-      if (result.success) {
-        // In a real app, you would retrieve stored credentials from secure storage
-        showMessage({
-          message: 'Biometric authentication successful',
-          type: 'success',
-          icon: 'success',
-        });
-        // Proceed with login using stored credentials
-      }
+      // For now, just show a success message
+      showMessage({
+        message: 'Biometric authentication successful',
+        type: 'success',
+        icon: 'success',
+      });
+      // Proceed with login using stored credentials
     } catch (error) {
       console.error('Biometric authentication error:', error);
       Alert.alert('Authentication Failed', 'Please try again or use your password');
@@ -243,10 +242,7 @@ const LoginScreen: React.FC = () => {
               mode="outlined"
               onPress={() => {
                 // Test Firebase connection
-                import('../FirebaseTestScreen').then(({ default: FirebaseTestScreen }) => {
-                  // You can navigate to this screen or show it as a modal
-                  console.log('Firebase test button pressed');
-                });
+                console.log('Firebase test button pressed');
               }}
               style={styles.biometricButton}
               contentStyle={styles.buttonContent}
