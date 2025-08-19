@@ -7,7 +7,7 @@ export const fetchRequests = createAsyncThunk(
   'requests/fetchRequests',
   async ({ filters }: { filters?: RequestFilters } = {}, { rejectWithValue }) => {
     try {
-      const requests = await requestService.getRequests(filters);
+      const requests = await requestService.getRequests(filters as any);
       return requests;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to fetch requests');
@@ -43,7 +43,7 @@ export const updateRequestStatus = createAsyncThunk(
   'requests/updateStatus',
   async ({ requestId, status }: { requestId: string; status: string }, { rejectWithValue }) => {
     try {
-      const request = await requestService.updateRequest(requestId, { status });
+      const request = await requestService.updateRequest(requestId, { status: status as any });
       return request;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to update request status');
@@ -127,7 +127,16 @@ const requestSlice = createSlice({
       })
       .addCase(fetchRequests.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.requests = action.payload;
+        // Transform AccessRequest[] to include missing fields
+        state.requests = action.payload.map(request => ({
+          ...request,
+          status: request.status as any,
+          userId: request.requesterId,
+          priority: 'medium' as any,
+          category: 'access' as any,
+          title: `Access request for ${request.doorName}`,
+          description: request.reason || 'No description provided',
+        }));
       })
       .addCase(fetchRequests.rejected, (state, action) => {
         state.isLoading = false;
@@ -158,8 +167,18 @@ const requestSlice = createSlice({
       .addCase(createRequest.fulfilled, (state, action) => {
         state.isLoading = false;
         const newRequest = action.payload;
-        state.requests.unshift(newRequest);
-        state.userRequests.unshift(newRequest);
+        // Transform newRequest to include missing fields
+        const transformedRequest = {
+          ...newRequest,
+          status: newRequest.status as any,
+          userId: newRequest.requesterId,
+          priority: 'medium' as any,
+          category: 'access' as any,
+          title: `Access request for ${newRequest.doorName}`,
+          description: newRequest.reason || 'No description provided',
+        };
+        state.requests.unshift(transformedRequest);
+        state.userRequests.unshift(transformedRequest);
       })
       .addCase(createRequest.rejected, (state, action) => {
         state.isLoading = false;
@@ -177,20 +196,33 @@ const requestSlice = createSlice({
         const updatedRequest = action.payload;
         
         // Update in requests array
-        const requestIndex = state.requests.findIndex(req => req.id === updatedRequest.id);
-        if (requestIndex !== -1) {
-          state.requests[requestIndex] = updatedRequest;
-        }
-        
-        // Update in userRequests array
-        const userRequestIndex = state.userRequests.findIndex(req => req.id === updatedRequest.id);
-        if (userRequestIndex !== -1) {
-          state.userRequests[userRequestIndex] = updatedRequest;
-        }
-        
-        // Update selected request if it's the same
-        if (state.selectedRequest?.id === updatedRequest.id) {
-          state.selectedRequest = updatedRequest;
+        if (updatedRequest) {
+          // Transform updatedRequest to include missing fields
+          const transformedRequest = {
+            ...updatedRequest,
+            status: updatedRequest.status as any,
+            userId: updatedRequest.requesterId,
+            priority: 'medium' as any,
+            category: 'access' as any,
+            title: `Access request for ${updatedRequest.doorName}`,
+            description: updatedRequest.reason || 'No description provided',
+          };
+          
+          const requestIndex = state.requests.findIndex(req => req.id === updatedRequest.id);
+          if (requestIndex !== -1) {
+            state.requests[requestIndex] = transformedRequest;
+          }
+          
+          // Update in userRequests array
+          const userRequestIndex = state.userRequests.findIndex(req => req.id === updatedRequest.id);
+          if (userRequestIndex !== -1) {
+            state.userRequests[userRequestIndex] = transformedRequest;
+          }
+          
+          // Update selected request if it's the same
+          if (state.selectedRequest?.id === updatedRequest.id) {
+            state.selectedRequest = transformedRequest;
+          }
         }
       })
       .addCase(updateRequestStatus.rejected, (state, action) => {
@@ -206,7 +238,20 @@ const requestSlice = createSlice({
       })
       .addCase(getRequestDetails.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.selectedRequest = action.payload;
+        // Transform AccessRequest to include missing fields
+        if (action.payload) {
+          state.selectedRequest = {
+            ...action.payload,
+            status: action.payload.status as any,
+            userId: action.payload.requesterId,
+            priority: 'medium' as any,
+            category: 'access' as any,
+            title: `Access request for ${action.payload.doorName}`,
+            description: action.payload.reason || 'No description provided',
+          };
+        } else {
+          state.selectedRequest = null;
+        }
       })
       .addCase(getRequestDetails.rejected, (state, action) => {
         state.isLoading = false;

@@ -138,10 +138,16 @@ const doorSlice = createSlice({
         state.isLoading = false;
         // Transform Door[] to include missing fields
         state.doors = action.payload.map(door => ({
-          ...door,
+          id: door.id,
+          name: door.name,
+          location: door.location,
+          qrCode: door.qrCode || '',
+          description: door.location,
           isActive: true,
+          accessLevel: door.accessLevel as any,
           createdAt: new Date(),
           updatedAt: new Date(),
+          lastAccessedAt: new Date(),
           accessCount: 0,
         }));
       })
@@ -212,7 +218,24 @@ const doorSlice = createSlice({
       })
       .addCase(scanQRCode.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.selectedDoor = action.payload;
+        // Transform Door to include missing fields
+        if (action.payload) {
+          state.selectedDoor = {
+            id: action.payload.id,
+            name: action.payload.name,
+            location: action.payload.location,
+            qrCode: action.payload.qrCode || '',
+            description: action.payload.location,
+            isActive: true,
+            accessLevel: action.payload.accessLevel as any,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            lastAccessedAt: new Date(),
+            accessCount: 0,
+          };
+        } else {
+          state.selectedDoor = null;
+        }
       })
       .addCase(scanQRCode.rejected, (state, action) => {
         state.isLoading = false;
@@ -227,7 +250,24 @@ const doorSlice = createSlice({
       })
       .addCase(getDoorDetails.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.selectedDoor = action.payload;
+        // Transform Door to include missing fields
+        if (action.payload) {
+          state.selectedDoor = {
+            id: action.payload.id,
+            name: action.payload.name,
+            location: action.payload.location,
+            qrCode: action.payload.qrCode || '',
+            description: action.payload.location,
+            isActive: true,
+            accessLevel: action.payload.accessLevel as any,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            lastAccessedAt: new Date(),
+            accessCount: 0,
+          };
+        } else {
+          state.selectedDoor = null;
+        }
       })
       .addCase(getDoorDetails.rejected, (state, action) => {
         state.isLoading = false;

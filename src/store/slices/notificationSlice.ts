@@ -137,7 +137,16 @@ const notificationSlice = createSlice({
       })
       .addCase(fetchNotifications.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.notifications = action.payload.notifications;
+        // Transform NotificationData[] to AppNotification[]
+        state.notifications = action.payload.notifications.map(notification => ({
+          id: notification.id,
+          title: notification.title,
+          message: notification.body, // Map body to message
+          type: 'system' as any, // Default to system type
+          isRead: notification.read,
+          timestamp: notification.timestamp,
+          data: notification.data,
+        }));
         state.unreadCount = action.payload.unreadCount;
       })
       .addCase(fetchNotifications.rejected, (state, action) => {

@@ -147,7 +147,7 @@ const chatSlice = createSlice({
             senderName: conversation.lastMessage.senderName,
             content: conversation.lastMessage.content,
             timestamp: conversation.lastMessage.timestamp,
-            messageType: conversation.lastMessage.type,
+            messageType: conversation.lastMessage.type as any,
             isRead: conversation.lastMessage.read,
             metadata: conversation.lastMessage.metadata,
           } : undefined,
@@ -178,7 +178,7 @@ const chatSlice = createSlice({
           senderName: message.senderName,
           content: message.content,
           timestamp: message.timestamp,
-          messageType: message.type,
+          messageType: message.type as any,
           isRead: message.read,
           metadata: message.metadata,
         }));
@@ -210,7 +210,7 @@ const chatSlice = createSlice({
           senderName: message.senderName,
           content: message.content,
           timestamp: message.timestamp,
-          messageType: message.type,
+          messageType: message.type as any,
           isRead: message.read,
           metadata: message.metadata,
         };

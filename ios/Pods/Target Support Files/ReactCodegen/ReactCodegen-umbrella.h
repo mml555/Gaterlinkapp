@@ -52,8 +52,6 @@
 #import "rnscreensJSI.h"
 #import "RNVectorIconsSpec/RNVectorIconsSpec.h"
 #import "RNVectorIconsSpecJSI.h"
-#import "rnworklets/rnworklets.h"
-#import "rnworkletsJSI.h"
 #import "RNWorkletsSpec/RNWorkletsSpec.h"
 #import "RNWorkletsSpecJSI.h"
 #import "safeareacontext/safeareacontext.h"

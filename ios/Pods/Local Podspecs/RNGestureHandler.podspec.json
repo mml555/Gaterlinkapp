@@ -22,7 +22,7 @@
   "xcconfig": {
     "OTHER_CFLAGS": "$(inherited)  -DREACT_NATIVE_MINOR_VERSION=81"
   },
-  "compiler_flags": "-DRCT_NEW_ARCH_ENABLED=1",
+  "compiler_flags": "",
   "dependencies": {
     "React-Core": [],
     "React-RCTFabric": [],
@@ -55,7 +55,7 @@
   "pod_target_xcconfig": {
     "HEADER_SEARCH_PATHS": "\"$(PODS_ROOT)/Headers/Private/Yoga\"",
     "CLANG_CXX_LANGUAGE_STANDARD": "c++20",
-    "OTHER_CPLUSPLUSFLAGS": "$(inherited) -DRCT_NEW_ARCH_ENABLED=1 ",
-    "OTHER_SWIFT_FLAGS": "$(inherited) -DRCT_NEW_ARCH_ENABLED"
+    "OTHER_CPLUSPLUSFLAGS": "$(inherited) ",
+    "OTHER_SWIFT_FLAGS": "$(inherited)"
   }
 }
