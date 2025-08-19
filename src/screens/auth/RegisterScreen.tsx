@@ -139,12 +139,7 @@ const RegisterScreen: React.FC = () => {
     }
   };
 
-  const updateField = (field: string, value: string) => {
-    setFormData({ ...formData, [field]: value });
-    if (errors[field]) {
-      setErrors({ ...errors, [field]: '' });
-    }
-  };
+
 
   return (
     <KeyboardAvoidingView
