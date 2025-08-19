@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@notifee/react-native": "^9.1.8",
     "@react-native-async-storage/async-storage": "^1.24.0",
     "@react-native-community/netinfo": "^11.4.1",
     "@react-native-firebase/app": "^23.0.1",
@@ -25,8 +26,10 @@
     "react": "19.1.0",
     "react-native": "0.81.0",
     "react-native-biometrics": "^3.0.1",
+    "react-native-document-picker": "^9.3.1",
     "react-native-flash-message": "^0.4.2",
     "react-native-gesture-handler": "^2.28.0",
+    "react-native-image-crop-picker": "^0.51.0",
     "react-native-keychain": "^10.0.0",
     "react-native-paper": "^5.14.5",
     "react-native-permissions": "^5.4.2",

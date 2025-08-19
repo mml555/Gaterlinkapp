@@ -32,6 +32,7 @@ export const STORAGE_KEYS = {
   APP_SETTINGS: '@gaterlink_settings',
   BIOMETRIC_ENABLED: '@gaterlink_biometric',
   FIRST_LAUNCH: '@gaterlink_first_launch',
+  FCM_TOKEN: '@gaterlink_fcm_token',
 };
 
 // Request Status

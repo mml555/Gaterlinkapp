@@ -17,6 +17,7 @@ import { lightTheme, darkTheme } from './src/styles/theme';
 import DatabaseService from './src/services/database.service';
 import SyncService from './src/services/sync.service';
 import ApiService from './src/services/api.service';
+import NotificationService from './src/services/notification.service';
 import { API_CONFIG } from './src/constants';
 import LoggingService from './src/services/logging.service';
 
@@ -40,6 +41,10 @@ function App(): React.JSX.Element {
       // Start sync service
       SyncService.startSync();
       LoggingService.info('Sync service started', 'App');
+
+      // Initialize notifications
+      await NotificationService.initialize();
+      LoggingService.info('Notification service initialized', 'App');
     } catch (error) {
       LoggingService.error('App initialization failed', 'App', error as Error);
     }

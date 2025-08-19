@@ -5,6 +5,7 @@ import doorsReducer from './slices/doorsSlice';
 import messagesReducer from './slices/messagesSlice';
 import settingsReducer from './slices/settingsSlice';
 import syncReducer from './slices/syncSlice';
+import notificationReducer from './slices/notificationSlice';
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     messages: messagesReducer,
     settings: settingsReducer,
     sync: syncReducer,
+    notifications: notificationReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
