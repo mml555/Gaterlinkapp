@@ -33,6 +33,11 @@ export const STORAGE_KEYS = {
   BIOMETRIC_ENABLED: '@gaterlink_biometric',
   FIRST_LAUNCH: '@gaterlink_first_launch',
   FCM_TOKEN: '@gaterlink_fcm_token',
+  BIOMETRIC_SETTINGS: '@gaterlink_biometric_settings',
+  SECURITY_CONFIG: '@gaterlink_security_config',
+  SESSION_DATA: '@gaterlink_session_data',
+  LOGIN_ATTEMPTS: '@gaterlink_login_attempts',
+  PRIVACY_SETTINGS: '@gaterlink_privacy_settings',
 };
 
 // Request Status

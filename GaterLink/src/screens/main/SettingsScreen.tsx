@@ -14,6 +14,7 @@ import {
   Dialog,
   Portal,
   TextInput,
+  Chip,
 } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
@@ -44,7 +45,7 @@ const SettingsScreen: React.FC = () => {
   
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const [showClearDataDialog, setShowClearDataDialog] = useState(false);
-  const [activeSection, setActiveSection] = useState<'general' | 'notifications' | 'privacy' | 'about'>('general');
+  const [activeSection, setActiveSection] = useState<'general' | 'notifications' | 'security' | 'privacy' | 'about'>('general');
 
   const handleDarkModeToggle = (value: boolean) => {
     dispatch(setDarkMode(value));
@@ -167,6 +168,55 @@ const SettingsScreen: React.FC = () => {
     </List.Section>
   );
 
+  const renderSecuritySettings = () => (
+    <List.Section>
+      <List.Subheader>Security & Authentication</List.Subheader>
+      
+      <List.Item
+        title="Security Dashboard"
+        description="View your security status and recommendations"
+        left={(props) => <List.Icon {...props} icon="shield-check" />}
+        onPress={() => navigation.navigate('SecurityDashboard' as never)}
+        right={(props) => <List.Icon {...props} icon="chevron-right" />}
+      />
+      
+      <List.Item
+        title="Biometric Settings"
+        description="Configure Face ID or Touch ID"
+        left={(props) => <List.Icon {...props} icon="fingerprint" />}
+        onPress={() => navigation.navigate('BiometricSettings' as never)}
+        right={(props) => <List.Icon {...props} icon="chevron-right" />}
+      />
+      
+      <List.Item
+        title="Active Sessions"
+        description="Manage devices with access to your account"
+        left={(props) => <List.Icon {...props} icon="devices" />}
+        onPress={() => navigation.navigate('ActiveSessions' as never)}
+        right={(props) => <List.Icon {...props} icon="chevron-right" />}
+      />
+      
+      <List.Item
+        title="Security Log"
+        description="View recent security events"
+        left={(props) => <List.Icon {...props} icon="file-clock" />}
+        onPress={() => navigation.navigate('SecurityLog' as never)}
+        right={(props) => <List.Icon {...props} icon="chevron-right" />}
+      />
+      
+      <Divider />
+      <List.Subheader>Advanced Security</List.Subheader>
+      
+      <List.Item
+        title="Two-Factor Authentication"
+        description="Add an extra layer of security"
+        left={(props) => <List.Icon {...props} icon="cellphone-key" />}
+        onPress={() => Alert.alert('Coming Soon', 'Two-factor authentication will be available in the next update')}
+        right={() => <Chip compact>Coming Soon</Chip>}
+      />
+    </List.Section>
+  );
+
   const renderPrivacySettings = () => (
     <List.Section>
       <List.Subheader>Data & Privacy</List.Subheader>
@@ -281,7 +331,7 @@ const SettingsScreen: React.FC = () => {
             showsHorizontalScrollIndicator={false}
             style={{ paddingHorizontal: 16, marginBottom: 8 }}
           >
-            {['general', 'notifications', 'privacy', 'about'].map((section) => (
+            {['general', 'notifications', 'security', 'privacy', 'about'].map((section) => (
               <Button
                 key={section}
                 mode={activeSection === section ? 'contained' : 'outlined'}
@@ -297,6 +347,7 @@ const SettingsScreen: React.FC = () => {
 
         {activeSection === 'general' && renderGeneralSettings()}
         {activeSection === 'notifications' && <NotificationSettings />}
+        {activeSection === 'security' && renderSecuritySettings()}
         {activeSection === 'privacy' && renderPrivacySettings()}
         {activeSection === 'about' && renderAboutSection()}
 
