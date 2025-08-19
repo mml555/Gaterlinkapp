@@ -53,29 +53,37 @@ const ForgotPasswordScreen: React.FC = () => {
 
     setIsLoading(true);
     try {
-      // TODO: Implement password reset API call
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate API call
-
-      setIsSubmitted(true);
-      showMessage({
-        message: 'Reset link sent!',
-        description: `Password reset instructions have been sent to ${email}`,
-        type: 'success',
-        icon: 'success',
-        duration: 5000,
-      });
-
-      // Navigate to verification screen after a delay
-      setTimeout(() => {
-        navigation.navigate('Verification', {
-          email,
-          type: 'reset-password',
+      const response = await authService.resetPassword(email);
+      
+      if (response.success) {
+        setIsSubmitted(true);
+        showMessage({
+          message: 'Reset link sent!',
+          description: `Password reset instructions have been sent to ${email}`,
+          type: 'success',
+          icon: 'success',
+          duration: 5000,
         });
-      }, 2000);
-    } catch (error) {
+
+        // Navigate to verification screen after a delay
+        setTimeout(() => {
+          navigation.navigate('Verification', {
+            email,
+            type: 'reset-password',
+          });
+        }, 2000);
+      } else {
+        showMessage({
+          message: 'Failed to send reset link',
+          description: response.error || 'Please try again later',
+          type: 'danger',
+          icon: 'danger',
+        });
+      }
+    } catch (error: any) {
       showMessage({
         message: 'Failed to send reset link',
-        description: 'Please try again later',
+        description: error.message || 'Please try again later',
         type: 'danger',
         icon: 'danger',
       });

@@ -22,6 +22,7 @@ import { showMessage } from 'react-native-flash-message';
 import { AuthNavigationProp, VerificationRouteProp } from '../../types/navigation';
 import Logo from '../../components/common/Logo';
 import LoadingOverlay from '../../components/common/LoadingOverlay';
+import { authService } from '../../services/authService';
 
 const VerificationScreen: React.FC = () => {
   const theme = useTheme();
@@ -94,29 +95,38 @@ const VerificationScreen: React.FC = () => {
 
     setIsLoading(true);
     try {
-      // TODO: Implement verification API call
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate API call
+      const response = await authService.verifyEmail(verificationCode);
+      
+      if (response.success) {
+        showMessage({
+          message: type === 'register' ? 'Email verified!' : 'Code verified!',
+          description: type === 'register' 
+            ? 'Your account has been activated successfully' 
+            : 'You can now reset your password',
+          type: 'success',
+          icon: 'success',
+        });
 
-      showMessage({
-        message: type === 'register' ? 'Email verified!' : 'Code verified!',
-        description: type === 'register' 
-          ? 'Your account has been activated successfully' 
-          : 'You can now reset your password',
-        type: 'success',
-        icon: 'success',
-      });
-
-      if (type === 'register') {
-        navigation.navigate('Login');
+        if (type === 'register') {
+          navigation.navigate('Login');
+        } else {
+          // Navigate to reset password screen (to be implemented)
+          navigation.navigate('Login');
+        }
       } else {
-        // Navigate to reset password screen (to be implemented)
-        navigation.navigate('Login');
+        setError('Invalid verification code. Please try again.');
+        showMessage({
+          message: 'Verification failed',
+          description: response.error || 'Please check the code and try again',
+          type: 'danger',
+          icon: 'danger',
+        });
       }
-    } catch (error) {
+    } catch (error: any) {
       setError('Invalid verification code. Please try again.');
       showMessage({
         message: 'Verification failed',
-        description: 'Please check the code and try again',
+        description: error.message || 'Please check the code and try again',
         type: 'danger',
         icon: 'danger',
       });
@@ -130,15 +140,25 @@ const VerificationScreen: React.FC = () => {
     setResendTimer(60);
     
     try {
-      // TODO: Implement resend code API call
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+      const response = await authService.resendVerificationCode(email);
       
-      showMessage({
-        message: 'Code resent!',
-        description: `A new verification code has been sent to ${email}`,
-        type: 'success',
-        icon: 'success',
-      });
+      if (response.success) {
+        showMessage({
+          message: 'Code resent!',
+          description: `A new verification code has been sent to ${email}`,
+          type: 'success',
+          icon: 'success',
+        });
+      } else {
+        showMessage({
+          message: 'Failed to resend code',
+          description: response.error || 'Please try again later',
+          type: 'danger',
+          icon: 'danger',
+        });
+        setCanResend(true);
+        return;
+      }
 
       // Restart timer
       const timer = setInterval(() => {

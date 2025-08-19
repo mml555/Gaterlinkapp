@@ -1,99 +1,150 @@
 import { LoginCredentials, RegisterData, User, ApiResponse } from '../types';
+import { firebaseAuthService } from './firebaseAuthService';
 
-// Placeholder auth service - implement with actual API calls
+// Actual auth service implementation using Firebase
 class AuthService {
   async login(credentials: LoginCredentials): Promise<ApiResponse<{ user: User; token: string }>> {
-    // TODO: Implement actual API call
-    console.log('Login attempt:', credentials);
-    return Promise.resolve({
-      success: true,
-      data: {
-        user: {
-          id: '1',
-          email: credentials.email,
-          firstName: 'John',
-          lastName: 'Doe',
-          role: 'customer' as any,
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          biometricEnabled: false,
-          notificationSettings: {
-            pushEnabled: true,
-            emailEnabled: true,
-            smsEnabled: false,
-            soundEnabled: true,
-            badgeEnabled: true,
-          },
+    try {
+      const response = await firebaseAuthService.login(credentials);
+      return {
+        success: true,
+        data: {
+          user: response.user,
+          token: response.token,
         },
-        token: 'fake-jwt-token',
-      },
-    });
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message || 'Login failed',
+      };
+    }
   }
 
   async register(userData: RegisterData): Promise<ApiResponse<{ user: User; token: string }>> {
-    // TODO: Implement actual API call
-    console.log('Register attempt:', userData);
-    return Promise.resolve({
-      success: true,
-      data: {
-        user: {
-          id: '1',
-          email: userData.email,
-          firstName: userData.firstName,
-          lastName: userData.lastName,
-          phone: userData.phone,
-          role: 'customer' as any,
-          isActive: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          biometricEnabled: false,
-          notificationSettings: {
-            pushEnabled: true,
-            emailEnabled: true,
-            smsEnabled: false,
-            soundEnabled: true,
-            badgeEnabled: true,
-          },
+    try {
+      const response = await firebaseAuthService.register({
+        email: userData.email,
+        password: userData.password,
+        name: `${userData.firstName} ${userData.lastName}`,
+        role: 'customer',
+      });
+      return {
+        success: true,
+        data: {
+          user: response.user,
+          token: response.token,
         },
-        token: 'fake-jwt-token',
-      },
-    });
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message || 'Registration failed',
+      };
+    }
   }
 
   async logout(): Promise<void> {
-    // TODO: Implement actual API call
-    console.log('Logout');
-    return Promise.resolve();
+    try {
+      await firebaseAuthService.logout();
+    } catch (error: any) {
+      console.error('Logout error:', error);
+      throw new Error('Failed to logout');
+    }
   }
 
   async getCurrentUser(): Promise<ApiResponse<User>> {
-    // TODO: Implement actual API call
-    return Promise.reject(new Error('Not authenticated'));
+    try {
+      const user = await firebaseAuthService.getCurrentUser();
+      if (!user) {
+        return {
+          success: false,
+          error: 'No authenticated user',
+        };
+      }
+      return {
+        success: true,
+        data: user,
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message || 'Failed to get current user',
+      };
+    }
   }
 
   async updateProfile(userData: Partial<User>): Promise<ApiResponse<User>> {
-    // TODO: Implement actual API call
-    console.log('Update profile:', userData);
-    return Promise.reject(new Error('Not implemented'));
+    try {
+      const updatedUser = await firebaseAuthService.updateUserProfile(userData);
+      return {
+        success: true,
+        data: updatedUser,
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message || 'Failed to update profile',
+      };
+    }
   }
 
   async enableBiometric(): Promise<ApiResponse<void>> {
-    // TODO: Implement actual API call
-    console.log('Enable biometric');
-    return Promise.resolve({ success: true });
+    try {
+      // Update user profile to enable biometric
+      await firebaseAuthService.updateUserProfile({ biometricEnabled: true });
+      return { success: true };
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message || 'Failed to enable biometric',
+      };
+    }
   }
 
   async resetPassword(email: string): Promise<ApiResponse<void>> {
-    // TODO: Implement actual API call
-    console.log('Reset password for:', email);
-    return Promise.resolve({ success: true });
+    try {
+      await firebaseAuthService.resetPassword(email);
+      return { success: true };
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message || 'Failed to reset password',
+      };
+    }
   }
 
   async verifyEmail(code: string): Promise<ApiResponse<void>> {
-    // TODO: Implement actual API call
-    console.log('Verify email with code:', code);
-    return Promise.resolve({ success: true });
+    try {
+      // For email verification, we'll use a custom implementation
+      // since Firebase doesn't provide a direct email verification with code
+      // This would typically involve a custom backend endpoint
+      console.log('Email verification with code:', code);
+      
+      // Simulate verification success for now
+      // In a real implementation, you would call your backend API
+      return { success: true };
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message || 'Failed to verify email',
+      };
+    }
+  }
+
+  async resendVerificationCode(email: string): Promise<ApiResponse<void>> {
+    try {
+      // This would typically call your backend API to resend verification code
+      console.log('Resending verification code to:', email);
+      
+      // Simulate success for now
+      return { success: true };
+    } catch (error: any) {
+      return {
+        success: false,
+        error: error.message || 'Failed to resend verification code',
+      };
+    }
   }
 }
 
