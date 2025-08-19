@@ -38,6 +38,10 @@ export const STORAGE_KEYS = {
   SESSION_DATA: '@gaterlink_session_data',
   LOGIN_ATTEMPTS: '@gaterlink_login_attempts',
   PRIVACY_SETTINGS: '@gaterlink_privacy_settings',
+  PERFORMANCE_REPORTS: '@gaterlink_performance_reports',
+  TUTORIAL_COMPLETED: '@gaterlink_tutorial_completed',
+  LAST_UPDATE_INFO: '@gaterlink_last_update_info',
+  UPDATE_HISTORY: '@gaterlink_update_history',
 };
 
 // Request Status
