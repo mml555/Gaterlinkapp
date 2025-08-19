@@ -1,4 +1,5 @@
-import '@testing-library/jest-native/extend-expect';
+// Jest matchers are now built into @testing-library/react-native v12.4+
+// No need to import jest-native anymore
 
 // Mock react-native-gesture-handler
 jest.mock('react-native-gesture-handler', () => {});
