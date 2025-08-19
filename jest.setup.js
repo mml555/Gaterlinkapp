@@ -1,12 +1,5 @@
 import '@testing-library/jest-native/extend-expect';
 
-// Mock react-native-reanimated
-jest.mock('react-native-reanimated', () => {
-  const Reanimated = require('react-native-reanimated/mock');
-  Reanimated.default.call = () => {};
-  return Reanimated;
-});
-
 // Mock react-native-gesture-handler
 jest.mock('react-native-gesture-handler', () => {});
 
@@ -67,97 +60,6 @@ jest.mock('react-native-push-notification', () => ({
 jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock')
 );
-
-// Mock react-native-dotenv
-jest.mock('react-native-dotenv', () => ({
-  API_BASE_URL: 'https://api.example.com',
-  FIREBASE_API_KEY: 'test-api-key',
-  FIREBASE_AUTH_DOMAIN: 'test.firebaseapp.com',
-  FIREBASE_PROJECT_ID: 'test-project',
-  FIREBASE_STORAGE_BUCKET: 'test.appspot.com',
-  FIREBASE_MESSAGING_SENDER_ID: '123456789',
-  FIREBASE_APP_ID: 'test-app-id',
-}));
-
-// Mock firebase
-jest.mock('firebase', () => ({
-  initializeApp: jest.fn(),
-  getAuth: jest.fn(() => ({
-    onAuthStateChanged: jest.fn(),
-    signInWithEmailAndPassword: jest.fn(),
-    createUserWithEmailAndPassword: jest.fn(),
-    signOut: jest.fn(),
-    currentUser: null,
-  })),
-  getFirestore: jest.fn(() => ({
-    collection: jest.fn(() => ({
-      doc: jest.fn(() => ({
-        get: jest.fn(),
-        set: jest.fn(),
-        update: jest.fn(),
-        delete: jest.fn(),
-      })),
-      add: jest.fn(),
-      where: jest.fn(),
-      orderBy: jest.fn(),
-      limit: jest.fn(),
-      onSnapshot: jest.fn(),
-    })),
-  })),
-}));
-
-// Mock socket.io-client
-jest.mock('socket.io-client', () => ({
-  io: jest.fn(() => ({
-    on: jest.fn(),
-    emit: jest.fn(),
-    connect: jest.fn(),
-    disconnect: jest.fn(),
-  })),
-}));
-
-// Mock axios
-jest.mock('axios', () => ({
-  create: jest.fn(() => ({
-    get: jest.fn(),
-    post: jest.fn(),
-    put: jest.fn(),
-    delete: jest.fn(),
-    interceptors: {
-      request: { use: jest.fn() },
-      response: { use: jest.fn() },
-    },
-  })),
-  get: jest.fn(),
-  post: jest.fn(),
-  put: jest.fn(),
-  delete: jest.fn(),
-}));
-
-// Mock react-hook-form
-jest.mock('react-hook-form', () => ({
-  useForm: jest.fn(() => ({
-    control: {},
-    handleSubmit: jest.fn(),
-    formState: { errors: {} },
-    watch: jest.fn(),
-    setValue: jest.fn(),
-    reset: jest.fn(),
-  })),
-  Controller: 'Controller',
-}));
-
-// Mock redux-persist
-jest.mock('redux-persist', () => ({
-  persistStore: jest.fn(),
-  persistReducer: jest.fn((config, reducer) => reducer),
-  FLUSH: 'FLUSH',
-  REHYDRATE: 'REHYDRATE',
-  PAUSE: 'PAUSE',
-  PERSIST: 'PERSIST',
-  PURGE: 'PURGE',
-  REGISTER: 'REGISTER',
-}));
 
 // Mock react-native-safe-area-context
 jest.mock('react-native-safe-area-context', () => ({

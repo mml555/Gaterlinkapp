@@ -284,20 +284,11 @@ const QRScannerScreen: React.FC = () => {
         </View>
       )}
       
-      <CameraScreen
-        style={styles.camera}
-        scanBarcode
-        onReadCode={handleQRCodeRead}
-        showFrame
-        laserColor="#007AFF"
-        frameColor="#007AFF"
-        onError={handleScanError}
-        cameraType="back"
-        focusable
-        torchMode="off"
-        ratioOverlay="1:1"
-        ratioOverlayColor="rgba(0,0,0,0.5)"
-      />
+      <View style={styles.camera}>
+        <Text style={styles.cameraPlaceholder}>
+          Camera functionality not available
+        </Text>
+      </View>
       
       <View style={styles.controls}>
         <View style={styles.scanArea}>

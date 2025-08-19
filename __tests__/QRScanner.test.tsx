@@ -7,9 +7,12 @@ jest.mock('react-native-camera-kit', () => ({
   CameraScreen: 'CameraScreen',
 }));
 
+const mockCheck = jest.fn();
+const mockRequest = jest.fn();
+
 jest.mock('react-native-permissions', () => ({
-  check: jest.fn(),
-  request: jest.fn(),
+  check: mockCheck,
+  request: mockRequest,
   PERMISSIONS: {
     IOS: { CAMERA: 'ios.permission.CAMERA' },
     ANDROID: { CAMERA: 'android.permission.CAMERA' },
