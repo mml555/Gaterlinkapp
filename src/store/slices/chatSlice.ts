@@ -1,0 +1,228 @@
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { ChatState, Chat, ChatMessage } from '../../types';
+import { chatService } from '../../services/chatService';
+
+// Async thunks
+export const fetchChats = createAsyncThunk(
+  'chat/fetchChats',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await chatService.getChats();
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch chats');
+    }
+  }
+);
+
+export const fetchMessages = createAsyncThunk(
+  'chat/fetchMessages',
+  async (chatId: string, { rejectWithValue }) => {
+    try {
+      const response = await chatService.getMessages(chatId);
+      return { chatId, messages: response.data };
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to fetch messages');
+    }
+  }
+);
+
+export const sendMessage = createAsyncThunk(
+  'chat/sendMessage',
+  async ({ chatId, content, messageType = 'text', attachments }: {
+    chatId: string;
+    content: string;
+    messageType?: string;
+    attachments?: any[];
+  }, { rejectWithValue }) => {
+    try {
+      const response = await chatService.sendMessage(chatId, content, messageType, attachments);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to send message');
+    }
+  }
+);
+
+export const markMessagesAsRead = createAsyncThunk(
+  'chat/markAsRead',
+  async (chatId: string, { rejectWithValue }) => {
+    try {
+      await chatService.markMessagesAsRead(chatId);
+      return chatId;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to mark messages as read');
+    }
+  }
+);
+
+// Initial state
+const initialState: ChatState = {
+  chats: [],
+  messages: {},
+  isLoading: false,
+  error: null,
+  activeChat: null,
+};
+
+// Chat slice
+const chatSlice = createSlice({
+  name: 'chat',
+  initialState,
+  reducers: {
+    clearError: (state) => {
+      state.error = null;
+    },
+    setActiveChat: (state, action: PayloadAction<Chat | null>) => {
+      state.activeChat = action.payload;
+    },
+    clearActiveChat: (state) => {
+      state.activeChat = null;
+    },
+    addMessage: (state, action: PayloadAction<{ chatId: string; message: ChatMessage }>) => {
+      const { chatId, message } = action.payload;
+      
+      // Add message to messages array
+      if (!state.messages[chatId]) {
+        state.messages[chatId] = [];
+      }
+      state.messages[chatId].push(message);
+      
+      // Update chat's last message and unread count
+      const chatIndex = state.chats.findIndex(chat => chat.id === chatId);
+      if (chatIndex !== -1) {
+        state.chats[chatIndex].lastMessage = message;
+        if (!message.isRead) {
+          state.chats[chatIndex].unreadCount += 1;
+        }
+      }
+    },
+    updateMessage: (state, action: PayloadAction<{ chatId: string; messageId: string; updates: Partial<ChatMessage> }>) => {
+      const { chatId, messageId, updates } = action.payload;
+      
+      if (state.messages[chatId]) {
+        const messageIndex = state.messages[chatId].findIndex(msg => msg.id === messageId);
+        if (messageIndex !== -1) {
+          state.messages[chatId][messageIndex] = { ...state.messages[chatId][messageIndex], ...updates };
+        }
+      }
+    },
+    addChat: (state, action: PayloadAction<Chat>) => {
+      const existingIndex = state.chats.findIndex(chat => chat.id === action.payload.id);
+      if (existingIndex === -1) {
+        state.chats.unshift(action.payload);
+      }
+    },
+    updateChat: (state, action: PayloadAction<Chat>) => {
+      const chatIndex = state.chats.findIndex(chat => chat.id === action.payload.id);
+      if (chatIndex !== -1) {
+        state.chats[chatIndex] = action.payload;
+      }
+    },
+    clearMessages: (state, action: PayloadAction<string>) => {
+      const chatId = action.payload;
+      state.messages[chatId] = [];
+    },
+  },
+  extraReducers: (builder) => {
+    // Fetch chats
+    builder
+      .addCase(fetchChats.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchChats.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.chats = action.payload;
+      })
+      .addCase(fetchChats.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Fetch messages
+    builder
+      .addCase(fetchMessages.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchMessages.fulfilled, (state, action) => {
+        state.isLoading = false;
+        const { chatId, messages } = action.payload;
+        state.messages[chatId] = messages;
+      })
+      .addCase(fetchMessages.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Send message
+    builder
+      .addCase(sendMessage.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(sendMessage.fulfilled, (state, action) => {
+        state.isLoading = false;
+        const message = action.payload;
+        const chatId = message.chatId;
+        
+        // Add message to messages array
+        if (!state.messages[chatId]) {
+          state.messages[chatId] = [];
+        }
+        state.messages[chatId].push(message);
+        
+        // Update chat's last message
+        const chatIndex = state.chats.findIndex(chat => chat.id === chatId);
+        if (chatIndex !== -1) {
+          state.chats[chatIndex].lastMessage = message;
+        }
+      })
+      .addCase(sendMessage.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+
+    // Mark messages as read
+    builder
+      .addCase(markMessagesAsRead.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(markMessagesAsRead.fulfilled, (state, action) => {
+        state.isLoading = false;
+        const chatId = action.payload;
+        
+        // Mark all messages in the chat as read
+        if (state.messages[chatId]) {
+          state.messages[chatId].forEach(message => {
+            message.isRead = true;
+          });
+        }
+        
+        // Update chat's unread count
+        const chatIndex = state.chats.findIndex(chat => chat.id === chatId);
+        if (chatIndex !== -1) {
+          state.chats[chatIndex].unreadCount = 0;
+        }
+      })
+      .addCase(markMessagesAsRead.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+      });
+  },
+});
+
+export const { 
+  clearError, 
+  setActiveChat, 
+  clearActiveChat, 
+  addMessage, 
+  updateMessage,
+  addChat,
+  updateChat,
+  clearMessages
+} = chatSlice.actions;
+
+export default chatSlice.reducer;

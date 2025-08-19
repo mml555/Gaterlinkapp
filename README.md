@@ -1,69 +1,118 @@
-# Gaterlinkapp
+# 🏠 GaterLink App
 
-A modern iOS application built with Swift and SwiftUI, designed to provide a seamless user experience on iPhone devices.
+A comprehensive door access management system built with React Native, designed to provide seamless access control, real-time communication, and secure authentication for iPhone users.
 
 ## 🚀 Features
 
-- **iPhone Optimized**: Built specifically for iPhone with responsive design
-- **Modern UI**: Clean, intuitive interface following iOS design guidelines
-- **Performance Focused**: Optimized for speed and efficiency
-- **Secure**: Implements best security practices for data handling
+### 🔐 **Authentication & Security**
+- **Email/Password Login** with Firebase Auth
+- **Biometric Authentication** (Face ID/Touch ID)
+- **Role-based Access Control** (Customer vs Admin)
+- **Secure Storage** with React Native Keychain
+
+### 🏠 **Door Access Management**
+- **QR Code Scanning** with real-time camera integration
+- **Saved Doors Management** with quick access
+- **Access Request System** with status tracking
+- **Request History** and analytics
+
+### 💬 **Real-Time Communication**
+- **In-App Chat System** with WebSocket integration
+- **Push Notifications** for instant updates
+- **Message History** with file sharing capabilities
+
+### 👨‍💼 **Admin Dashboard**
+- **Request Management** with filtering and search
+- **User Management** and analytics
+- **Performance Metrics** and reporting
+
+### 📱 **iOS-Specific Features**
+- **Native iOS Integration** with Share Sheet
+- **Haptic Feedback** and smooth animations
+- **Background App Refresh** support
+- **iOS Security Features** (Keychain, biometrics)
 
 ## 📱 Requirements
 
 - iOS 15.0+
+- React Native 0.72+
+- Node.js 18+
 - Xcode 14.0+
-- Swift 5.7+
 
 ## 🛠 Installation
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/Gaterlinkapp.git
+git clone https://github.com/mml555/Gaterlinkapp.git
 cd Gaterlinkapp
 ```
 
-2. Open the project in Xcode:
+2. Install dependencies:
 ```bash
-open Gaterlinkapp.xcodeproj
+npm install
+# or
+yarn install
 ```
 
-3. Build and run the project on your iPhone or simulator.
+3. Install iOS dependencies:
+```bash
+cd ios && pod install && cd ..
+```
+
+4. Run the app:
+```bash
+# iOS
+npx react-native run-ios
+# or
+yarn ios
+```
 
 ## 🏗 Project Structure
 
 ```
 Gaterlinkapp/
-├── Gaterlinkapp/
-│   ├── App/
-│   │   └── GaterlinkappApp.swift
-│   ├── Views/
-│   │   ├── ContentView.swift
-│   │   └── Components/
-│   ├── Models/
-│   ├── Services/
-│   └── Resources/
-├── Tests/
-└── Documentation/
+├── src/
+│   ├── components/          # Reusable UI components
+│   ├── screens/            # Screen components
+│   ├── navigation/         # Navigation configuration
+│   ├── services/           # API and external services
+│   ├── store/              # State management (Redux/Context)
+│   ├── utils/              # Helper functions and utilities
+│   ├── types/              # TypeScript type definitions
+│   └── assets/             # Images, fonts, and other assets
+├── ios/                    # iOS native code
+├── android/                # Android native code (future)
+├── __tests__/              # Test files
+└── docs/                   # Documentation
 ```
 
 ## 🔧 Development
 
 ### Code Style
-- Follow Swift style guidelines
-- Use meaningful variable and function names
-- Add comments for complex logic
-- Maintain consistent indentation
+- Follow React Native best practices
+- Use TypeScript for type safety
+- Follow ESLint and Prettier configurations
+- Write meaningful commit messages
 
 ### Testing
 - Write unit tests for business logic
-- Test UI components
+- Test UI components with React Native Testing Library
+- Test API services and authentication
 - Ensure accessibility compliance
 
 ### Performance
-- Monitor app performance
-- Optimize database queries
+- Monitor app performance with Flipper
+- Optimize bundle size and loading times
 - Implement proper caching strategies
+- Use React Native Reanimated for smooth animations
+
+## 🔒 Security & Privacy
+
+- **Input Sanitization** for all user inputs
+- **Schema Validation** for API requests
+- **Secure Storage** for sensitive data
+- **Biometric Authentication** integration
+- **Data Encryption** for sensitive information
 
 ## 📄 License
 
