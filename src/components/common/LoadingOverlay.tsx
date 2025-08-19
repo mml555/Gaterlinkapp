@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, Modal } from 'react-native';
 import { ActivityIndicator, Text, useTheme } from 'react-native-paper';
-import { BlurView } from 'expo-blur';
 
 interface LoadingOverlayProps {
   visible?: boolean;
@@ -21,7 +20,7 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
       animationType="fade"
       statusBarTranslucent
     >
-      <BlurView intensity={20} style={styles.container}>
+      <View style={styles.container}>
         <View style={[styles.content, { backgroundColor: theme.colors.surface }]}>
           <ActivityIndicator
             animating={true}
@@ -33,7 +32,7 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = ({
             {message}
           </Text>
         </View>
-      </BlurView>
+      </View>
     </Modal>
   );
 };
