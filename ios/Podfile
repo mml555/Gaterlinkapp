@@ -1,96 +1,32 @@
-# Resolve react_native_pods.rb with node to allow for hoisting
-require Pod::Executable.execute_command('node', ['-p', 'require.resolve("react-native/scripts/react_native_pods.rb", {paths: [process.argv[1]]})', __dir__]).strip
+platform :ios, '16.0' # iOS 16 required for React Native 0.81.0 React-graphics
 
-platform :ios, '15.1'
-prepare_react_native_project!
+require_relative '../node_modules/react-native/scripts/react_native_pods'
 
-linkage = ENV['USE_FRAMEWORKS']
-if linkage != nil
-  Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
-  use_frameworks! :linkage => linkage.to_sym
-end
+use_frameworks! :linkage => :static
+
+# Add permissions configuration
+permissions_path = '../node_modules/react-native-permissions/ios'
 
 target 'GaterLinkNative' do
-  config = use_native_modules!
-
   use_react_native!(
-    :path => config[:reactNativePath],
-    # An absolute path to your application root.
-    :app_path => "#{Pod::Config.instance.installation_root}/..",
-    :hermes_enabled => false,
-    :fabric_enabled => false
+    :path => '../node_modules/react-native',
+    :hermes_enabled => true,   # Hermes is default in RN 0.81
+    :fabric_enabled => false   # Keep Old Arch since using Reanimated 3.19.1
   )
 
+  # Firebase 12+ (using default subspecs, no modular headers)
+  pod 'Firebase/Auth'
+  pod 'Firebase/Firestore'
+
+  # React Native Permissions - will be handled by the main package
+
   post_install do |installer|
-    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
-    react_native_post_install(
-      installer,
-      config[:reactNativePath],
-      :mac_catalyst_enabled => false
-    )
+    react_native_post_install(installer)
 
-    # Fix for Xcode 16 compatibility
-    installer.pods_project.targets.each do |target|
-      target.build_configurations.each do |config|
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'
-        config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
-        config.build_settings['CLANG_CXX_LIBRARY'] = 'libc++'
-        config.build_settings['GCC_C_LANGUAGE_STANDARD'] = 'c11'
-        
-        # Fix header search paths for C++ standard library
-        config.build_settings['HEADER_SEARCH_PATHS'] = '$(inherited) "$(SDKROOT)/usr/include/c++/v1" "$(SDKROOT)/usr/include" "$(PODS_ROOT)/Headers/Public"'
-        
-        # Fix non-modular include errors
-        config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
-        
-        # Additional flags for Xcode 16 compatibility
-        config.build_settings['CLANG_CXX_FLAGS'] = '$(inherited) -std=c++17 -stdlib=libc++ -I"$(SDKROOT)/usr/include/c++/v1" -I"$(SDKROOT)/usr/include"'
-        config.build_settings['OTHER_CPLUSPLUSFLAGS'] = '$(inherited) -std=c++17 -stdlib=libc++ -I"$(SDKROOT)/usr/include/c++/v1" -I"$(SDKROOT)/usr/include"'
-        
-        # Fix for react-native-safe-area-context specific issues
-        if target.name == 'react-native-safe-area-context'
-          config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
-          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) _LIBCPP_DISABLE_AVAILABILITY=1 COCOAPODS=1'
-        end
-
-        # Fix for glog specific issues
-        if target.name == 'glog'
-          config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
-          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) _LIBCPP_DISABLE_AVAILABILITY=1 GOOGLE_GLOG_DLL_DECL='
-          config.build_settings['CLANG_CXX_FLAGS'] = '$(inherited) -std=c++17 -stdlib=libc++ -I"$(SDKROOT)/usr/include/c++/v1" -I"$(SDKROOT)/usr/include" -DGOOGLE_GLOG_DLL_DECL='
-        end
-
-        # Fix for fmt specific issues
-        if target.name == 'fmt'
-          config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
-          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) _LIBCPP_DISABLE_AVAILABILITY=1 FMT_HEADER_ONLY=1'
-        end
-
-        # Fix for Yoga specific issues
-        if target.name == 'Yoga'
-          config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
-          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) _LIBCPP_DISABLE_AVAILABILITY=1'
-        end
-
-        # Fix for React Native core components
-        if target.name.start_with?('React-') || target.name.start_with?('RCT')
-          config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
-          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) _LIBCPP_DISABLE_AVAILABILITY=1'
-        end
-
-        # Fix for Hermes engine
-        if target.name == 'hermes-engine'
-          config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
-          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) _LIBCPP_DISABLE_AVAILABILITY=1'
-        end
-
-        # Fix for SocketRocket - add missing header for typeof support
-        if target.name == 'SocketRocket'
-          config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
-          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = '$(inherited) _LIBCPP_DISABLE_AVAILABILITY=1'
-          config.build_settings['CLANG_CXX_FLAGS'] = '$(inherited) -std=c++17 -stdlib=libc++ -I"$(SDKROOT)/usr/include/c++/v1" -I"$(SDKROOT)/usr/include" -include <objc/objc.h>'
-          config.build_settings['OTHER_CPLUSPLUSFLAGS'] = '$(inherited) -std=c++17 -stdlib=libc++ -I"$(SDKROOT)/usr/include/c++/v1" -I"$(SDKROOT)/usr/include" -include <objc/objc.h>'
-        end
+    # Xcode 16: avoid sandboxing failures in RN/Hermes build phases
+    (installer.pods_project.targets + installer.generated_projects.flat_map(&:targets)).each do |t|
+      t.build_configurations.each do |cfg|
+        cfg.build_settings['ENABLE_USER_SCRIPT_SANDBOXING'] = 'NO'
       end
     end
   end
