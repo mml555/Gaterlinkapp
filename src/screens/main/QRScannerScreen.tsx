@@ -285,7 +285,7 @@ const QRScannerScreen: React.FC = () => {
       )}
       
       <View style={styles.camera}>
-        <Text style={styles.cameraPlaceholder}>
+        <Text style={{ color: '#FFFFFF', textAlign: 'center' }}>
           Camera functionality not available
         </Text>
       </View>

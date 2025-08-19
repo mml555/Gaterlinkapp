@@ -52,6 +52,10 @@ jest.mock('react-native-paper', () => ({
 jest.mock('../src/components/common/TestQRCodeDisplay', () => 'TestQRCodeDisplay');
 
 describe('QRScannerScreen', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('renders without crashing', () => {
     const { getByText } = render(<QRScannerScreen />);
     expect(getByText('Checking camera permissions...')).toBeTruthy();
@@ -61,6 +65,9 @@ describe('QRScannerScreen', () => {
     // Mock __DEV__ to be true
     const originalDev = global.__DEV__;
     global.__DEV__ = true;
+    
+    // Mock permission check to return denied so it shows test mode
+    mockCheck.mockResolvedValue('denied');
     
     const { getByText } = render(<QRScannerScreen />);
     
