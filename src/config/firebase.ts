@@ -24,7 +24,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // Initialize Analytics (only in web environment)
-let analytics = null;
+let analytics: any = null;
 isSupported().then(yes => yes ? analytics = getAnalytics(app) : null);
 
 export { app, auth, db, analytics };
