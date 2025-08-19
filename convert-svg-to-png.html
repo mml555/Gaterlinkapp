@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SVG to PNG Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .icon-preview {
+            margin: 20px 0;
+            text-align: center;
+        }
+        .icon-preview img {
+            border: 1px solid #ccc;
+            margin: 10px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .download-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gaterlink Icon Converter</h1>
+    <p>This tool converts the Gaterlink SVG icon to PNG format for your React Native app.</p>
+    
+    <div class="icon-preview">
+        <h3>Icon Preview</h3>
+        <div id="iconContainer"></div>
+    </div>
+    
+    <div class="download-section">
+        <h3>Download Icons</h3>
+        <p>Click the buttons below to download the icons in different sizes:</p>
+        <button onclick="downloadIcon(1024, 1024, 'icon.png')">Download icon.png (1024x1024)</button>
+        <button onclick="downloadIcon(1024, 1024, 'adaptive-icon.png', true)">Download adaptive-icon.png (1024x1024)</button>
+        <button onclick="downloadIcon(32, 32, 'favicon.png')">Download favicon.png (32x32)</button>
+        <button onclick="downloadIcon(1024, 1024, 'splash-icon.png')">Download splash-icon.png (1024x1024)</button>
+    </div>
+
+    <script>
+        // Load the SVG content
+        const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#e4ff79;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#006d32;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" fill="url(#grad1)"/>
+  
+  <!-- Left gate part -->
+  <path d="M 280 280 L 280 744 C 280 820 340 880 416 880 L 608 880 C 684 880 744 820 744 744 L 744 280 C 744 204 684 144 608 144 L 416 144 C 340 144 280 204 280 280 Z" 
+        fill="white" opacity="0.9"/>
+  
+  <!-- Right gate part -->
+  <path d="M 480 200 L 480 824 C 480 900 540 960 616 960 L 808 960 C 884 960 944 900 944 824 L 944 360 C 944 284 884 224 808 224 L 616 224 C 540 224 480 284 480 360 Z" 
+        fill="white" opacity="0.9"/>
+  
+  <!-- Center lock mechanism -->
+  <circle cx="512" cy="512" r="80" fill="#006d32"/>
+  <circle cx="512" cy="512" r="60" fill="white"/>
+  <rect x="492" y="472" width="40" height="80" rx="20" fill="#006d32"/>
+</svg>`;
+
+        // Display the icon
+        document.getElementById('iconContainer').innerHTML = svgContent;
+
+        function downloadIcon(width, height, filename, circular = false) {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = width;
+            canvas.height = height;
+            
+            // Create a temporary image element
+            const img = new Image();
+            const svgBlob = new Blob([svgContent], {type: 'image/svg+xml'});
+            const url = URL.createObjectURL(svgBlob);
+            
+            img.onload = function() {
+                // Clear canvas
+                ctx.clearRect(0, 0, width, height);
+                
+                if (circular) {
+                    // Create circular mask for adaptive icon
+                    ctx.beginPath();
+                    ctx.arc(width/2, height/2, Math.min(width, height)/2, 0, 2 * Math.PI);
+                    ctx.clip();
+                }
+                
+                // Draw the image
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Convert to blob and download
+                canvas.toBlob(function(blob) {
+                    const downloadUrl = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = downloadUrl;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(downloadUrl);
+                });
+                
+                URL.revokeObjectURL(url);
+            };
+            
+            img.src = url;
+        }
+    </script>
+</body>
+</html>
