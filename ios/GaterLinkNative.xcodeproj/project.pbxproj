@@ -380,7 +380,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.gaterlink.app;
-				PRODUCT_NAME = GaterLinkNative;
+				PRODUCT_NAME = GaterLinkApp;
 				SWIFT_OBJC_BRIDGING_HEADER = "GaterLinkNative/GaterLinkNative-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";

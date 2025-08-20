@@ -2,38 +2,49 @@
 
 echo "🔧 Fixing iOS build issues..."
 
-# Navigate to the project root
-cd "$(dirname "$0")/.."
+# Stop Metro bundler if running
+echo "📱 Stopping Metro bundler..."
+pkill -f "react-native start" || true
+pkill -f "npx react-native start" || true
 
-echo "📱 Cleaning iOS build artifacts..."
+# Clear Watchman cache
+echo "🧹 Clearing Watchman cache..."
+watchman watch-del-all || true
 
-# Clean Xcode derived data
-rm -rf ~/Library/Developer/Xcode/DerivedData/GaterLinkNative-*
+# Clear React Native cache
+echo "🗑️ Clearing React Native cache..."
+rm -rf ~/Library/Developer/Xcode/DerivedData
+rm -rf ~/Library/Caches/CocoaPods
+rm -rf ~/.rncache
+
+# Clear Metro cache
+echo "📦 Clearing Metro cache..."
+npx react-native start --reset-cache &
+METRO_PID=$!
+sleep 5
+kill $METRO_PID || true
+
+# Clean node_modules and reinstall
+echo "📦 Reinstalling node_modules..."
+rm -rf node_modules
+rm -rf package-lock.json
+npm install
 
 # Clean iOS build
+echo "🍎 Cleaning iOS build..."
 cd ios
-rm -rf build/
-rm -rf Pods/
+rm -rf build
+rm -rf Pods
 rm -rf Podfile.lock
 
-echo "📦 Reinstalling CocoaPods..."
-
 # Reinstall pods
+echo "📱 Reinstalling CocoaPods..."
 pod install --repo-update
 
-echo "🔨 Cleaning and rebuilding..."
+cd ..
 
-# Clean and build
-xcodebuild clean -workspace GaterLinkNative.xcworkspace -scheme GaterLinkNative
+# Clean and rebuild
+echo "🔨 Building iOS project..."
+npx react-native run-ios --simulator="iPhone 15"
 
 echo "✅ iOS build fix completed!"
-echo ""
-echo "Next steps:"
-echo "1. Open ios/GaterLinkNative.xcworkspace in Xcode"
-echo "2. Clean build folder (Product > Clean Build Folder)"
-echo "3. Build the project (Cmd + B)"
-echo ""
-echo "If issues persist, try:"
-echo "- Reset Xcode (Product > Clean Build Folder)"
-echo "- Restart Xcode"
-echo "- Check that you're using the .xcworkspace file, not .xcodeproj"
