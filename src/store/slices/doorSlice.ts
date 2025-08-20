@@ -2,13 +2,47 @@ import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { DoorState, Door } from '../../types';
 import { doorService } from '../../services/doorService';
 
+// Helper function to serialize dates in door objects
+const serializeDoorDates = (door: any): any => {
+  if (!door) return door;
+  
+  const serializeDate = (date: any): string | null => {
+    if (!date) return null;
+    
+    // Handle Firestore Timestamp objects
+    if (date && typeof date === 'object' && date.seconds) {
+      return new Date(date.seconds * 1000).toISOString();
+    }
+    
+    // Handle Date objects
+    if (date instanceof Date) {
+      return date.toISOString();
+    }
+    
+    // Handle string dates
+    if (typeof date === 'string') {
+      return date;
+    }
+    
+    return null;
+  };
+  
+  return {
+    ...door,
+    createdAt: serializeDate(door.createdAt),
+    updatedAt: serializeDate(door.updatedAt),
+    lastAccessedAt: serializeDate(door.lastAccessedAt),
+  };
+};
+
 // Async thunks
 export const fetchDoors = createAsyncThunk(
   'doors/fetchDoors',
   async (_, { rejectWithValue }) => {
     try {
       const doors = await doorService.getDoors();
-      return doors;
+      // Serialize dates for all doors
+      return doors.map(door => serializeDoorDates(door));
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to fetch doors');
     }
@@ -74,7 +108,8 @@ export const scanQRCode = createAsyncThunk(
         throw new Error('Door not found');
       }
 
-      return door;
+      // Serialize dates before returning
+      return serializeDoorDates(door);
     } catch (error: any) {
       console.error('QR Code scan error:', error);
       return rejectWithValue(error.message || 'Invalid QR code');
@@ -87,7 +122,8 @@ export const getDoorDetails = createAsyncThunk(
   async (doorId: string, { rejectWithValue }) => {
     try {
       const door = await doorService.getDoorById(doorId);
-      return door;
+      // Serialize dates before returning
+      return serializeDoorDates(door);
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to get door details');
     }

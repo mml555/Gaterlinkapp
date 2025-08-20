@@ -11,6 +11,7 @@ import {
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
 import { User, LoginCredentials, UserRole } from '../types';
+import { performanceMonitor } from '../utils/performanceMonitor';
 
 interface AuthResponse {
   user: User;
@@ -19,21 +20,35 @@ interface AuthResponse {
 
 class FirebaseAuthService {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
+    const stopTimer = performanceMonitor.startTimer('firebase_login');
     try {
-      const userCredential: UserCredential = await signInWithEmailAndPassword(
+      // Add timeout for better UX
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Login timeout')), 10000)
+      );
+
+      const loginPromise = signInWithEmailAndPassword(
         auth,
         credentials.email,
         credentials.password
       );
 
-      const firebaseUser = userCredential.user;
-      const userData = await this.getUserData(firebaseUser.uid);
+      const userCredential: UserCredential = await Promise.race([loginPromise, timeoutPromise]) as UserCredential;
 
-      return {
+      const firebaseUser = userCredential.user;
+      
+      // Get user data with caching
+      const userData = await this.getUserDataWithCache(firebaseUser.uid);
+
+      const result = {
         user: userData,
         token: await firebaseUser.getIdToken(),
       };
+
+      stopTimer();
+      return result;
     } catch (error: any) {
+      stopTimer();
       console.error('Firebase login error:', error);
       throw new Error(this.getErrorMessage(error.code));
     }
@@ -165,6 +180,10 @@ class FirebaseAuthService {
     }
   }
 
+  // Simple in-memory cache for user data
+  private userCache: Map<string, { user: User; timestamp: number }> = new Map();
+  private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
   private async getUserData(userId: string): Promise<User> {
     try {
       const userRef = doc(db, 'users', userId);
@@ -179,6 +198,24 @@ class FirebaseAuthService {
       console.error('Error getting user data:', error);
       throw error;
     }
+  }
+
+  private async getUserDataWithCache(userId: string): Promise<User> {
+    const now = Date.now();
+    const cached = this.userCache.get(userId);
+    
+    // Return cached data if it's still valid
+    if (cached && (now - cached.timestamp) < this.CACHE_DURATION) {
+      return cached.user;
+    }
+
+    // Fetch fresh data
+    const userData = await this.getUserData(userId);
+    
+    // Cache the fresh data
+    this.userCache.set(userId, { user: userData, timestamp: now });
+    
+    return userData;
   }
 
   private generateAvatar(name: string): string {

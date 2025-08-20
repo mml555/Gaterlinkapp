@@ -17,8 +17,8 @@ const config = {
     // Enable the new transformer for better performance
     unstable_allowRequireContext: true,
   },
-  // Enable the new architecture features when available
-  experimentalNativeHermes: true,
+                // Enable the new architecture features when available
+              // experimentalNativeHermes: true, // Removed due to validation warning
 };
 
 module.exports = mergeConfig(getDefaultConfig(__dirname), config);

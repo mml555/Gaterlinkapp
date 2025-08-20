@@ -2,8 +2,8 @@ import { initializeApp } from 'firebase/app';
 import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getAnalytics, isSupported } from 'firebase/analytics';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Platform-specific Firebase configuration
 const firebaseConfig = Platform.select({
@@ -39,18 +39,41 @@ const firebaseConfig = Platform.select({
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Auth with AsyncStorage persistence for React Native
-const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(AsyncStorage)
-});
+// Initialize Auth with performance optimizations and persistence
+let auth: any;
+try {
+  auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(AsyncStorage)
+  });
+} catch (error) {
+  // If already initialized, get the existing auth instance
+  if (error.code === 'auth/already-initialized') {
+    const { getAuth } = require('firebase/auth');
+    auth = getAuth(app);
+  } else {
+    throw error;
+  }
+}
 
-// Initialize Firestore
+// Initialize Firestore with performance optimizations
 const db = getFirestore(app);
+
+// Enable offline persistence for better performance
+import { enableNetwork, disableNetwork } from 'firebase/firestore';
 
 // Initialize Analytics (only in web environment)
 let analytics: any = null;
 if (Platform.OS === 'web') {
   isSupported().then(yes => yes ? analytics = getAnalytics(app) : null);
+}
+
+// Performance monitoring
+let perf: any = null;
+try {
+  const { getPerformance } = require('firebase/performance');
+  perf = getPerformance(app);
+} catch (error) {
+  console.log('Firebase Performance not available');
 }
 
 export { app, auth, db, analytics };

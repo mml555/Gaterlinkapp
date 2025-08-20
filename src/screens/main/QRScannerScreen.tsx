@@ -9,7 +9,7 @@ import {
   Text as RNText,
 } from 'react-native';
 import { Text, Button, Card, IconButton, Switch } from 'react-native-paper';
-import { CameraScreen } from 'react-native-camera-kit';
+import Camera from 'react-native-camera-kit';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
@@ -284,7 +284,7 @@ const QRScannerScreen: React.FC = () => {
         </View>
       )}
       
-      <CameraScreen
+      <Camera
         scanBarcode
         onReadCode={handleQRCodeRead}
         showFrame
@@ -294,6 +294,8 @@ const QRScannerScreen: React.FC = () => {
         cameraType="back"
         flashMode="auto"
         onError={handleScanError}
+        zoomMode="on"
+        maxZoom={10}
       />
       
       <View style={styles.controls}>
@@ -486,6 +488,26 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     marginTop: 10,
     fontSize: 16,
+  },
+  cameraPlaceholder: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5F5F5',
+  },
+  cameraIcon: {
+    marginBottom: 16,
+  },
+  cameraText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#007AFF',
+    marginBottom: 8,
+  },
+  cameraSubtext: {
+    fontSize: 14,
+    color: '#666666',
+    textAlign: 'center',
   },
 });
 

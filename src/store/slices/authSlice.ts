@@ -6,11 +6,32 @@ import { authService } from '../../services/authService';
 const serializeUserDates = (user: any): any => {
   if (!user) return user;
   
+  const serializeDate = (date: any): string | null => {
+    if (!date) return null;
+    
+    // Handle Firestore Timestamp objects
+    if (date && typeof date === 'object' && date.seconds) {
+      return new Date(date.seconds * 1000).toISOString();
+    }
+    
+    // Handle Date objects
+    if (date instanceof Date) {
+      return date.toISOString();
+    }
+    
+    // Handle string dates
+    if (typeof date === 'string') {
+      return date;
+    }
+    
+    return null;
+  };
+  
   return {
     ...user,
-    createdAt: user.createdAt instanceof Date ? user.createdAt.toISOString() : user.createdAt,
-    updatedAt: user.updatedAt instanceof Date ? user.updatedAt.toISOString() : user.updatedAt,
-    lastLoginAt: user.lastLoginAt instanceof Date ? user.lastLoginAt.toISOString() : user.lastLoginAt,
+    createdAt: serializeDate(user.createdAt),
+    updatedAt: serializeDate(user.updatedAt),
+    lastLoginAt: serializeDate(user.lastLoginAt),
   };
 };
 

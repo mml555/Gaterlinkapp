@@ -1,50 +1,34 @@
 #!/bin/bash
 
-echo "🔧 Fixing iOS build issues..."
+echo "🧹 Cleaning iOS build and fixing Firebase module issues..."
 
-# Stop Metro bundler if running
-echo "📱 Stopping Metro bundler..."
-pkill -f "react-native start" || true
-pkill -f "npx react-native start" || true
+# Navigate to the project root
+cd "$(dirname "$0")/.."
 
-# Clear Watchman cache
-echo "🧹 Clearing Watchman cache..."
-watchman watch-del-all || true
+echo "📱 Cleaning Xcode derived data..."
+# Clean Xcode derived data
+rm -rf ~/Library/Developer/Xcode/DerivedData/GaterLinkNative-*
 
-# Clear React Native cache
-echo "🗑️ Clearing React Native cache..."
-rm -rf ~/Library/Developer/Xcode/DerivedData
-rm -rf ~/Library/Caches/CocoaPods
-rm -rf ~/.rncache
-
-# Clear Metro cache
-echo "📦 Clearing Metro cache..."
-npx react-native start --reset-cache &
-METRO_PID=$!
-sleep 5
-kill $METRO_PID || true
-
-# Clean node_modules and reinstall
-echo "📦 Reinstalling node_modules..."
-rm -rf node_modules
-rm -rf package-lock.json
-npm install
-
-# Clean iOS build
-echo "🍎 Cleaning iOS build..."
+echo "🗂️ Cleaning iOS build artifacts..."
+# Clean iOS build artifacts
 cd ios
-rm -rf build
-rm -rf Pods
+rm -rf build/
+rm -rf Pods/
 rm -rf Podfile.lock
 
+echo "📦 Reinstalling CocoaPods..."
 # Reinstall pods
-echo "📱 Reinstalling CocoaPods..."
 pod install --repo-update
 
+echo "🔧 Cleaning React Native cache..."
+# Clean React Native cache
 cd ..
+npx react-native clean
 
-# Clean and rebuild
-echo "🔨 Building iOS project..."
-npx react-native run-ios --simulator="iPhone 15"
-
-echo "✅ iOS build fix completed!"
+echo "✅ iOS build cleanup completed!"
+echo "🚀 You can now try building in Xcode again."
+echo ""
+echo "If you still encounter issues, try:"
+echo "1. Clean build folder in Xcode (Product > Clean Build Folder)"
+echo "2. Reset iOS Simulator (Device > Erase All Content and Settings)"
+echo "3. Restart Xcode"

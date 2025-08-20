@@ -91,12 +91,25 @@ const LoginScreen: React.FC = () => {
     }
 
     try {
-      await dispatch(login({ email, password }) as any);
+      // Show immediate feedback
       showMessage({
-        message: 'Welcome back!',
-        type: 'success',
-        icon: 'success',
+        message: 'Signing you in...',
+        type: 'info',
+        icon: 'info',
+        duration: 2000,
       });
+
+      const result = await dispatch(login({ email, password }) as any);
+      
+      if (result.payload?.success) {
+        showMessage({
+          message: 'Welcome back!',
+          type: 'success',
+          icon: 'success',
+        });
+      } else {
+        throw new Error(result.payload?.error || 'Login failed');
+      }
     } catch (error) {
       showMessage({
         message: 'Login failed',

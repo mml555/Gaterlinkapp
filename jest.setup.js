@@ -1,29 +1,49 @@
-// Jest matchers are now built into @testing-library/react-native v12.4+
-// No need to import jest-native anymore
+// Essential mocks for React Native testing
+jest.mock('react-native', () => {
+  const RN = jest.requireActual('react-native');
+  return {
+    ...RN,
+    NativeModules: {
+      ...RN.NativeModules,
+    },
+    TurboModuleRegistry: {
+      getEnforcing: jest.fn(() => ({
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+      })),
+      get: jest.fn(),
+    },
+    __fbBatchedBridgeConfig: {
+      remoteModuleConfig: [],
+      localModuleConfig: [],
+    },
+  };
+});
 
-// Mock react-native-gesture-handler
-jest.mock('react-native-gesture-handler', () => {});
-
-// Mock react-native-vector-icons
+// Mock essential React Native libraries
+jest.mock('react-native-gesture-handler', () => ({}));
 jest.mock('react-native-vector-icons/MaterialCommunityIcons', () => 'Icon');
-
-// Mock react-native-flash-message
 jest.mock('react-native-flash-message', () => 'FlashMessage');
-
-// Mock react-native-modal
 jest.mock('react-native-modal', () => 'Modal');
-
-// Mock react-native-skeleton-placeholder
 jest.mock('react-native-skeleton-placeholder', () => 'SkeletonPlaceholder');
+jest.mock('react-native-safe-area-context', () => ({
+  SafeAreaProvider: ({ children }) => children,
+  useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
+}));
+jest.mock('react-native-screens', () => ({ enableScreens: jest.fn() }));
+jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
+jest.mock('react-native-worklets-core', () => ({
+  runOnJS: (fn) => fn,
+  runOnUI: (fn) => fn,
+}));
 
-// Mock react-native-keychain
+// Mock native modules
 jest.mock('react-native-keychain', () => ({
   getInternetCredentials: jest.fn(),
   setInternetCredentials: jest.fn(),
   resetInternetCredentials: jest.fn(),
 }));
 
-// Mock react-native-biometrics
 jest.mock('react-native-biometrics', () => ({
   isSensorAvailable: jest.fn(),
   createKeys: jest.fn(),
@@ -32,7 +52,6 @@ jest.mock('react-native-biometrics', () => ({
   simplePrompt: jest.fn(),
 }));
 
-// Mock react-native-push-notification
 jest.mock('react-native-push-notification', () => ({
   configure: jest.fn(),
   localNotification: jest.fn(),
@@ -57,23 +76,144 @@ jest.mock('react-native-push-notification', () => ({
   deleteChannel: jest.fn(),
 }));
 
-// Mock @react-native-async-storage/async-storage
 jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock')
 );
 
-// Mock react-native-safe-area-context
-jest.mock('react-native-safe-area-context', () => ({
-  SafeAreaProvider: ({ children }) => children,
-  useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
+// Mock React Navigation
+jest.mock('@react-navigation/native', () => ({
+  NavigationContainer: ({ children }) => children,
+  useNavigation: () => ({
+    navigate: jest.fn(),
+    goBack: jest.fn(),
+    push: jest.fn(),
+    pop: jest.fn(),
+  }),
+  useRoute: () => ({ params: {} }),
 }));
 
-// Mock react-native-screens
-jest.mock('react-native-screens', () => ({
-  enableScreens: jest.fn(),
+// Mock Redux
+jest.mock('react-redux', () => ({
+  Provider: ({ children }) => children,
+  useDispatch: () => jest.fn(),
+  useSelector: jest.fn(),
+  connect: () => (Component) => Component,
 }));
 
-// Global mocks
+jest.mock('@reduxjs/toolkit', () => ({
+  configureStore: jest.fn(),
+  createSlice: jest.fn(),
+  createAsyncThunk: jest.fn(),
+}));
+
+jest.mock('redux-persist', () => ({
+  persistStore: jest.fn(),
+  persistReducer: (config, reducer) => reducer,
+  FLUSH: 'persist/FLUSH',
+  REHYDRATE: 'persist/REHYDRATE',
+  PAUSE: 'persist/PAUSE',
+  PERSIST: 'persist/PERSIST',
+  PURGE: 'persist/PURGE',
+  REGISTER: 'persist/REGISTER',
+}));
+
+// Mock UI libraries
+jest.mock('react-native-paper', () => ({
+  Provider: ({ children }) => children,
+  Text: 'Text',
+  Button: 'Button',
+  Card: 'Card',
+  IconButton: 'IconButton',
+  Switch: 'Switch',
+  useTheme: () => ({
+    colors: { primary: '#000', background: '#fff' },
+  }),
+}));
+
+// Mock camera and permissions
+jest.mock('react-native-camera-kit', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  
+  const Camera = React.forwardRef((props, ref) => {
+    return React.createElement(View, {
+      ...props,
+      testID: 'camera-component',
+      style: [{ minWidth: 100, minHeight: 100 }, props.style]
+    });
+  });
+  
+  return {
+    default: Camera,
+  };
+});
+
+jest.mock('react-native-permissions', () => ({
+  check: jest.fn(),
+  request: jest.fn(),
+  PERMISSIONS: {
+    IOS: { CAMERA: 'ios.permission.CAMERA' },
+    ANDROID: { CAMERA: 'android.permission.CAMERA' },
+  },
+  RESULTS: {
+    UNAVAILABLE: 'unavailable',
+    DENIED: 'denied',
+    LIMITED: 'limited',
+    GRANTED: 'granted',
+    BLOCKED: 'blocked',
+  },
+}));
+
+// Mock networking
+jest.mock('axios', () => ({
+  create: jest.fn(() => ({
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+  })),
+  get: jest.fn(),
+  post: jest.fn(),
+  put: jest.fn(),
+  delete: jest.fn(),
+}));
+
+jest.mock('socket.io-client', () => ({
+  io: jest.fn(() => ({
+    on: jest.fn(),
+    emit: jest.fn(),
+    connect: jest.fn(),
+    disconnect: jest.fn(),
+  })),
+}));
+
+// Mock forms
+jest.mock('react-hook-form', () => ({
+  useForm: () => ({
+    control: {},
+    handleSubmit: jest.fn(),
+    formState: { errors: {} },
+    setValue: jest.fn(),
+    getValues: jest.fn(),
+    reset: jest.fn(),
+  }),
+  Controller: ({ render }) => render({ field: { onChange: jest.fn(), value: '' } }),
+}));
+
+// Mock environment variables
+jest.mock('react-native-dotenv', () => ({
+  API_BASE_URL: 'http://localhost:3000',
+  SOCKET_URL: 'http://localhost:3001',
+}));
+
+// Mock app-specific components
+jest.mock('@react-native/new-app-screen', () => ({
+  NewAppScreen: 'NewAppScreen',
+}));
+
+jest.mock('./src/components/common/TestQRCodeDisplay', () => 'TestQRCodeDisplay');
+
+// Global console mock
 global.console = {
   ...console,
   log: jest.fn(),

@@ -1,4 +1,3 @@
-import 'react-native-reanimated';
 import React from 'react';
 import { StatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -14,6 +13,7 @@ import { theme } from './src/utils/theme';
 import RootNavigator from './src/navigation/RootNavigator';
 import { AuthProvider } from './src/contexts/AuthContext';
 import { NotificationProvider } from './src/contexts/NotificationContext';
+import 'react-native-reanimated';
 
 function App(): React.JSX.Element {
   return (

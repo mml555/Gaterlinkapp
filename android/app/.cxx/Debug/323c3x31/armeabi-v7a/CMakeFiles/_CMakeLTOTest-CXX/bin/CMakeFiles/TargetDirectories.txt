@@ -1,0 +1,4 @@
+/Users/mendell/Gaterlinkapp/android/app/.cxx/Debug/323c3x31/armeabi-v7a/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir
+/Users/mendell/Gaterlinkapp/android/app/.cxx/Debug/323c3x31/armeabi-v7a/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir
+/Users/mendell/Gaterlinkapp/android/app/.cxx/Debug/323c3x31/armeabi-v7a/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/edit_cache.dir
+/Users/mendell/Gaterlinkapp/android/app/.cxx/Debug/323c3x31/armeabi-v7a/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/rebuild_cache.dir

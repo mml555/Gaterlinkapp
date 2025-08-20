@@ -85,6 +85,14 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    
+    // AndroidX migration configuration
+    configurations.all {
+        resolutionStrategy {
+            force 'androidx.core:core:1.16.0'
+            force 'androidx.core:core-ktx:1.16.0'
+        }
+    }
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
@@ -116,4 +124,17 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+    
+    // AndroidX dependencies
+    implementation 'androidx.core:core:1.16.0'
+    implementation 'androidx.core:core-ktx:1.16.0'
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+}
+
+// Exclude conflicting support libraries
+configurations.all {
+    exclude group: 'com.android.support', module: 'support-compat'
+    exclude group: 'com.android.support', module: 'support-v4'
+    exclude group: 'com.android.support', module: 'support-annotations'
 }

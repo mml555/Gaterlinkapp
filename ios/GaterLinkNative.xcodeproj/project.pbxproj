@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		560AECE5532F634D9C1DA5B0 /* Pods_GaterLinkNative.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DB8EDEEEAA0BD4623CDF6A9B /* Pods_GaterLinkNative.framework */; };
+		4F20F4F329BC443F1288AE33 /* Pods_GaterLinkNative.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 355F8C8AA4BB3C3BC7160A67 /* Pods_GaterLinkNative.framework */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		ADF3F2902E551DFE00C8754D /* FirebaseAI in Frameworks */ = {isa = PBXBuildFile; productRef = ADF3F28F2E551DFE00C8754D /* FirebaseAI */; };
@@ -36,10 +36,10 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = GaterLinkNative/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = GaterLinkNative/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = GaterLinkNative/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		355F8C8AA4BB3C3BC7160A67 /* Pods_GaterLinkNative.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GaterLinkNative.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		699B14F0E0363698717952D0 /* Pods-GaterLinkNative.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GaterLinkNative.release.xcconfig"; path = "Target Support Files/Pods-GaterLinkNative/Pods-GaterLinkNative.release.xcconfig"; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = GaterLinkNative/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = GaterLinkNative/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		DB8EDEEEAA0BD4623CDF6A9B /* Pods_GaterLinkNative.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GaterLinkNative.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE1BCA535CA8909C235BB075 /* Pods-GaterLinkNative.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GaterLinkNative.debug.xcconfig"; path = "Target Support Files/Pods-GaterLinkNative/Pods-GaterLinkNative.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -66,7 +66,7 @@
 				ADF3F2AA2E551DFE00C8754D /* FirebaseFunctions in Frameworks */,
 				ADF3F29C2E551DFE00C8754D /* FirebaseAuth in Frameworks */,
 				ADF3F2A82E551DFE00C8754D /* FirebaseFirestoreCombine-Community in Frameworks */,
-				560AECE5532F634D9C1DA5B0 /* Pods_GaterLinkNative.framework in Frameworks */,
+				4F20F4F329BC443F1288AE33 /* Pods_GaterLinkNative.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -89,7 +89,7 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				DB8EDEEEAA0BD4623CDF6A9B /* Pods_GaterLinkNative.framework */,
+				355F8C8AA4BB3C3BC7160A67 /* Pods_GaterLinkNative.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -150,6 +150,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				AD7B4FF02E5560DB00E63E9E /* PBXTargetDependency */,
 				ADE1D2C22E553E9C00D5C7CC /* PBXTargetDependency */,
 				ADE1D2C02E553E9700D5C7CC /* PBXTargetDependency */,
 				ADE1D2BE2E553E9200D5C7CC /* PBXTargetDependency */,
@@ -243,7 +244,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-GaterLinkNative/Pods-GaterLinkNative-resources.sh\"\n";
-			showEnvVarsInLog = 0;
 		};
 		C9E0A4C7F5E3C61B7B08C745 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -298,6 +298,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		AD7B4FF02E5560DB00E63E9E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = AD7B4FEF2E5560DB00E63E9E /* FirebaseAuthCombine-Community */;
+		};
 		ADE1D2B62E553E8200D5C7CC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			productRef = ADE1D2B52E553E8200D5C7CC /* FirebaseCore */;
@@ -339,7 +343,7 @@
 				DEVELOPMENT_TEAM = HAG426Y5FK;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = GaterLinkNative/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -368,7 +372,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = HAG426Y5FK;
 				INFOPLIST_FILE = GaterLinkNative/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -591,6 +595,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		AD7B4FEF2E5560DB00E63E9E /* FirebaseAuthCombine-Community */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ADF3F28E2E551DFE00C8754D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseAuthCombine-Community";
+		};
 		ADE1D2B52E553E8200D5C7CC /* FirebaseCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = ADF3F28E2E551DFE00C8754D /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
