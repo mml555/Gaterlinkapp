@@ -48,7 +48,6 @@ const LoginScreen: React.FC = () => {
 
   const checkBiometricAvailability = async () => {
     try {
-      // For now, set to false since LocalAuthentication is not available
       setBiometricAvailable(false);
     } catch (error) {
       console.error('Error checking biometric availability:', error);
@@ -91,7 +90,6 @@ const LoginScreen: React.FC = () => {
     }
 
     try {
-      // Show immediate feedback
       showMessage({
         message: 'Signing you in...',
         type: 'info',
@@ -122,21 +120,12 @@ const LoginScreen: React.FC = () => {
 
   const handleBiometricLogin = async () => {
     try {
-      // For now, show a message since LocalAuthentication is not available
       showMessage({
         message: 'Biometric authentication not available',
         description: 'Please use email and password to login',
         type: 'info',
         icon: 'info',
       });
-
-      // For now, just show a success message
-      showMessage({
-        message: 'Biometric authentication successful',
-        type: 'success',
-        icon: 'success',
-      });
-      // Proceed with login using stored credentials
     } catch (error) {
       console.error('Biometric authentication error:', error);
       Alert.alert('Authentication Failed', 'Please try again or use your password');
@@ -159,7 +148,7 @@ const LoginScreen: React.FC = () => {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
     >
@@ -168,18 +157,17 @@ const LoginScreen: React.FC = () => {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <Surface style={styles.surface} elevation={0}>
-          <View style={styles.logoContainer}>
-            <Logo size={100} />
-          </View>
-
-          <Text variant="headlineMedium" style={styles.title}>
+        <View style={styles.header}>
+          <Logo size={80} variant="text" />
+          <Text variant="displaySmall" style={[styles.title, { color: theme.colors.primary }]}>
             Welcome Back
           </Text>
-          <Text variant="bodyMedium" style={styles.subtitle}>
+          <Text variant="bodyLarge" style={[styles.subtitle, { color: theme.colors.onSurface }]}>
             Sign in to continue to GaterLink
           </Text>
+        </View>
 
+        <Surface style={[styles.surface, { backgroundColor: theme.colors.surface }]} elevation={1}>
           <View style={styles.form}>
             <TextInput
               label="Email"
@@ -196,6 +184,8 @@ const LoginScreen: React.FC = () => {
               style={styles.input}
               editable={!isLoading}
               pointerEvents={isLoading ? 'none' : 'auto'}
+              outlineColor={theme.colors.outline}
+              activeOutlineColor={theme.colors.primary}
             />
             <HelperText type="error" visible={!!emailError}>
               {emailError}
@@ -223,6 +213,8 @@ const LoginScreen: React.FC = () => {
               style={styles.input}
               editable={!isLoading}
               pointerEvents={isLoading ? 'none' : 'auto'}
+              outlineColor={theme.colors.outline}
+              activeOutlineColor={theme.colors.primary}
             />
             <HelperText type="error" visible={!!passwordError}>
               {passwordError}
@@ -242,7 +234,7 @@ const LoginScreen: React.FC = () => {
                 onPress={() => navigation.navigate('ForgotPassword')}
                 disabled={isLoading}
               >
-                <Text variant="bodyMedium" style={styles.forgotPassword}>
+                <Text variant="bodyMedium" style={[styles.forgotPassword, { color: theme.colors.primary }]}>
                   Forgot Password?
                 </Text>
               </TouchableOpacity>
@@ -253,8 +245,9 @@ const LoginScreen: React.FC = () => {
               onPress={handleLogin}
               loading={isLoading}
               disabled={isLoading}
-              style={styles.loginButton}
+              style={[styles.loginButton, { backgroundColor: theme.colors.primary }]}
               contentStyle={styles.loginButtonContent}
+              labelStyle={styles.loginButtonLabel}
             >
               Sign In
             </Button>
@@ -264,7 +257,7 @@ const LoginScreen: React.FC = () => {
                 mode="outlined"
                 onPress={handleBiometricLogin}
                 icon="face-recognition"
-                style={styles.biometricButton}
+                style={[styles.biometricButton, { borderColor: theme.colors.outline }]}
                 contentStyle={styles.buttonContent}
                 disabled={isLoading}
               >
@@ -272,29 +265,18 @@ const LoginScreen: React.FC = () => {
               </Button>
             )}
 
-            <Button
-              mode="outlined"
-              onPress={() => {
-                // Test Firebase connection
-                console.log('Firebase test button pressed');
-              }}
-              style={styles.biometricButton}
-              contentStyle={styles.buttonContent}
-              disabled={isLoading}
-            >
-              Test Firebase Connection
-            </Button>
-
             <View style={styles.divider}>
-              <View style={styles.dividerLine} />
-              <Text variant="bodySmall" style={styles.dividerText}>
+              <View style={[styles.dividerLine, { backgroundColor: theme.colors.outline }]} />
+              <Text variant="bodySmall" style={[styles.dividerText, { color: theme.colors.onSurface }]}>
                 OR
               </Text>
-              <View style={styles.dividerLine} />
+              <View style={[styles.dividerLine, { backgroundColor: theme.colors.outline }]} />
             </View>
 
             <View style={styles.footer}>
-              <Text variant="bodyMedium">Don't have an account? </Text>
+              <Text variant="bodyMedium" style={{ color: theme.colors.onSurface }}>
+                Don't have an account?{' '}
+              </Text>
               <TouchableOpacity 
                 onPress={() => navigation.navigate('Register')}
                 disabled={isLoading}
@@ -318,31 +300,29 @@ const LoginScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
   },
   scrollContainer: {
     flexGrow: 1,
     justifyContent: 'center',
     padding: 20,
   },
-  surface: {
-    borderRadius: 20,
-    padding: 30,
-    backgroundColor: '#FFFFFF',
-  },
-  logoContainer: {
+  header: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 30,
   },
   title: {
-    textAlign: 'center',
     fontWeight: 'bold',
+    marginTop: 20,
     marginBottom: 8,
+    textAlign: 'center',
   },
   subtitle: {
     textAlign: 'center',
-    color: '#666666',
-    marginBottom: 30,
+    opacity: 0.8,
+  },
+  surface: {
+    borderRadius: 24,
+    padding: 30,
   },
   form: {
     width: '100%',
@@ -361,18 +341,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   forgotPassword: {
-    color: '#1976D2',
+    fontWeight: '500',
   },
   loginButton: {
     marginTop: 10,
-    borderRadius: 25,
+    borderRadius: 12,
   },
   loginButtonContent: {
     paddingVertical: 8,
   },
+  loginButtonLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
   biometricButton: {
     marginTop: 15,
-    borderRadius: 25,
+    borderRadius: 12,
   },
   buttonContent: {
     paddingVertical: 8,
@@ -385,11 +369,9 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#E0E0E0',
   },
   dividerText: {
     marginHorizontal: 10,
-    color: '#666666',
   },
   footer: {
     flexDirection: 'row',

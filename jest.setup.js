@@ -1,17 +1,67 @@
 // Essential mocks for React Native testing
 jest.mock('react-native', () => {
   const RN = jest.requireActual('react-native');
+  
+  // Create a comprehensive mock that handles all native modules
+  const mockNativeModules = {
+    DevMenu: {
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+    },
+    SettingsManager: {
+      getConstants: () => ({
+        settings: {
+          AppleLocale: 'en_US',
+          AppleLanguages: ['en'],
+        },
+      }),
+      setValues: jest.fn(),
+      deleteValues: jest.fn(),
+    },
+    AsyncLocalStorage: {
+      multiGet: jest.fn(),
+      multiSet: jest.fn(),
+      multiRemove: jest.fn(),
+      clear: jest.fn(),
+      getAllKeys: jest.fn(),
+    },
+    CameraManager: {
+      getConstants: () => ({}),
+      takePicture: jest.fn(),
+      record: jest.fn(),
+      stopRecording: jest.fn(),
+    },
+    PushNotificationManager: {
+      getConstants: () => ({}),
+      requestPermissions: jest.fn(),
+      abandonPermissions: jest.fn(),
+      checkPermissions: jest.fn(),
+      getInitialNotification: jest.fn(),
+    },
+  };
+
   return {
     ...RN,
     NativeModules: {
       ...RN.NativeModules,
+      ...mockNativeModules,
     },
     TurboModuleRegistry: {
-      getEnforcing: jest.fn(() => ({
-        addEventListener: jest.fn(),
-        removeEventListener: jest.fn(),
-      })),
-      get: jest.fn(),
+      getEnforcing: jest.fn((name) => {
+        return mockNativeModules[name] || {
+          addEventListener: jest.fn(),
+          removeEventListener: jest.fn(),
+          connect: jest.fn(),
+          disconnect: jest.fn(),
+          getConstants: () => ({}),
+        };
+      }),
+      get: jest.fn((name) => {
+        return mockNativeModules[name] || {
+          addEventListener: jest.fn(),
+          removeEventListener: jest.fn(),
+        };
+      }),
     },
     __fbBatchedBridgeConfig: {
       remoteModuleConfig: [],
@@ -125,8 +175,22 @@ jest.mock('react-native-paper', () => ({
   Card: 'Card',
   IconButton: 'IconButton',
   Switch: 'Switch',
+  Avatar: 'Avatar',
+  List: 'List',
+  Divider: 'Divider',
+  Portal: 'Portal',
+  Modal: 'Modal',
+  TextInput: 'TextInput',
   useTheme: () => ({
-    colors: { primary: '#000', background: '#fff' },
+    colors: { 
+      primary: '#000', 
+      background: '#fff',
+      surface: '#fff',
+      onSurface: '#000',
+      onSurfaceVariant: '#666',
+      onBackground: '#000',
+      onPrimary: '#fff'
+    },
   }),
 }));
 

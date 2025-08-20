@@ -1,30 +1,42 @@
 import { MD3LightTheme, MD3DarkTheme } from 'react-native-paper';
 
-// Color palette
+// Modern Color palette - GaterLink Brand Colors
 const colors = {
   primary: {
+    '50': '#E8F5E8',
+    '100': '#C8E6C9',
+    '200': '#A5D6A7',
+    '300': '#81C784',
+    '400': '#66BB6A',
+    '500': '#4CAF50', // Primary green - GaterLink brand
+    '600': '#43A047',
+    '700': '#388E3C',
+    '800': '#2E7D32',
+    '900': '#1B5E20',
+  },
+  secondary: {
     '50': '#E3F2FD',
     '100': '#BBDEFB',
     '200': '#90CAF9',
     '300': '#64B5F6',
     '400': '#42A5F5',
-    '500': '#2196F3', // Primary color
+    '500': '#2196F3', // Secondary blue
     '600': '#1E88E5',
     '700': '#1976D2',
     '800': '#1565C0',
     '900': '#0D47A1',
   },
-  secondary: {
-    '50': '#F3E5F5',
-    '100': '#E1BEE7',
-    '200': '#CE93D8',
-    '300': '#BA68C8',
-    '400': '#AB47BC',
-    '500': '#9C27B0', // Secondary color
-    '600': '#8E24AA',
-    '700': '#7B1FA2',
-    '800': '#6A1B9A',
-    '900': '#4A148C',
+  accent: {
+    '50': '#FFF3E0',
+    '100': '#FFE0B2',
+    '200': '#FFCC80',
+    '300': '#FFB74D',
+    '400': '#FFA726',
+    '500': '#FF9800', // Accent orange
+    '600': '#FB8C00',
+    '700': '#F57C00',
+    '800': '#EF6C00',
+    '900': '#E65100',
   },
   success: {
     '50': '#E8F5E8',
@@ -32,7 +44,7 @@ const colors = {
     '200': '#A5D6A7',
     '300': '#81C784',
     '400': '#66BB6A',
-    '500': '#4CAF50', // Success color
+    '500': '#4CAF50',
     '600': '#43A047',
     '700': '#388E3C',
     '800': '#2E7D32',
@@ -44,7 +56,7 @@ const colors = {
     '200': '#FFE082',
     '300': '#FFD54F',
     '400': '#FFCA28',
-    '500': '#FFC107', // Warning color
+    '500': '#FFC107',
     '600': '#FFB300',
     '700': '#FFA000',
     '800': '#FF8F00',
@@ -56,7 +68,7 @@ const colors = {
     '200': '#EF9A9A',
     '300': '#E57373',
     '400': '#EF5350',
-    '500': '#F44336', // Error color
+    '500': '#F44336',
     '600': '#E53935',
     '700': '#D32F2F',
     '800': '#C62828',
@@ -75,7 +87,7 @@ const colors = {
     '900': '#212121',
   },
   background: {
-    light: '#FFFFFF',
+    light: '#FAFBFC',
     dark: '#121212',
   },
   surface: {
@@ -84,8 +96,8 @@ const colors = {
   },
   text: {
     light: {
-      primary: '#212121',
-      secondary: '#757575',
+      primary: '#1A1A1A',
+      secondary: '#666666',
       disabled: '#BDBDBD',
       inverse: '#FFFFFF',
     },
@@ -93,12 +105,12 @@ const colors = {
       primary: '#FFFFFF',
       secondary: '#B3B3B3',
       disabled: '#666666',
-      inverse: '#212121',
+      inverse: '#1A1A1A',
     },
   },
 };
 
-// Typography
+// Modern Typography
 const typography = {
   fontFamily: {
     regular: 'System',
@@ -114,6 +126,7 @@ const typography = {
     xl: 20,
     xxl: 24,
     xxxl: 32,
+    display: 48,
   },
   fontWeight: {
     light: '300',
@@ -121,11 +134,13 @@ const typography = {
     medium: '500',
     semibold: '600',
     bold: '700',
+    extrabold: '800',
   },
   lineHeight: {
     tight: 1.2,
     normal: 1.5,
     relaxed: 1.75,
+    loose: 2,
   },
 };
 
@@ -150,7 +165,7 @@ const borderRadius = {
   full: 9999,
 };
 
-// Shadows
+// Modern Shadows
 const shadows = {
   sm: {
     shadowColor: '#000',
@@ -158,8 +173,8 @@ const shadows = {
       width: 0,
       height: 1,
     },
-    shadowOpacity: 0.18,
-    shadowRadius: 1.0,
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
     elevation: 1,
   },
   md: {
@@ -168,9 +183,9 @@ const shadows = {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   lg: {
     shadowColor: '#000',
@@ -178,18 +193,18 @@ const shadows = {
       width: 0,
       height: 4,
     },
-    shadowOpacity: 0.30,
-    shadowRadius: 4.65,
-    elevation: 8,
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 6,
   },
   xl: {
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 10,
+      height: 8,
     },
-    shadowOpacity: 0.40,
-    shadowRadius: 6.27,
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
     elevation: 12,
   },
 };
@@ -203,10 +218,10 @@ export const lightTheme = {
     primaryContainer: colors.primary['100'],
     secondary: colors.secondary['500'],
     secondaryContainer: colors.secondary['100'],
-    tertiary: colors.neutral['500'],
-    tertiaryContainer: colors.neutral['100'],
+    tertiary: colors.accent['500'],
+    tertiaryContainer: colors.accent['100'],
     surface: colors.surface.light,
-    surfaceVariant: colors.neutral['100'],
+    surfaceVariant: colors.neutral['50'],
     background: colors.background.light,
     error: colors.error['500'],
     errorContainer: colors.error['100'],
@@ -221,8 +236,8 @@ export const lightTheme = {
     onBackground: colors.text.light.primary,
     onError: colors.text.light.inverse,
     onErrorContainer: colors.text.light.primary,
-    outline: colors.neutral['300'],
-    outlineVariant: colors.neutral['200'],
+    outline: colors.neutral['200'],
+    outlineVariant: colors.neutral['100'],
     shadow: colors.neutral['900'],
     scrim: colors.neutral['900'],
     inverseSurface: colors.neutral['800'],
@@ -237,7 +252,27 @@ export const lightTheme = {
       level5: colors.neutral['400'],
     },
   },
-  dark: false,
+  fonts: {
+    ...MD3LightTheme.fonts,
+    displayLarge: {
+      fontFamily: typography.fontFamily.regular,
+      fontSize: typography.fontSize.display,
+      fontWeight: typography.fontWeight.bold,
+      lineHeight: typography.fontSize.display * typography.lineHeight.tight,
+    },
+    displayMedium: {
+      fontFamily: typography.fontFamily.regular,
+      fontSize: typography.fontSize.xxxl,
+      fontWeight: typography.fontWeight.bold,
+      lineHeight: typography.fontSize.xxxl * typography.lineHeight.tight,
+    },
+    displaySmall: {
+      fontFamily: typography.fontFamily.regular,
+      fontSize: typography.fontSize.xxl,
+      fontWeight: typography.fontWeight.bold,
+      lineHeight: typography.fontSize.xxl * typography.lineHeight.tight,
+    },
+  },
 };
 
 // Dark theme
@@ -245,12 +280,12 @@ export const darkTheme = {
   ...MD3DarkTheme,
   colors: {
     ...MD3DarkTheme.colors,
-    primary: colors.primary['200'],
+    primary: colors.primary['400'],
     primaryContainer: colors.primary['800'],
-    secondary: colors.secondary['200'],
+    secondary: colors.secondary['400'],
     secondaryContainer: colors.secondary['800'],
-    tertiary: colors.neutral['400'],
-    tertiaryContainer: colors.neutral['800'],
+    tertiary: colors.accent['400'],
+    tertiaryContainer: colors.accent['800'],
     surface: colors.surface.dark,
     surfaceVariant: colors.neutral['800'],
     background: colors.background.dark,
@@ -283,7 +318,27 @@ export const darkTheme = {
       level5: colors.neutral['500'],
     },
   },
-  dark: true,
+  fonts: {
+    ...MD3DarkTheme.fonts,
+    displayLarge: {
+      fontFamily: typography.fontFamily.regular,
+      fontSize: typography.fontSize.display,
+      fontWeight: typography.fontWeight.bold,
+      lineHeight: typography.fontSize.display * typography.lineHeight.tight,
+    },
+    displayMedium: {
+      fontFamily: typography.fontFamily.regular,
+      fontSize: typography.fontSize.xxxl,
+      fontWeight: typography.fontWeight.bold,
+      lineHeight: typography.fontSize.xxxl * typography.lineHeight.tight,
+    },
+    displaySmall: {
+      fontFamily: typography.fontFamily.regular,
+      fontSize: typography.fontSize.xxl,
+      fontWeight: typography.fontWeight.bold,
+      lineHeight: typography.fontSize.xxl * typography.lineHeight.tight,
+    },
+  },
 };
 
 // Default theme (light)

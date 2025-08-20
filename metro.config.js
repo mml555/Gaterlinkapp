@@ -17,8 +17,12 @@ const config = {
     // Enable the new transformer for better performance
     unstable_allowRequireContext: true,
   },
-                // Enable the new architecture features when available
-              // experimentalNativeHermes: true, // Removed due to validation warning
+  // Reduce verbose output and Unicode characters
+  reporter: {
+    update: () => {},
+  },
+  // Enable the new architecture features when available
+  // experimentalNativeHermes: true, // Removed due to validation warning
 };
 
 module.exports = mergeConfig(getDefaultConfig(__dirname), config);

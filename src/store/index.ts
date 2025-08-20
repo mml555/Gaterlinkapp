@@ -7,12 +7,16 @@ import doorReducer from './slices/doorSlice';
 import requestReducer from './slices/requestSlice';
 import chatReducer from './slices/chatSlice';
 import notificationReducer from './slices/notificationSlice';
+import siteReducer from './slices/siteSlice';
+import equipmentReducer from './slices/equipmentSlice';
+import holdReducer from './slices/holdSlice';
+import emergencyReducer from './slices/emergencySlice';
 
 // Persist configuration
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  whitelist: ['auth', 'doors'], // Only persist auth and doors
+  whitelist: ['auth', 'doors', 'sites'], // Only persist auth, doors, and sites
   serialize: true,
   deserialize: true,
 };
@@ -20,6 +24,7 @@ const persistConfig = {
 // Create persisted reducers
 const persistedAuthReducer = persistReducer(persistConfig, authReducer);
 const persistedDoorReducer = persistReducer(persistConfig, doorReducer);
+const persistedSiteReducer = persistReducer(persistConfig, siteReducer);
 
 // Configure store
 export const store = configureStore({
@@ -29,6 +34,10 @@ export const store = configureStore({
     requests: requestReducer,
     chat: chatReducer,
     notifications: notificationReducer,
+    sites: persistedSiteReducer,
+    equipment: equipmentReducer,
+    holds: holdReducer,
+    emergencies: emergencyReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -43,20 +52,15 @@ export const store = configureStore({
           'persist/FLUSH',
         ],
         // Ignore these field paths in all actions
-        ignoredActionPaths: ['payload.createdAt', 'payload.updatedAt', 'payload.lastLoginAt'],
+        ignoredActionPaths: ['payload.timestamp', 'meta.arg.timestamp'],
         // Ignore these paths in the state
-        ignoredPaths: ['auth.user.createdAt', 'auth.user.updatedAt', 'auth.user.lastLoginAt'],
-      },
-      immutableCheck: {
-        // Ignore these paths in the state
-        ignoredPaths: ['auth.user.createdAt', 'auth.user.updatedAt', 'auth.user.lastLoginAt'],
+        ignoredPaths: ['auth.user.lastLoginAt', 'doors.lastScanResult.scannedAt'],
       },
     }),
-  devTools: __DEV__,
 });
 
 export const persistor = persistStore(store);
 
-// Export types
+// Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

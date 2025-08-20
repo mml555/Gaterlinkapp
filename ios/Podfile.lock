@@ -3393,6 +3393,7 @@ DEPENDENCIES:
   - Firebase/Auth (~> 10.0)
   - Firebase/Core (~> 10.0)
   - Firebase/Firestore (~> 10.0)
+  - FirebaseCoreInternal (~> 10.0)
   - fmt (from `../node_modules/react-native/third-party-podspecs/fmt.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
@@ -3730,6 +3731,6 @@ SPEC CHECKSUMS:
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: be78ddad0c56d06a5e41eaef4bfbbd49b86a4d07
 
-PODFILE CHECKSUM: 5d1918b25adaa4104a52fad768974cb27165f058
+PODFILE CHECKSUM: 8abba691ac5a3466fb01357b5ddda1fdcdbc0fd9
 
 COCOAPODS: 1.16.2

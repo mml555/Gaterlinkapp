@@ -13,7 +13,7 @@ export type AuthStackParamList = {
 // Main Tab Navigator
 export type MainTabParamList = {
   Home: undefined;
-  Chat: undefined;
+  Messages: undefined;
   Profile: undefined;
 };
 
@@ -28,12 +28,16 @@ export type HomeStackParamList = {
   RequestManagement: undefined;
   UserManagement: undefined;
   Analytics: undefined;
+  EquipmentList: undefined;
+  EquipmentDetails: { equipmentId: string };
+  EmergencyDashboard: undefined;
+  HoldManagement: undefined;
 };
 
 // Chat Stack
 export type ChatStackParamList = {
   ChatList: undefined;
-  Chat: { chatId: string; userName?: string };
+  ChatDetail: { chatId: string; userName?: string };
 };
 
 // Profile Stack
@@ -63,4 +67,4 @@ export type RegisterRouteProp = RouteProp<AuthStackParamList, 'Register'>;
 export type ForgotPasswordRouteProp = RouteProp<AuthStackParamList, 'ForgotPassword'>;
 export type VerificationRouteProp = RouteProp<AuthStackParamList, 'Verification'>;
 export type DoorDetailsRouteProp = RouteProp<HomeStackParamList, 'DoorDetails'>;
-export type ChatRouteProp = RouteProp<ChatStackParamList, 'Chat'>;
+export type ChatRouteProp = RouteProp<ChatStackParamList, 'ChatDetail'>;

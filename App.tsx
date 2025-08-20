@@ -13,6 +13,7 @@ import { theme } from './src/utils/theme';
 import RootNavigator from './src/navigation/RootNavigator';
 import { AuthProvider } from './src/contexts/AuthContext';
 import { NotificationProvider } from './src/contexts/NotificationContext';
+import { ServiceStatusIndicator } from './src/components/ServiceStatusIndicator';
 import 'react-native-reanimated';
 
 function App(): React.JSX.Element {
@@ -28,6 +29,7 @@ function App(): React.JSX.Element {
                     <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
                     <RootNavigator />
                     <FlashMessage position="top" />
+                    <ServiceStatusIndicator visible={__DEV__} />
                   </NavigationContainer>
                 </NotificationProvider>
               </AuthProvider>

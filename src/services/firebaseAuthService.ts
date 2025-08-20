@@ -22,9 +22,9 @@ class FirebaseAuthService {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
     const stopTimer = performanceMonitor.startTimer('firebase_login');
     try {
-      // Add timeout for better UX
+      // Add timeout for better UX - increased to 30 seconds for slower connections
       const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Login timeout')), 10000)
+        setTimeout(() => reject(new Error('Login timeout - please check your internet connection')), 30000)
       );
 
       const loginPromise = signInWithEmailAndPassword(
@@ -50,6 +50,17 @@ class FirebaseAuthService {
     } catch (error: any) {
       stopTimer();
       console.error('Firebase login error:', error);
+      
+      // Handle timeout specifically
+      if (error.message.includes('timeout')) {
+        throw new Error('Login timeout - please check your internet connection and try again');
+      }
+      
+      // Handle network errors
+      if (error.code === 'auth/network-request-failed') {
+        throw new Error('Network error - please check your internet connection');
+      }
+      
       throw new Error(this.getErrorMessage(error.code));
     }
   }
@@ -174,9 +185,45 @@ class FirebaseAuthService {
         createdAt: new Date(),
         updatedAt: new Date(),
       });
+
+      // Client-side trigger: Set default custom claims and notification settings
+      await this.onUserCreated(user);
     } catch (error) {
       console.error('Error creating user document:', error);
       throw error;
+    }
+  }
+
+  // Client-side trigger for user creation (free tier alternative to Cloud Functions)
+  private async onUserCreated(user: User): Promise<void> {
+    try {
+      console.log(`Client-side trigger: New user created: ${user.id}`);
+
+      // Set default custom claims (internal Firebase operation)
+      const defaultClaims = {
+        role: user.role || 'user',
+        isActive: true,
+        lastLogin: Date.now(),
+      };
+
+      // Note: Custom claims require admin SDK, so this will be handled by security rules
+      // The client can't set custom claims directly, but we can store them in user document
+      await updateDoc(doc(db, 'users', user.id), {
+        customClaims: defaultClaims,
+        notificationSettings: {
+          pushEnabled: true,
+          emailEnabled: true,
+          smsEnabled: false,
+          soundEnabled: true,
+          badgeEnabled: true,
+        },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      console.log(`User setup completed for: ${user.id}`);
+    } catch (error) {
+      console.error('Error in client-side user creation trigger:', error);
     }
   }
 

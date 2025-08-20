@@ -1,0 +1,196 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    function isAdmin() {
+      return request.auth.token.role == 'admin';
+    }
+    
+    function isEmergencyResponder() {
+      return request.auth.token.role == 'emergency_responder';
+    }
+    
+    function isEquipmentManager() {
+      return request.auth.token.role == 'equipment_manager';
+    }
+    
+               function isSiteManager() {
+             return request.auth.token.role == 'site_manager';
+           }
+           
+           function isValidNotification() {
+             return request.resource.data.keys().hasAll(['userId', 'type', 'title', 'body']) &&
+                    request.resource.data.userId is string &&
+                    request.resource.data.type is string &&
+                    request.resource.data.title is string &&
+                    request.resource.data.body is string &&
+                    request.resource.data.read is bool;
+           }
+           
+           function isValidEmergency() {
+             return request.resource.data.keys().hasAll(['type', 'description', 'siteId', 'severity']) &&
+                    request.resource.data.type is string &&
+                    request.resource.data.description is string &&
+                    request.resource.data.siteId is string &&
+                    request.resource.data.severity in ['low', 'medium', 'high', 'critical'];
+           }
+           
+           function isValidAccessRequest() {
+             return request.resource.data.keys().hasAll(['userId', 'siteId', 'doorId']) &&
+                    request.resource.data.userId is string &&
+                    request.resource.data.siteId is string &&
+                    request.resource.data.doorId is string &&
+                    request.resource.data.status in ['pending', 'approved', 'rejected', 'cancelled'];
+           }
+    
+    function hasValidRequest() {
+      return request.auth.token.request_id != null;
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      allow create: if isAuthenticated() && isOwner(userId);
+      allow update: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      allow delete: if isAuthenticated() && isAdmin();
+    }
+    
+    // Sites collection
+    match /sites/{siteId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAuthenticated() && (isAdmin() || isSiteManager());
+    }
+    
+    // Doors collection
+    match /doors/{doorId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAuthenticated() && (isAdmin() || isSiteManager());
+      
+      // Door access logs
+      match /accessLogs/{logId} {
+        allow read: if isAuthenticated() && (isAdmin() || isSiteManager());
+        allow create: if isAuthenticated();
+        allow update, delete: if isAuthenticated() && isAdmin();
+      }
+    }
+    
+    // Access requests collection
+    match /accessRequests/{requestId} {
+      allow read: if isAuthenticated() && (
+        isOwner(resource.data.userId) || 
+        isAdmin() || 
+        isSiteManager() ||
+        request.auth.uid in resource.data.approvedBy
+      );
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId) && isValidAccessRequest();
+      allow update: if isAuthenticated() && (
+        isOwner(resource.data.userId) || 
+        isAdmin() || 
+        isSiteManager()
+      );
+      allow delete: if isAuthenticated() && isAdmin();
+    }
+    
+    // Equipment collection
+    match /equipment/{equipmentId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAuthenticated() && (isAdmin() || isEquipmentManager());
+      
+      // Equipment reservations
+      match /reservations/{reservationId} {
+        allow read: if isAuthenticated() && (
+          isOwner(resource.data.userId) || 
+          isAdmin() || 
+          isEquipmentManager()
+        );
+        allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+        allow update: if isAuthenticated() && (
+          isOwner(resource.data.userId) || 
+          isAdmin() || 
+          isEquipmentManager()
+        );
+        allow delete: if isAuthenticated() && (isAdmin() || isEquipmentManager());
+      }
+    }
+    
+    // Emergency collection
+    match /emergencies/{emergencyId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidEmergency();
+      allow update: if isAuthenticated() && (
+        isOwner(resource.data.reportedBy) || 
+        isAdmin() || 
+        isEmergencyResponder()
+      );
+      allow delete: if isAuthenticated() && isAdmin();
+    }
+    
+    // Holds collection
+    match /holds/{holdId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAuthenticated() && (isAdmin() || isSiteManager());
+    }
+    
+    // Chat messages collection
+    match /chats/{chatId} {
+      allow read: if isAuthenticated() && (
+        request.auth.uid in resource.data.participants
+      );
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (
+        request.auth.uid in resource.data.participants
+      );
+      allow delete: if isAuthenticated() && isAdmin();
+      
+      // Messages subcollection
+      match /messages/{messageId} {
+        allow read: if isAuthenticated() && (
+          request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants
+        );
+        allow create: if isAuthenticated() && (
+          request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants
+        );
+        allow update: if isAuthenticated() && (
+          request.auth.uid == resource.data.senderId
+        );
+        allow delete: if isAuthenticated() && isAdmin();
+      }
+    }
+    
+    // Notifications collection
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated() && isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && isValidNotification();
+      allow update: if isAuthenticated() && isOwner(resource.data.userId);
+      allow delete: if isAuthenticated() && (isOwner(resource.data.userId) || isAdmin());
+    }
+    
+    // System settings collection (admin only)
+    match /systemSettings/{settingId} {
+      allow read, write: if isAuthenticated() && isAdmin();
+    }
+    
+    // Analytics collection (admin only)
+    match /analytics/{analyticsId} {
+      allow read, write: if isAuthenticated() && isAdmin();
+    }
+    
+    // Audit logs collection (admin only)
+    match /auditLogs/{logId} {
+      allow read, write: if isAuthenticated() && isAdmin();
+    }
+    
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

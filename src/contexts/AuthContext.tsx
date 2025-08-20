@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { getCurrentUser, enableBiometric } from '../store/slices/authSlice';
 import { authService } from '../services/authService';
+import { serviceInitializer } from '../services/serviceInitializer';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -38,6 +39,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const userResponse = await authService.getCurrentUser();
         if (userResponse.success && userResponse.data) {
           await dispatch(getCurrentUser() as any);
+          
+          // Initialize client-side services for free tier automation
+          console.log('Initializing client-side services...');
+          // Add a small delay to ensure Firebase is fully initialized
+          setTimeout(async () => {
+            try {
+              await serviceInitializer.initializeServices();
+            } catch (error) {
+              console.error('Error initializing services:', error);
+            }
+          }, 1000);
         }
       } catch (error) {
         console.error('Auth initialization error:', error);
@@ -47,7 +59,33 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     initializeAuth();
+
+    // Cleanup services when component unmounts
+    return () => {
+      console.log('Cleaning up client-side services...');
+      serviceInitializer.cleanupServices();
+    };
   }, [dispatch]);
+
+  // Listen for authentication state changes
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      // User is authenticated, ensure services are initialized
+      console.log('User authenticated, ensuring services are initialized...');
+      // Add a small delay to ensure Firebase is fully initialized
+      setTimeout(async () => {
+        try {
+          await serviceInitializer.initializeServices();
+        } catch (error) {
+          console.error('Error initializing services:', error);
+        }
+      }, 1000);
+    } else if (!isAuthenticated) {
+      // User is not authenticated, cleanup services
+      console.log('User not authenticated, cleaning up services...');
+      serviceInitializer.cleanupServices();
+    }
+  }, [isAuthenticated, user]);
 
   const enableBiometricAuth = async () => {
     try {

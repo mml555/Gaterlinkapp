@@ -50,6 +50,7 @@ android/local.properties
 android/.idea/
 android/*.iml
 android/app/release/
+android/app/.cxx/
 
 # Bundle artifacts
 *.jsbundle
@@ -67,6 +68,16 @@ android/app/release/
 .expo/
 dist/
 web-build/
+
+# Firebase
+.firebaserc
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Test files
+test-*.js
+test-*.ts
 
 # Flipper
 ios/Pods/Flipper*

@@ -1,0 +1,1 @@
+{"version":3,"file":"webhooks.d.ts","sourceRoot":"","sources":["../../../src/webhooks.ts"],"names":[],"mappings":"AAOA,eAAO,MAAM,gBAAgB;iCAEQ,GAAG,cAAc,MAAM;;;;yCA8Bf,GAAG;;;;iDA+BK,GAAG;;;;wCAoClB,GAAG,cAAc,MAAM;CAiC5D,CAAC;AA8KF,eAAO,MACL,aAAa,gBAjTsB,GAAG,cAAc,MAAM;;;IAkT1D,qBAAqB,gBApRsB,GAAG;;;IAqR9C,yBAAyB,oBAtP0B,GAAG;;;IAuPtD,wBAAwB,YAnNY,GAAG,cAAc,MAAM,YAoNzC,CAAC"}

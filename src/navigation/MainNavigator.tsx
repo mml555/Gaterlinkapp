@@ -23,6 +23,16 @@ import RequestManagementScreen from '../screens/admin/RequestManagementScreen';
 import UserManagementScreen from '../screens/admin/UserManagementScreen';
 import AnalyticsScreen from '../screens/admin/AnalyticsScreen';
 
+// Equipment screens
+import EquipmentListScreen from '../screens/equipment/EquipmentListScreen';
+import EquipmentDetailsScreen from '../screens/equipment/EquipmentDetailsScreen';
+
+// Emergency screens
+import EmergencyDashboardScreen from '../screens/emergency/EmergencyDashboardScreen';
+
+// Hold screens
+import HoldManagementScreen from '../screens/holds/HoldManagementScreen';
+
 const Tab = createBottomTabNavigator<MainTabParamList>();
 const HomeStack = createStackNavigator<HomeStackParamList>();
 const ChatStack = createStackNavigator<ChatStackParamList>();
@@ -88,6 +98,26 @@ const HomeStackNavigator: React.FC = () => {
         component={AnalyticsScreen}
         options={{ title: 'Analytics' }}
       />
+      <HomeStack.Screen 
+        name="EquipmentList" 
+        component={EquipmentListScreen}
+        options={{ title: 'Equipment' }}
+      />
+      <HomeStack.Screen 
+        name="EquipmentDetails" 
+        component={EquipmentDetailsScreen}
+        options={{ title: 'Equipment Details' }}
+      />
+      <HomeStack.Screen 
+        name="EmergencyDashboard" 
+        component={EmergencyDashboardScreen}
+        options={{ title: 'Emergency Dashboard' }}
+      />
+      <HomeStack.Screen 
+        name="HoldManagement" 
+        component={HoldManagementScreen}
+        options={{ title: 'Hold Management' }}
+      />
     </HomeStack.Navigator>
   );
 };
@@ -113,7 +143,7 @@ const ChatStackNavigator: React.FC = () => {
         options={{ title: 'Messages' }}
       />
       <ChatStack.Screen 
-        name="Chat" 
+        name="ChatDetail" 
         component={ChatScreen}
         options={({ route }) => ({ 
           title: route.params?.userName || 'Chat' 
@@ -190,7 +220,7 @@ const MainNavigator: React.FC = () => {
         }}
       />
       <Tab.Screen
-        name="Chat"
+        name="Messages"
         component={ChatStackNavigator}
         options={{
           tabBarLabel: 'Messages',

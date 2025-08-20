@@ -2,13 +2,29 @@ module.exports = {
   preset: 'react-native',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   transformIgnorePatterns: [
-    'node_modules/(?!(react-native|@react-native|react-native-camera-kit|react-native-vision-camera|react-native-permissions|react-native-vector-icons|react-native-paper|react-native-safe-area-context|react-native-screens|react-native-gesture-handler|react-native-reanimated|react-native-flash-message|react-native-modal|react-native-skeleton-placeholder|react-native-keychain|react-native-biometrics|react-native-push-notification|@react-native-async-storage|@react-native-community|@react-navigation|@reduxjs|redux-persist|socket.io-client|axios|react-hook-form|react-native-dotenv|react-redux)/)',
+    'node_modules/(?!(react-native|@react-native|@react-navigation|react-native-.*|@react-native-.*)/)',
   ],
-  moduleNameMapper: {
-    '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
-      '<rootDir>/__mocks__/fileMock.js',
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  testMatch: ['**/__tests__/**/*.(ts|tsx|js)', '**/?(*.)+(spec|test).(ts|tsx|js)'],
+  collectCoverageFrom: [
+    'src/**/*.{ts,tsx}',
+    '!src/**/*.d.ts',
+    '!src/**/*.stories.{ts,tsx}',
+    '!src/**/index.{ts,tsx}',
+  ],
+  coverageThreshold: {
+    global: {
+      branches: 70,
+      functions: 70,
+      lines: 70,
+      statements: 70,
+    },
   },
   testEnvironment: 'node',
-  setupFiles: ['<rootDir>/jest.setup.js'],
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+  },
+  clearMocks: true,
+  restoreMocks: true,
   testPathIgnorePatterns: ['TestApp/__tests__/'],
 };

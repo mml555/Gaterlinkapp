@@ -13,12 +13,38 @@ export interface User {
   lastLoginAt?: Date;
   biometricEnabled: boolean;
   notificationSettings: NotificationSettings;
+  trade?: TradeType;
+  siteMemberships: SiteMembership[];
 }
 
 export enum UserRole {
-  CUSTOMER = 'customer',
+  WORKER = 'worker',
   ADMIN = 'admin',
   SUPER_ADMIN = 'super_admin',
+}
+
+export enum TradeType {
+  MEP = 'mep',
+  CARPENTRY = 'carpentry',
+  ELECTRICAL = 'electrical',
+  PLUMBING = 'plumbing',
+  HVAC = 'hvac',
+  GENERAL = 'general',
+}
+
+export interface SiteMembership {
+  siteId: string;
+  role: UserRole;
+  permissions: Permission[];
+  joinedAt: Date;
+}
+
+export interface Permission {
+  id: string;
+  name: string;
+  description: string;
+  resource: string;
+  action: string;
 }
 
 export interface NotificationSettings {
@@ -29,23 +55,86 @@ export interface NotificationSettings {
   badgeEnabled: boolean;
 }
 
-// Door Types
-export interface Door {
+// Site Types
+export interface Site {
   id: string;
   name: string;
+  address: string;
+  description?: string;
+  coordinates?: Coordinates;
+  settings: SiteSettings;
+  status: SiteStatus;
+  createdAt: Date;
+  updatedAt: Date;
+  createdBy: string;
+}
+
+export interface SiteSettings {
+  autoApprovalEnabled: boolean;
+  requireDocumentation: boolean;
+  maxConcurrentUsers: number;
+  emergencyContacts: EmergencyContact[];
+  safetyRules: string[];
+  equipmentLibraryEnabled: boolean;
+  premiumFeatures: PremiumFeature[];
+}
+
+export enum SiteStatus {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+  MAINTENANCE = 'maintenance',
+  EMERGENCY = 'emergency',
+}
+
+export interface EmergencyContact {
+  name: string;
+  phone: string;
+  email?: string;
+  role: string;
+}
+
+export enum PremiumFeature {
+  EQUIPMENT_SCHEDULING = 'equipment_scheduling',
+  TEMPORARY_HOLDS = 'temporary_holds',
+  SMART_ALERTS = 'smart_alerts',
+  API_INTEGRATIONS = 'api_integrations',
+  ADVANCED_ANALYTICS = 'advanced_analytics',
+}
+
+// Enhanced Door Types
+export interface Door {
+  id: string;
+  siteId: string;
+  name: string;
   location: string;
+  type: DoorType;
   qrCode: string;
+  nfcId?: string;
   description?: string;
   isActive: boolean;
+  status: DoorStatus;
   accessLevel: AccessLevel;
+  lockProfile: LockProfile;
+  coordinates?: Coordinates;
   createdAt: Date;
   updatedAt: Date;
   lastAccessedAt?: Date;
   accessCount: number;
-  coordinates?: {
-    latitude: number;
-    longitude: number;
-  };
+  visibleTrades: TradeType[];
+  approvers: string[];
+}
+
+export enum DoorType {
+  SITE_ENTRY = 'site_entry',
+  SHANTY = 'shanty',
+  UNIT_ROOM = 'unit_room',
+}
+
+export enum DoorStatus {
+  ACTIVE = 'active',
+  ON_HOLD = 'on_hold',
+  DISABLED = 'disabled',
+  MAINTENANCE = 'maintenance',
 }
 
 export enum AccessLevel {
@@ -54,34 +143,89 @@ export enum AccessLevel {
   PRIVATE = 'private',
 }
 
-// Request Types
+export interface LockProfile {
+  id: string;
+  type: LockType;
+  code?: string; // encrypted
+  qrId: string;
+  nfcId?: string;
+  padlockCode?: string; // for shanty doors
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export enum LockType {
+  QR = 'qr',
+  NFC = 'nfc',
+  PADLOCK = 'padlock',
+  SMART_LOCK = 'smart_lock',
+}
+
+// Enhanced Request Types
 export interface AccessRequest {
   id: string;
   userId: string;
   doorId: string;
+  siteId: string;
   status: RequestStatus;
   priority: RequestPriority;
   category: RequestCategory;
   title: string;
   description: string;
-  requestedAt: Date;
+  reason: string;
+  note?: string;
+  documents?: Document[];
+  autoApproved: boolean;
+  approvedBy?: string;
   approvedAt?: Date;
+  deniedBy?: string;
+  deniedAt?: Date;
+  denialReason?: string;
+  requestedAt: Date;
   completedAt?: Date;
   cancelledAt?: Date;
   assignedTo?: string;
-  notes?: string;
-  attachments?: string[];
   estimatedCompletion?: Date;
   actualCompletion?: Date;
+  accessToken?: string;
+  accessCode?: string;
+  expiresAt?: Date;
+}
+
+export interface Document {
+  id: string;
+  name: string;
+  type: DocumentType;
+  url: string;
+  uploadedAt: Date;
+  expiresAt?: Date;
+  status: DocumentStatus;
+}
+
+export enum DocumentType {
+  INSURANCE = 'insurance',
+  CERTIFICATION = 'certification',
+  SAFETY_TRAINING = 'safety_training',
+  WORK_PERMIT = 'work_permit',
+  OTHER = 'other',
+}
+
+export enum DocumentStatus {
+  VALID = 'valid',
+  EXPIRED = 'expired',
+  MISSING = 'missing',
+  PENDING_REVIEW = 'pending_review',
 }
 
 export enum RequestStatus {
   PENDING = 'pending',
+  DOCUMENTATION_REQUIRED = 'documentation_required',
   IN_PROGRESS = 'in_progress',
   APPROVED = 'approved',
   DENIED = 'denied',
   COMPLETED = 'completed',
   CANCELLED = 'cancelled',
+  EXPIRED = 'expired',
 }
 
 export enum RequestPriority {
@@ -99,6 +243,240 @@ export enum RequestCategory {
   MAINTENANCE = 'maintenance',
   SECURITY = 'security',
   OTHER = 'other',
+}
+
+// Equipment Types
+export interface Equipment {
+  id: string;
+  siteId: string;
+  name: string;
+  type: EquipmentType;
+  description?: string;
+  qrCode: string;
+  status: EquipmentStatus;
+  currentReservationId?: string;
+  maintenanceSchedule: MaintenanceSchedule;
+  checklists: Checklist[];
+  location?: string;
+  specifications?: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export enum EquipmentType {
+  TOOLS = 'tools',
+  MACHINERY = 'machinery',
+  VEHICLES = 'vehicles',
+  SAFETY_EQUIPMENT = 'safety_equipment',
+  ELECTRONICS = 'electronics',
+  OTHER = 'other',
+}
+
+export enum EquipmentStatus {
+  AVAILABLE = 'available',
+  IN_USE = 'in_use',
+  MAINTENANCE = 'maintenance',
+  OUT_OF_SERVICE = 'out_of_service',
+  RESERVED = 'reserved',
+}
+
+export interface MaintenanceSchedule {
+  lastMaintenance: Date;
+  nextMaintenance: Date;
+  maintenanceInterval: number; // days
+  maintenanceType: string;
+  performedBy?: string;
+}
+
+export interface Checklist {
+  id: string;
+  name: string;
+  type: ChecklistType;
+  items: ChecklistItem[];
+  required: boolean;
+  createdAt: Date;
+}
+
+export enum ChecklistType {
+  PRE_USE = 'pre_use',
+  POST_USE = 'post_use',
+  MAINTENANCE = 'maintenance',
+  SAFETY = 'safety',
+}
+
+export interface ChecklistItem {
+  id: string;
+  question: string;
+  type: 'boolean' | 'text' | 'photo';
+  required: boolean;
+  order: number;
+}
+
+export interface ChecklistResponse {
+  id: string;
+  checklistId: string;
+  reservationId: string;
+  responses: ChecklistItemResponse[];
+  completedAt: Date;
+  completedBy: string;
+}
+
+export interface ChecklistItemResponse {
+  itemId: string;
+  response: boolean | string;
+  photoUrl?: string;
+  notes?: string;
+}
+
+// Reservation Types
+export interface Reservation {
+  id: string;
+  equipmentId: string;
+  userId: string;
+  siteId: string;
+  startTime: Date;
+  endTime: Date;
+  reason: string;
+  status: ReservationStatus;
+  needsApproval: boolean;
+  approvedBy?: string;
+  approvedAt?: Date;
+  deniedBy?: string;
+  deniedAt?: Date;
+  denialReason?: string;
+  preUseChecklist?: ChecklistResponse;
+  postUseChecklist?: ChecklistResponse;
+  damageReport?: DamageReport;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export enum ReservationStatus {
+  PENDING = 'pending',
+  APPROVED = 'approved',
+  DENIED = 'denied',
+  ACTIVE = 'active',
+  COMPLETED = 'completed',
+  CANCELLED = 'cancelled',
+  EXPIRED = 'expired',
+}
+
+export interface DamageReport {
+  id: string;
+  description: string;
+  severity: 'minor' | 'moderate' | 'major';
+  photos: string[];
+  reportedAt: Date;
+  reportedBy: string;
+  resolvedAt?: Date;
+  resolvedBy?: string;
+  resolutionNotes?: string;
+}
+
+// Holds & Emergency Types
+export interface Hold {
+  id: string;
+  siteId: string;
+  areaId: string; // doorId or equipmentId
+  areaType: 'door' | 'equipment' | 'site';
+  reason: string;
+  startTime: Date;
+  endTime: Date;
+  status: HoldStatus;
+  createdBy: string;
+  createdAt: Date;
+  affectedUsers: string[];
+  notificationsSent: boolean;
+}
+
+export enum HoldStatus {
+  ACTIVE = 'active',
+  EXPIRED = 'expired',
+  CANCELLED = 'cancelled',
+}
+
+export interface EmergencyEvent {
+  id: string;
+  siteId: string;
+  type: EmergencyType;
+  severity: EmergencySeverity;
+  description: string;
+  location?: string;
+  startTime: Date;
+  endTime?: Date;
+  status: EmergencyStatus;
+  createdBy: string;
+  createdAt: Date;
+  affectedUsers: string[];
+  notificationsSent: boolean;
+  readAcknowledgments: ReadAcknowledgment[];
+}
+
+export enum EmergencyType {
+  EVACUATION = 'evacuation',
+  FIRE = 'fire',
+  MEDICAL = 'medical',
+  SECURITY = 'security',
+  WEATHER = 'weather',
+  OTHER = 'other',
+}
+
+export enum EmergencySeverity {
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high',
+  CRITICAL = 'critical',
+}
+
+export enum EmergencyStatus {
+  ACTIVE = 'active',
+  RESOLVED = 'resolved',
+  CANCELLED = 'cancelled',
+}
+
+export interface ReadAcknowledgment {
+  userId: string;
+  acknowledgedAt: Date;
+  deviceInfo?: string;
+}
+
+// Access Log Types
+export interface AccessLog {
+  id: string;
+  userId: string;
+  doorId: string;
+  siteId: string;
+  action: AccessAction;
+  timestamp: Date;
+  immutable: boolean;
+  metadata: AccessLogMetadata;
+  accessToken?: string;
+  accessCode?: string;
+  reason?: string;
+  note?: string;
+}
+
+export enum AccessAction {
+  GRANTED = 'granted',
+  DENIED = 'denied',
+  USED = 'used',
+  EXPIRED = 'expired',
+  CANCELLED = 'cancelled',
+}
+
+export interface AccessLogMetadata {
+  deviceInfo: DeviceInfo;
+  location?: Coordinates;
+  userAgent: string;
+  ipAddress?: string;
+  biometricUsed?: boolean;
+}
+
+export interface DeviceInfo {
+  platform: string;
+  version: string;
+  model?: string;
+  uniqueId: string;
 }
 
 // Chat Types
@@ -132,7 +510,8 @@ export interface MessageAttachment {
 
 export interface Chat {
   id: string;
-  requestId: string;
+  requestId?: string;
+  siteId: string;
   participants: string[];
   lastMessage?: ChatMessage;
   unreadCount: number;
@@ -160,6 +539,7 @@ export interface RegisterData {
   firstName: string;
   lastName: string;
   phone?: string;
+  trade?: TradeType;
 }
 
 export interface RequestForm {
@@ -207,6 +587,13 @@ export type RootStackParamList = {
   AdminDashboard: undefined;
   UserManagement: undefined;
   Analytics: undefined;
+  EquipmentList: undefined;
+  EquipmentDetails: { equipmentId: string };
+  EquipmentReservation: { equipmentId?: string };
+  SiteManagement: undefined;
+  EmergencyDashboard: undefined;
+  EmergencyManagement: undefined;
+  HoldManagement: undefined;
 };
 
 // App State Types
@@ -216,19 +603,37 @@ export interface AppState {
   requests: RequestState;
   chat: ChatState;
   notifications: NotificationState;
+  sites: SiteState;
+  equipment: EquipmentState;
+  holds: HoldState;
+  emergencies: EmergencyState;
 }
 
 export interface DoorState {
   doors: Door[];
   savedDoors: Door[];
+  siteDoors: Record<string, Door[]>;
   isLoading: boolean;
   error: string | null;
   selectedDoor: Door | null;
+  lastScanResult: QRCodeScanResult | null;
+  scanHistory: QRCodeScanResult[];
+}
+
+export interface QRCodeScanResult {
+  id: string;
+  qrCode: string;
+  doorId?: string;
+  equipmentId?: string;
+  scannedAt: Date;
+  success: boolean;
+  error?: string;
 }
 
 export interface RequestState {
   requests: AccessRequest[];
   userRequests: AccessRequest[];
+  pendingRequests: AccessRequest[];
   isLoading: boolean;
   error: string | null;
   selectedRequest: AccessRequest | null;
@@ -239,6 +644,7 @@ export interface RequestFilters {
   status?: RequestStatus[];
   priority?: RequestPriority[];
   category?: RequestCategory[];
+  siteId?: string;
   dateRange?: {
     start: Date;
     end: Date;
@@ -274,7 +680,42 @@ export enum NotificationType {
   REQUEST_UPDATE = 'request_update',
   NEW_MESSAGE = 'new_message',
   DOOR_ACCESS = 'door_access',
+  EQUIPMENT_RESERVATION = 'equipment_reservation',
+  HOLD_NOTIFICATION = 'hold_notification',
+  EMERGENCY_ALERT = 'emergency_alert',
   SYSTEM = 'system',
+}
+
+export interface SiteState {
+  sites: Site[];
+  selectedSite: Site | null;
+  isLoading: boolean;
+  error: string | null;
+  userSites: Site[];
+}
+
+export interface EquipmentState {
+  equipment: Equipment[];
+  reservations: Reservation[];
+  userReservations: Reservation[];
+  isLoading: boolean;
+  error: string | null;
+  selectedEquipment: Equipment | null;
+  selectedReservation: Reservation | null;
+}
+
+export interface HoldState {
+  holds: Hold[];
+  activeHolds: Hold[];
+  isLoading: boolean;
+  error: string | null;
+}
+
+export interface EmergencyState {
+  emergencies: EmergencyEvent[];
+  activeEmergencies: EmergencyEvent[];
+  isLoading: boolean;
+  error: string | null;
 }
 
 // Utility Types
@@ -316,6 +757,7 @@ export interface ProfileForm {
   lastName: string;
   phone?: string;
   profilePicture?: FileUpload;
+  trade?: TradeType;
 }
 
 // Analytics Types
@@ -328,6 +770,16 @@ export interface AnalyticsData {
   requestsByStatus: Record<RequestStatus, number>;
   requestsByPriority: Record<RequestPriority, number>;
   monthlyTrends: MonthlyTrend[];
+  siteStats: SiteStats;
+}
+
+export interface SiteStats {
+  totalDoors: number;
+  activeUsers: number;
+  equipmentUtilization: number;
+  accessLogs: number;
+  holds: number;
+  emergencies: number;
 }
 
 export interface MonthlyTrend {
@@ -335,4 +787,19 @@ export interface MonthlyTrend {
   requests: number;
   completed: number;
   averageResponseTime: number;
+}
+
+// Pricing Tier Types
+export enum PricingTier {
+  STARTER = 'starter',
+  PREMIUM = 'premium',
+  DEVELOPER = 'developer',
+}
+
+export interface PricingLimits {
+  maxDoors: number;
+  maxManagers: number;
+  features: PremiumFeature[];
+  apiAccess: boolean;
+  integrations: boolean;
 }

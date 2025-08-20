@@ -9,7 +9,7 @@ import {
   Text as RNText,
 } from 'react-native';
 import { Text, Button, Card, IconButton, Switch } from 'react-native-paper';
-import Camera from 'react-native-camera-kit';
+import { Camera, CameraType } from 'react-native-camera-kit';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
@@ -106,7 +106,7 @@ const QRScannerScreen: React.FC = () => {
     }
   };
 
-  const handleQRCodeRead = async (event: { data: string }) => {
+  const handleQRCodeRead = async (event: { nativeEvent: { codeStringValue: string } }) => {
     try {
       // Prevent multiple scans
       if (isScanning || isProcessing) {
@@ -115,19 +115,19 @@ const QRScannerScreen: React.FC = () => {
 
       setIsScanning(true);
       setIsProcessing(true);
-      setScannedData(event.data);
+      setScannedData(event.nativeEvent.codeStringValue);
       setError(null);
 
       // Validate QR code format
-      if (!event.data || event.data.trim().length === 0) {
+      if (!event.nativeEvent.codeStringValue || event.nativeEvent.codeStringValue.trim().length === 0) {
         throw new Error('Invalid QR code: Empty data');
       }
 
       // Log the scan for debugging (remove in production)
-      console.log('QR Code scanned:', event.data);
+      console.log('QR Code scanned:', event.nativeEvent.codeStringValue);
 
       // Dispatch QR code scan action
-      await dispatch(scanQRCode(event.data) as any);
+      await dispatch(scanQRCode(event.nativeEvent.codeStringValue) as any);
 
     } catch (err: any) {
       console.error('Error processing QR code:', err);
@@ -152,8 +152,8 @@ const QRScannerScreen: React.FC = () => {
     setError(null);
   };
 
-  const handleScanError = (error: any) => {
-    console.error('Camera scan error:', error);
+  const handleScanError = (event: { nativeEvent: { errorMessage: string } }) => {
+    console.error('Camera scan error:', event.nativeEvent.errorMessage);
     setError('Camera error occurred. Please try again.');
   };
 
@@ -291,7 +291,7 @@ const QRScannerScreen: React.FC = () => {
         laserColor="#007AFF"
         frameColor="#007AFF"
         style={styles.camera}
-        cameraType="back"
+        cameraType={CameraType.Back}
         flashMode="auto"
         onError={handleScanError}
         zoomMode="on"
