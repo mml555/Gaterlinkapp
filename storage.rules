@@ -1,0 +1,72 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // User profile images
+    match /users/{userId}/profile/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null 
+        && request.auth.uid == userId
+        && request.resource.size < 5 * 1024 * 1024 // 5MB limit
+        && request.resource.contentType.matches('image/.*');
+    }
+    
+    // Door images (admin only write, all authenticated read)
+    match /doors/{doorId}/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null 
+        && request.auth.token.role == 'admin'
+        && request.resource.size < 10 * 1024 * 1024 // 10MB limit
+        && request.resource.contentType.matches('image/.*');
+    }
+    
+    // Equipment images
+    match /equipment/{equipmentId}/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null 
+        && (request.auth.token.role == 'admin' || request.auth.token.role == 'manager')
+        && request.resource.size < 10 * 1024 * 1024 // 10MB limit
+        && request.resource.contentType.matches('image/.*');
+    }
+    
+    // Chat attachments
+    match /chats/{chatId}/attachments/{fileName} {
+      allow read: if request.auth != null 
+        && exists(/databases/$(database)/documents/chats/$(chatId)/participants/$(request.auth.uid));
+      allow write: if request.auth != null 
+        && exists(/databases/$(database)/documents/chats/$(chatId)/participants/$(request.auth.uid))
+        && request.resource.size < 25 * 1024 * 1024 // 25MB limit
+        && (request.resource.contentType.matches('image/.*') 
+          || request.resource.contentType.matches('application/pdf')
+          || request.resource.contentType.matches('video/.*'));
+    }
+    
+    // QR codes (public read, admin write)
+    match /qr-codes/{qrId}/{fileName} {
+      allow read: if true; // Public access for QR codes
+      allow write: if request.auth != null 
+        && request.auth.token.role == 'admin'
+        && request.resource.size < 1 * 1024 * 1024 // 1MB limit
+        && request.resource.contentType.matches('image/.*');
+    }
+    
+    // Public assets (logos, etc.)
+    match /public/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null 
+        && request.auth.token.role == 'admin';
+    }
+    
+    // Temporary uploads (auto-deleted after 24 hours)
+    match /temp/{userId}/{fileName} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null 
+        && request.auth.uid == userId
+        && request.resource.size < 50 * 1024 * 1024; // 50MB limit
+    }
+    
+    // Default: deny all
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
