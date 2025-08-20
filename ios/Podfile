@@ -50,6 +50,21 @@ target 'GaterLinkNative' do
         end
       end
       
+      # Fix BoringSSL-GRPC unsupported compiler flag issue
+      if target.name == 'BoringSSL-GRPC'
+        target.build_configurations.each do |config|
+          # Remove the -G flag that's causing issues
+          if config.build_settings['OTHER_CFLAGS']
+            config.build_settings['OTHER_CFLAGS'] = config.build_settings['OTHER_CFLAGS'].gsub(/-G\s*/, '')
+          end
+          if config.build_settings['OTHER_CPLUSPLUSFLAGS']
+            config.build_settings['OTHER_CPLUSPLUSFLAGS'] = config.build_settings['OTHER_CPLUSPLUSFLAGS'].gsub(/-G\s*/, '')
+          end
+          # Also ensure proper architecture settings
+          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
+        end
+      end
+      
       # Fix Firebase module compilation issues
       if target.name.start_with?('Firebase')
         target.build_configurations.each do |config|
