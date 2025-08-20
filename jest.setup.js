@@ -1,288 +1,229 @@
-// Essential mocks for React Native testing
-jest.mock('react-native', () => {
-  const RN = jest.requireActual('react-native');
-  
-  // Create a comprehensive mock that handles all native modules
-  const mockNativeModules = {
-    DevMenu: {
-      addEventListener: jest.fn(),
-      removeEventListener: jest.fn(),
-    },
-    SettingsManager: {
-      getConstants: () => ({
-        settings: {
-          AppleLocale: 'en_US',
-          AppleLanguages: ['en'],
-        },
-      }),
-      setValues: jest.fn(),
-      deleteValues: jest.fn(),
-    },
-    AsyncLocalStorage: {
-      multiGet: jest.fn(),
-      multiSet: jest.fn(),
-      multiRemove: jest.fn(),
-      clear: jest.fn(),
-      getAllKeys: jest.fn(),
-    },
-    CameraManager: {
-      getConstants: () => ({}),
-      takePicture: jest.fn(),
-      record: jest.fn(),
-      stopRecording: jest.fn(),
-    },
-    PushNotificationManager: {
-      getConstants: () => ({}),
-      requestPermissions: jest.fn(),
-      abandonPermissions: jest.fn(),
-      checkPermissions: jest.fn(),
-      getInitialNotification: jest.fn(),
-    },
-  };
+import 'react-native-gesture-handler/jestSetup';
 
-  return {
-    ...RN,
-    NativeModules: {
-      ...RN.NativeModules,
-      ...mockNativeModules,
-    },
-    TurboModuleRegistry: {
-      getEnforcing: jest.fn((name) => {
-        return mockNativeModules[name] || {
-          addEventListener: jest.fn(),
-          removeEventListener: jest.fn(),
-          connect: jest.fn(),
-          disconnect: jest.fn(),
-          getConstants: () => ({}),
-        };
-      }),
-      get: jest.fn((name) => {
-        return mockNativeModules[name] || {
-          addEventListener: jest.fn(),
-          removeEventListener: jest.fn(),
-        };
-      }),
-    },
-    __fbBatchedBridgeConfig: {
-      remoteModuleConfig: [],
-      localModuleConfig: [],
-    },
-  };
+// Mock reanimated
+jest.mock('react-native-reanimated', () => {
+  const Reanimated = require('react-native-reanimated/mock');
+  Reanimated.default.call = () => {};
+  return Reanimated;
 });
 
-// Mock essential React Native libraries
-jest.mock('react-native-gesture-handler', () => ({}));
-jest.mock('react-native-vector-icons/MaterialCommunityIcons', () => 'Icon');
-jest.mock('react-native-flash-message', () => 'FlashMessage');
-jest.mock('react-native-modal', () => 'Modal');
-jest.mock('react-native-skeleton-placeholder', () => 'SkeletonPlaceholder');
-jest.mock('react-native-safe-area-context', () => ({
-  SafeAreaProvider: ({ children }) => children,
-  useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
-}));
-jest.mock('react-native-screens', () => ({ enableScreens: jest.fn() }));
-jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
-jest.mock('react-native-worklets-core', () => ({
-  runOnJS: (fn) => fn,
-  runOnUI: (fn) => fn,
-}));
-
-// Mock native modules
-jest.mock('react-native-keychain', () => ({
-  getInternetCredentials: jest.fn(),
-  setInternetCredentials: jest.fn(),
-  resetInternetCredentials: jest.fn(),
-}));
-
-jest.mock('react-native-biometrics', () => ({
-  isSensorAvailable: jest.fn(),
-  createKeys: jest.fn(),
-  deleteKeys: jest.fn(),
-  createSignature: jest.fn(),
-  simplePrompt: jest.fn(),
-}));
-
-jest.mock('react-native-push-notification', () => ({
-  configure: jest.fn(),
-  localNotification: jest.fn(),
-  localNotificationSchedule: jest.fn(),
-  cancelLocalNotifications: jest.fn(),
-  cancelAllLocalNotifications: jest.fn(),
-  getScheduledLocalNotifications: jest.fn(),
-  getDeliveredNotifications: jest.fn(),
-  removeDeliveredNotifications: jest.fn(),
-  removeAllDeliveredNotifications: jest.fn(),
-  requestPermissions: jest.fn(),
-  abandonPermissions: jest.fn(),
-  checkPermissions: jest.fn(),
-  getInitialNotification: jest.fn(),
-  getBadgeCount: jest.fn(),
-  setBadgeCount: jest.fn(),
-  clearAllNotifications: jest.fn(),
-  getChannels: jest.fn(),
-  channelExists: jest.fn(),
-  createChannel: jest.fn(),
-  channelBlocked: jest.fn(),
-  deleteChannel: jest.fn(),
-}));
-
+// Mock async storage
 jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock')
 );
 
-// Mock React Navigation
-jest.mock('@react-navigation/native', () => ({
-  NavigationContainer: ({ children }) => children,
-  useNavigation: () => ({
-    navigate: jest.fn(),
-    goBack: jest.fn(),
-    push: jest.fn(),
-    pop: jest.fn(),
-  }),
-  useRoute: () => ({ params: {} }),
+// Mock Firebase
+jest.mock('firebase/app', () => ({
+  initializeApp: jest.fn(() => ({})),
 }));
 
-// Mock Redux
-jest.mock('react-redux', () => ({
-  Provider: ({ children }) => children,
-  useDispatch: () => jest.fn(),
-  useSelector: jest.fn(),
-  connect: () => (Component) => Component,
+jest.mock('firebase/auth', () => ({
+  getAuth: jest.fn(() => ({})),
+  initializeAuth: jest.fn(() => ({})),
+  getReactNativePersistence: jest.fn(),
+  signInWithEmailAndPassword: jest.fn(),
+  createUserWithEmailAndPassword: jest.fn(),
+  signOut: jest.fn(),
+  onAuthStateChanged: jest.fn(),
+  sendPasswordResetEmail: jest.fn(),
 }));
 
-jest.mock('@reduxjs/toolkit', () => ({
-  configureStore: jest.fn(),
-  createSlice: jest.fn(),
-  createAsyncThunk: jest.fn(),
+jest.mock('firebase/firestore', () => ({
+  getFirestore: jest.fn(() => ({})),
+  collection: jest.fn(),
+  doc: jest.fn(),
+  getDoc: jest.fn(),
+  setDoc: jest.fn(),
+  updateDoc: jest.fn(),
+  deleteDoc: jest.fn(),
+  query: jest.fn(),
+  where: jest.fn(),
+  orderBy: jest.fn(),
+  limit: jest.fn(),
+  onSnapshot: jest.fn(),
+  serverTimestamp: jest.fn(),
+  enableNetwork: jest.fn(),
+  disableNetwork: jest.fn(),
 }));
 
-jest.mock('redux-persist', () => ({
-  persistStore: jest.fn(),
-  persistReducer: (config, reducer) => reducer,
-  FLUSH: 'persist/FLUSH',
-  REHYDRATE: 'persist/REHYDRATE',
-  PAUSE: 'persist/PAUSE',
-  PERSIST: 'persist/PERSIST',
-  PURGE: 'persist/PURGE',
-  REGISTER: 'persist/REGISTER',
+jest.mock('firebase/analytics', () => ({
+  getAnalytics: jest.fn(),
+  isSupported: jest.fn(() => Promise.resolve(false)),
 }));
 
-// Mock UI libraries
-jest.mock('react-native-paper', () => ({
-  Provider: ({ children }) => children,
-  Text: 'Text',
-  Button: 'Button',
-  Card: 'Card',
-  IconButton: 'IconButton',
-  Switch: 'Switch',
-  Avatar: 'Avatar',
-  List: 'List',
-  Divider: 'Divider',
-  Portal: 'Portal',
-  Modal: 'Modal',
-  TextInput: 'TextInput',
-  useTheme: () => ({
-    colors: { 
-      primary: '#000', 
-      background: '#fff',
-      surface: '#fff',
-      onSurface: '#000',
-      onSurfaceVariant: '#666',
-      onBackground: '#000',
-      onPrimary: '#fff'
+// Mock react-native-paper
+jest.mock('react-native-paper', () => {
+  const RealModule = jest.requireActual('react-native-paper');
+  const MockedModule = {
+    ...RealModule,
+    Portal: ({ children }) => children,
+  };
+  return MockedModule;
+});
+
+// Mock react-native-vector-icons
+jest.mock('react-native-vector-icons/MaterialIcons', () => 'Icon');
+jest.mock('react-native-vector-icons/MaterialCommunityIcons', () => 'Icon');
+jest.mock('react-native-vector-icons/Ionicons', () => 'Icon');
+jest.mock('react-native-vector-icons/FontAwesome', () => 'Icon');
+jest.mock('react-native-vector-icons/Feather', () => 'Icon');
+
+// Mock react-native-permissions
+jest.mock('react-native-permissions', () => ({
+  PERMISSIONS: {
+    IOS: {
+      CAMERA: 'ios.permission.CAMERA',
     },
-  }),
+    ANDROID: {
+      CAMERA: 'android.permission.CAMERA',
+    },
+  },
+  RESULTS: {
+    GRANTED: 'granted',
+    DENIED: 'denied',
+    BLOCKED: 'blocked',
+    UNAVAILABLE: 'unavailable',
+  },
+  check: jest.fn(() => Promise.resolve('granted')),
+  request: jest.fn(() => Promise.resolve('granted')),
 }));
 
-// Mock camera and permissions
-jest.mock('react-native-camera-kit', () => {
+// Mock react-native-camera-kit
+jest.mock('react-native-camera-kit', () => ({
+  Camera: () => null,
+  CameraScreen: () => null,
+}));
+
+// Mock react-native-biometrics
+jest.mock('react-native-biometrics', () => ({
+  __esModule: true,
+  default: jest.fn().mockImplementation(() => ({
+    isSensorAvailable: jest.fn(() => Promise.resolve({ available: false })),
+    createKeys: jest.fn(() => Promise.resolve({ publicKey: 'test' })),
+    createSignature: jest.fn(() => Promise.resolve({ success: true })),
+    simplePrompt: jest.fn(() => Promise.resolve({ success: true })),
+  })),
+}));
+
+// Mock react-native-keychain
+jest.mock('react-native-keychain', () => ({
+  setInternetCredentials: jest.fn(() => Promise.resolve(true)),
+  getInternetCredentials: jest.fn(() => Promise.resolve(false)),
+  resetInternetCredentials: jest.fn(() => Promise.resolve(true)),
+}));
+
+// Mock react-native-push-notification
+jest.mock('react-native-push-notification', () => ({
+  configure: jest.fn(),
+  onRegister: jest.fn(),
+  onNotification: jest.fn(),
+  addEventListener: jest.fn(),
+  requestPermissions: jest.fn(),
+  localNotification: jest.fn(),
+  cancelAllLocalNotifications: jest.fn(),
+  removeAllDeliveredNotifications: jest.fn(),
+  getDeliveredNotifications: jest.fn(),
+  getScheduledLocalNotifications: jest.fn(),
+  setApplicationIconBadgeNumber: jest.fn(),
+  getApplicationIconBadgeNumber: jest.fn(),
+}));
+
+// Mock @react-native-community/push-notification-ios
+jest.mock('@react-native-community/push-notification-ios', () => ({
+  addEventListener: jest.fn(),
+  requestPermissions: jest.fn(() => Promise.resolve()),
+  getInitialNotification: jest.fn(() => Promise.resolve(null)),
+}));
+
+// Mock react-native-flash-message
+jest.mock('react-native-flash-message', () => {
   const React = require('react');
-  const { View } = require('react-native');
-  
-  const Camera = React.forwardRef((props, ref) => {
-    return React.createElement(View, {
-      ...props,
-      testID: 'camera-component',
-      style: [{ minWidth: 100, minHeight: 100 }, props.style]
-    });
-  });
-  
   return {
-    default: Camera,
+    __esModule: true,
+    default: ({ children }) => children,
+    showMessage: jest.fn(),
+    hideMessage: jest.fn(),
   };
 });
 
-jest.mock('react-native-permissions', () => ({
-  check: jest.fn(),
-  request: jest.fn(),
-  PERMISSIONS: {
-    IOS: { CAMERA: 'ios.permission.CAMERA' },
-    ANDROID: { CAMERA: 'android.permission.CAMERA' },
-  },
-  RESULTS: {
-    UNAVAILABLE: 'unavailable',
-    DENIED: 'denied',
-    LIMITED: 'limited',
-    GRANTED: 'granted',
-    BLOCKED: 'blocked',
-  },
-}));
+// Mock react-native-modal
+jest.mock('react-native-modal', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  return ({ children, ...props }) => (
+    props.isVisible ? React.createElement(View, props, children) : null
+  );
+});
 
-// Mock networking
-jest.mock('axios', () => ({
-  create: jest.fn(() => ({
-    get: jest.fn(),
-    post: jest.fn(),
-    put: jest.fn(),
-    delete: jest.fn(),
-  })),
-  get: jest.fn(),
-  post: jest.fn(),
-  put: jest.fn(),
-  delete: jest.fn(),
-}));
+// Mock react-native-linear-gradient
+jest.mock('react-native-linear-gradient', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  return ({ children, ...props }) => React.createElement(View, props, children);
+});
 
+// Mock react-native-skeleton-placeholder
+jest.mock('react-native-skeleton-placeholder', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  const SkeletonPlaceholder = ({ children }) => children;
+  SkeletonPlaceholder.Item = View;
+  return SkeletonPlaceholder;
+});
+
+// Mock socket.io-client
 jest.mock('socket.io-client', () => ({
   io: jest.fn(() => ({
     on: jest.fn(),
     emit: jest.fn(),
+    off: jest.fn(),
     connect: jest.fn(),
     disconnect: jest.fn(),
   })),
 }));
 
-// Mock forms
-jest.mock('react-hook-form', () => ({
-  useForm: () => ({
-    control: {},
-    handleSubmit: jest.fn(),
-    formState: { errors: {} },
-    setValue: jest.fn(),
-    getValues: jest.fn(),
-    reset: jest.fn(),
-  }),
-  Controller: ({ render }) => render({ field: { onChange: jest.fn(), value: '' } }),
-}));
-
-// Mock environment variables
+// Mock react-native-dotenv
 jest.mock('react-native-dotenv', () => ({
-  API_BASE_URL: 'http://localhost:3000',
-  SOCKET_URL: 'http://localhost:3001',
+  API_URL: 'http://localhost:3000',
+  WS_URL: 'ws://localhost:3000',
 }));
 
-// Mock app-specific components
-jest.mock('@react-native/new-app-screen', () => ({
-  NewAppScreen: 'NewAppScreen',
-}));
+// Add global test utilities
+global.fetch = jest.fn(() =>
+  Promise.resolve({
+    json: () => Promise.resolve({}),
+    text: () => Promise.resolve(''),
+    ok: true,
+    status: 200,
+  })
+);
 
-jest.mock('./src/components/common/TestQRCodeDisplay', () => 'TestQRCodeDisplay');
+// Suppress console warnings in tests
+const originalWarn = console.warn;
+const originalError = console.error;
 
-// Global console mock
-global.console = {
-  ...console,
-  log: jest.fn(),
-  error: jest.fn(),
-  warn: jest.fn(),
-  info: jest.fn(),
-  debug: jest.fn(),
-};
+beforeAll(() => {
+  console.warn = (...args) => {
+    if (
+      args[0]?.includes?.('Warning:') ||
+      args[0]?.includes?.('Deprecation')
+    ) {
+      return;
+    }
+    originalWarn(...args);
+  };
+  console.error = (...args) => {
+    if (
+      args[0]?.includes?.('Warning:') ||
+      args[0]?.includes?.('Error:')
+    ) {
+      return;
+    }
+    originalError(...args);
+  };
+});
+
+afterAll(() => {
+  console.warn = originalWarn;
+  console.error = originalError;
+});
