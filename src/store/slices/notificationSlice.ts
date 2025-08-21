@@ -144,7 +144,7 @@ const notificationSlice = createSlice({
           message: notification.body, // Map body to message
           type: 'system' as any, // Default to system type
           isRead: notification.read,
-          timestamp: notification.timestamp,
+          timestamp: notification.createdAt || new Date(),
           data: notification.data,
         }));
         state.unreadCount = action.payload.unreadCount;

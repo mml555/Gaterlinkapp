@@ -12,15 +12,16 @@ const db = admin.firestore();
 export const onUserCreated = functions.firestore
   .document('users/{userId}')
   .onCreate(async (snap, context) => {
-    // const userData = snap.data();
+    const userData = snap.data();
     const userId = context.params.userId;
 
     console.log(`New user created: ${userId}`);
 
     try {
-      // Set default custom claims (internal Firebase operation)
+      // Set custom claims based on user role from the document
+      const userRole = userData.role || 'customer';
       const defaultClaims = {
-        role: 'user',
+        role: userRole.toLowerCase(), // Normalize to lowercase
         isActive: true,
         lastLogin: Date.now(),
       };
@@ -40,9 +41,36 @@ export const onUserCreated = functions.firestore
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
 
-      console.log(`User setup completed for: ${userId}`);
+      console.log(`User setup completed for: ${userId} with role: ${userRole}`);
     } catch (error) {
       console.error('Error in onUserCreated:', error);
+    }
+  });
+
+export const onUserUpdated = functions.firestore
+  .document('users/{userId}')
+  .onUpdate(async (change, context) => {
+    const beforeData = change.before.data();
+    const afterData = change.after.data();
+    const userId = context.params.userId;
+
+    // Check if role has changed
+    if (beforeData.role !== afterData.role) {
+      console.log(`User role updated for ${userId}: ${beforeData.role} -> ${afterData.role}`);
+
+      try {
+        // Update custom claims with new role
+        const updatedClaims = {
+          role: afterData.role.toLowerCase(), // Normalize to lowercase
+          isActive: afterData.isActive !== false, // Default to true if not specified
+          lastLogin: Date.now(),
+        };
+
+        await admin.auth().setCustomUserClaims(userId, updatedClaims);
+        console.log(`Custom claims updated for user: ${userId}`);
+      } catch (error) {
+        console.error('Error updating custom claims:', error);
+      }
     }
   });
 

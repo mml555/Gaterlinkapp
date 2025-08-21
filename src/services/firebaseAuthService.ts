@@ -1,15 +1,5 @@
-import {
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-  User as FirebaseUser,
-  sendPasswordResetEmail,
-  updateProfile,
-  UserCredential,
-} from 'firebase/auth';
-import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
-import { auth, db } from '../config/firebase';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 import { User, LoginCredentials, UserRole } from '../types';
 import { performanceMonitor } from '../utils/performanceMonitor';
 
@@ -27,18 +17,20 @@ class FirebaseAuthService {
         setTimeout(() => reject(new Error('Login timeout - please check your internet connection')), 30000)
       );
 
-      const loginPromise = signInWithEmailAndPassword(
-        auth,
+      const loginPromise = auth().signInWithEmailAndPassword(
         credentials.email,
         credentials.password
       );
 
-      const userCredential: UserCredential = await Promise.race([loginPromise, timeoutPromise]) as UserCredential;
+      const userCredential = await Promise.race([loginPromise, timeoutPromise]);
 
       const firebaseUser = userCredential.user;
       
       // Get user data with caching
       const userData = await this.getUserDataWithCache(firebaseUser.uid);
+
+      // Ensure user document exists with proper structure
+      await this.ensureUserDocumentExists(firebaseUser.uid, userData);
 
       const result = {
         user: userData,
@@ -72,8 +64,7 @@ class FirebaseAuthService {
     role?: string;
   }): Promise<AuthResponse> {
     try {
-      const userCredential: UserCredential = await createUserWithEmailAndPassword(
-        auth,
+      const userCredential = await auth().createUserWithEmailAndPassword(
         userData.email,
         userData.password
       );
@@ -81,7 +72,7 @@ class FirebaseAuthService {
       const firebaseUser = userCredential.user;
 
       // Update profile with display name
-      await updateProfile(firebaseUser, {
+      await firebaseUser.updateProfile({
         displayName: userData.name,
       });
 
@@ -123,7 +114,7 @@ class FirebaseAuthService {
 
   async logout(): Promise<void> {
     try {
-      await signOut(auth);
+      await auth().signOut();
     } catch (error: any) {
       console.error('Firebase logout error:', error);
       throw new Error('Failed to logout');
@@ -132,7 +123,7 @@ class FirebaseAuthService {
 
   async getCurrentUser(): Promise<User | null> {
     try {
-      const firebaseUser = auth.currentUser;
+      const firebaseUser = auth().currentUser;
       if (!firebaseUser) return null;
 
       return await this.getUserData(firebaseUser.uid);
@@ -144,8 +135,7 @@ class FirebaseAuthService {
 
   async isAuthenticated(): Promise<boolean> {
     return new Promise((resolve) => {
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
-        unsubscribe();
+      auth().onAuthStateChanged((user) => {
         resolve(!!user);
       });
     });
@@ -153,7 +143,7 @@ class FirebaseAuthService {
 
   async resetPassword(email: string): Promise<void> {
     try {
-      await sendPasswordResetEmail(auth, email);
+      await auth().sendPasswordResetEmail(email);
     } catch (error: any) {
       console.error('Firebase password reset error:', error);
       throw new Error(this.getErrorMessage(error.code));
@@ -162,13 +152,13 @@ class FirebaseAuthService {
 
   async updateUserProfile(updates: Partial<User>): Promise<User> {
     try {
-      const firebaseUser = auth.currentUser;
+      const firebaseUser = auth().currentUser;
       if (!firebaseUser) {
         throw new Error('No authenticated user');
       }
 
-      const userRef = doc(db, 'users', firebaseUser.uid);
-      await updateDoc(userRef, updates);
+      const userRef = firestore().collection('users').doc(firebaseUser.uid);
+      await userRef.update(updates);
 
       return await this.getUserData(firebaseUser.uid);
     } catch (error: any) {
@@ -179,8 +169,8 @@ class FirebaseAuthService {
 
   private async createUserDocument(user: User): Promise<void> {
     try {
-      const userRef = doc(db, 'users', user.id);
-      await setDoc(userRef, {
+      const userRef = firestore().collection('users').doc(user.id);
+      await userRef.set({
         ...user,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -208,7 +198,7 @@ class FirebaseAuthService {
 
       // Note: Custom claims require admin SDK, so this will be handled by security rules
       // The client can't set custom claims directly, but we can store them in user document
-      await updateDoc(doc(db, 'users', user.id), {
+      await firestore().collection('users').doc(user.id).update({
         customClaims: defaultClaims,
         notificationSettings: {
           pushEnabled: true,
@@ -233,10 +223,10 @@ class FirebaseAuthService {
 
   private async getUserData(userId: string): Promise<User> {
     try {
-      const userRef = doc(db, 'users', userId);
-      const userSnap = await getDoc(userRef);
+      const userRef = firestore().collection('users').doc(userId);
+      const userSnap = await userRef.get();
 
-      if (userSnap.exists()) {
+      if (userSnap.exists) {
         return userSnap.data() as User;
       } else {
         throw new Error('User document not found');
@@ -297,11 +287,10 @@ class FirebaseAuthService {
 
   // Listen to auth state changes
   onAuthStateChanged(callback: (user: User | null) => void): () => void {
-    return onAuthStateChanged(auth, async (firebaseUser) => {
+    return auth().onAuthStateChanged((firebaseUser) => {
       if (firebaseUser) {
         try {
-          const user = await this.getUserData(firebaseUser.uid);
-          callback(user);
+          this.getUserData(firebaseUser.uid).then(user => callback(user));
         } catch (error) {
           console.error('Error getting user data in auth state change:', error);
           callback(null);
@@ -310,6 +299,117 @@ class FirebaseAuthService {
         callback(null);
       }
     });
+  }
+
+  // Check current user's custom claims and permissions
+  async checkUserPermissions(): Promise<{ 
+    uid: string; 
+    customClaims: any; 
+    token: string; 
+    permissions: string[] 
+  } | null> {
+    try {
+      const firebaseUser = auth().currentUser;
+      if (!firebaseUser) {
+        console.log('No authenticated user');
+        return null;
+      }
+
+      const token = await firebaseUser.getIdTokenResult();
+      const customClaims = token.claims || {};
+      
+      console.log('User permissions check:', {
+        uid: firebaseUser.uid,
+        customClaims,
+        token: token.token.substring(0, 20) + '...',
+        permissions: Object.keys(customClaims)
+      });
+
+      return {
+        uid: firebaseUser.uid,
+        customClaims,
+        token: token.token,
+        permissions: Object.keys(customClaims)
+      };
+    } catch (error) {
+      console.error('Error checking user permissions:', error);
+      return null;
+    }
+  }
+
+  // Force refresh user token to get updated custom claims
+  async refreshUserToken(): Promise<string | null> {
+    try {
+      const firebaseUser = auth().currentUser;
+      if (!firebaseUser) {
+        return null;
+      }
+
+      // Force refresh the token
+      const newToken = await firebaseUser.getIdToken(true);
+      console.log('User token refreshed successfully');
+      return newToken;
+    } catch (error) {
+      console.error('Error refreshing user token:', error);
+      return null;
+    }
+  }
+
+  private async ensureUserDocumentExists(userId: string, userData: User): Promise<void> {
+    try {
+      const userRef = firestore().collection('users').doc(userId);
+      const userSnap = await userRef.get();
+
+      if (!userSnap.exists) {
+        console.log(`User document not found for ${userId}, creating...`);
+        
+        // Create user document with proper structure
+        const newUserData = {
+          ...userData,
+          role: userData.role || 'customer',
+          isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          notificationSettings: {
+            pushEnabled: true,
+            emailEnabled: true,
+            smsEnabled: false,
+            soundEnabled: true,
+            badgeEnabled: true,
+          },
+        };
+        
+        await userRef.set(newUserData);
+        console.log(`User document created for ${userId} with role: ${newUserData.role}`);
+      } else {
+        console.log(`User document already exists for ${userId}`);
+        
+        // Check if user document has proper structure
+        const existingData = userSnap.data();
+        if (!existingData.role || !existingData.notificationSettings) {
+          console.log(`Updating user document structure for ${userId}...`);
+          
+          const updatedData = {
+            ...existingData,
+            role: existingData.role || 'customer',
+            notificationSettings: existingData.notificationSettings || {
+              pushEnabled: true,
+              emailEnabled: true,
+              smsEnabled: false,
+              soundEnabled: true,
+              badgeEnabled: true,
+            },
+            updatedAt: new Date(),
+          };
+          
+          await userRef.update(updatedData);
+          console.log(`User document updated for ${userId}`);
+        }
+      }
+    } catch (error) {
+      console.error(`Error ensuring user document exists for ${userId}:`, error);
+      // Don't throw the error to prevent login failure
+    }
   }
 }
 

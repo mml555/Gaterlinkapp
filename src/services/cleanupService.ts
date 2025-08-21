@@ -1,4 +1,5 @@
 import { firebaseService } from './firebaseService';
+import firestore from '@react-native-firebase/firestore';
 
 class CleanupService {
   private cleanupListeners: (() => void)[] = [];
@@ -19,16 +20,13 @@ class CleanupService {
 
   // Clean up expired holds automatically
   private setupExpiredHoldsListener(): void {
-    const expiredHoldsQuery = firebaseService.firestore
-      .collection('holds')
-      .where('expiresAt', '<', new Date())
-      .where('status', '==', 'active');
+    const expiredHoldsQuery = firestore().collection('holds').where('expiresAt', '<', new Date()).where('status', '==', 'active');
 
     const unsubscribe = expiredHoldsQuery.onSnapshot(async (snapshot) => {
       if (!snapshot.empty) {
         console.log(`Found ${snapshot.docs.length} expired holds to clean up`);
         
-        const batch = firebaseService.firestore.batch();
+        const batch = firestore().batch();
         
         snapshot.docs.forEach(doc => {
           batch.update(doc.ref, {
@@ -54,16 +52,13 @@ class CleanupService {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    const oldNotificationsQuery = firebaseService.firestore
-      .collection('notifications')
-      .where('createdAt', '<', thirtyDaysAgo)
-      .where('read', '==', true);
+    const oldNotificationsQuery = firestore().collection('notifications').where('createdAt', '<', thirtyDaysAgo).where('read', '==', true);
 
     const unsubscribe = oldNotificationsQuery.onSnapshot(async (snapshot) => {
       if (!snapshot.empty) {
         console.log(`Found ${snapshot.docs.length} old notifications to clean up`);
         
-        const batch = firebaseService.firestore.batch();
+        const batch = firestore().batch();
         
         snapshot.docs.forEach(doc => {
           batch.delete(doc.ref);
@@ -111,14 +106,10 @@ class CleanupService {
     const ninetyDaysAgo = new Date();
     ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
 
-    const oldEmergencies = await firebaseService.firestore
-      .collection('emergencies')
-      .where('createdAt', '<', ninetyDaysAgo)
-      .where('status', '==', 'resolved')
-      .get();
+    const oldEmergencies = await firestore().collection('emergencies').where('createdAt', '<', ninetyDaysAgo).where('status', '==', 'resolved').get();
 
     if (!oldEmergencies.empty) {
-      const batch = firebaseService.firestore.batch();
+      const batch = firestore().batch();
       
       oldEmergencies.docs.forEach(doc => {
         batch.delete(doc.ref);
@@ -134,13 +125,10 @@ class CleanupService {
     const sixtyDaysAgo = new Date();
     sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
 
-    const oldAccessLogs = await firebaseService.firestore
-      .collection('accessLogs')
-      .where('timestamp', '<', sixtyDaysAgo)
-      .get();
+    const oldAccessLogs = await firestore().collection('accessLogs').where('timestamp', '<', sixtyDaysAgo).get();
 
     if (!oldAccessLogs.empty) {
-      const batch = firebaseService.firestore.batch();
+      const batch = firestore().batch();
       
       oldAccessLogs.docs.forEach(doc => {
         batch.delete(doc.ref);
@@ -156,13 +144,10 @@ class CleanupService {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-    const oldMessages = await firebaseService.firestore
-      .collectionGroup('messages')
-      .where('createdAt', '<', thirtyDaysAgo)
-      .get();
+    const oldMessages = await firestore().collection('messages').where('createdAt', '<', thirtyDaysAgo).get();
 
     if (!oldMessages.empty) {
-      const batch = firebaseService.firestore.batch();
+      const batch = firestore().batch();
       
       oldMessages.docs.forEach(doc => {
         batch.delete(doc.ref);
@@ -176,14 +161,10 @@ class CleanupService {
   // Manual cleanup methods for immediate execution
   async cleanupExpiredHolds(): Promise<number> {
     try {
-      const expiredHolds = await firebaseService.firestore
-        .collection('holds')
-        .where('expiresAt', '<', new Date())
-        .where('status', '==', 'active')
-        .get();
+      const expiredHolds = await firestore().collection('holds').where('expiresAt', '<', new Date()).where('status', '==', 'active').get();
 
       if (!expiredHolds.empty) {
-        const batch = firebaseService.firestore.batch();
+        const batch = firestore().batch();
         
         expiredHolds.docs.forEach(doc => {
           batch.update(doc.ref, {
@@ -208,14 +189,10 @@ class CleanupService {
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-      const oldNotifications = await firebaseService.firestore
-        .collection('notifications')
-        .where('createdAt', '<', thirtyDaysAgo)
-        .where('read', '==', true)
-        .get();
+      const oldNotifications = await firestore().collection('notifications').where('createdAt', '<', thirtyDaysAgo).where('read', '==', true).get();
 
       if (!oldNotifications.empty) {
-        const batch = firebaseService.firestore.batch();
+        const batch = firestore().batch();
         
         oldNotifications.docs.forEach(doc => {
           batch.delete(doc.ref);

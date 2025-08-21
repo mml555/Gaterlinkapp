@@ -11,7 +11,7 @@
 #endif
 
 #import "ReactCommon/RuntimeExecutor.h"
-#import "platform/ios/ReactCommon/RuntimeExecutorSyncUIThreadUtils.h"
+#import "ReactCommon/RuntimeExecutorSyncUIThreadUtils.h"
 
 FOUNDATION_EXPORT double React_runtimeexecutorVersionNumber;
 FOUNDATION_EXPORT const unsigned char React_runtimeexecutorVersionString[];

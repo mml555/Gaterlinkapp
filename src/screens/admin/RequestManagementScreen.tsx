@@ -26,6 +26,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
+import { HomeNavigationProp } from '../../types/navigation';
 import {
   fetchRequests,
   fetchPendingRequests,
@@ -35,10 +36,10 @@ import {
   setFilters,
   clearFilters,
 } from '../../store/slices/requestSlice';
-import { AccessRequest, RequestStatus, RequestFilters } from '../../types';
+import { AccessRequest, RequestStatus, RequestFilters, RequestPriority } from '../../types';
 
 const RequestManagementScreen: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<HomeNavigationProp>();
   const dispatch = useDispatch();
   const theme = useTheme();
   
@@ -62,7 +63,7 @@ const RequestManagementScreen: React.FC = () => {
   const loadRequests = async () => {
     try {
       await Promise.all([
-        dispatch(fetchRequests({ filters }) as any),
+        dispatch(fetchRequests() as any),
         dispatch(fetchPendingRequests() as any),
       ]);
     } catch (error) {
@@ -178,7 +179,7 @@ const RequestManagementScreen: React.FC = () => {
   const getStatusColor = (status: RequestStatus) => {
     switch (status) {
       case RequestStatus.PENDING:
-        return theme.colors.warning;
+        return theme.colors.tertiary;
       case RequestStatus.APPROVED:
         return theme.colors.primary;
       case RequestStatus.DENIED:
@@ -205,15 +206,15 @@ const RequestManagementScreen: React.FC = () => {
     }
   };
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityColor = (priority: RequestPriority) => {
     switch (priority) {
-      case 'urgent':
+      case RequestPriority.URGENT:
         return theme.colors.error;
-      case 'high':
-        return theme.colors.warning;
-      case 'medium':
+      case RequestPriority.HIGH:
+        return theme.colors.tertiary;
+      case RequestPriority.MEDIUM:
         return theme.colors.primary;
-      case 'low':
+      case RequestPriority.LOW:
         return theme.colors.outline;
       default:
         return theme.colors.outline;
@@ -222,8 +223,8 @@ const RequestManagementScreen: React.FC = () => {
 
   const filteredRequests = requests.filter(request => {
     const matchesSearch = searchQuery === '' || 
-      request.doorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      request.requesterName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (request.doorName?.toLowerCase().includes(searchQuery.toLowerCase()) || false) ||
+      (request.requesterName?.toLowerCase().includes(searchQuery.toLowerCase()) || false) ||
       request.reason.toLowerCase().includes(searchQuery.toLowerCase());
     
     const matchesFilter = activeFilter === 'all' || request.status === activeFilter;
@@ -345,11 +346,11 @@ const RequestManagementScreen: React.FC = () => {
                       {getStatusText(request.status)}
                     </Chip>
                     {request.priority && (
-                      <Chip
-                        mode="outlined"
-                        textStyle={{ color: getPriorityColor(request.priority) }}
-                        style={[styles.priorityChip, { borderColor: getPriorityColor(request.priority) }]}
-                      >
+                                              <Chip
+                          mode="outlined"
+                          textStyle={{ color: getPriorityColor(request.priority), fontSize: 10 }}
+                          style={{ borderColor: getPriorityColor(request.priority) }}
+                        >
                         {request.priority}
                       </Chip>
                     )}
@@ -554,7 +555,7 @@ const RequestManagementScreen: React.FC = () => {
       <FAB
         icon="plus"
         style={styles.fab}
-        onPress={() => navigation.navigate('NewRequest' as any)}
+        onPress={() => navigation.navigate('NewRequest')}
       />
     </View>
   );
@@ -640,9 +641,7 @@ const styles = StyleSheet.create({
   statusChip: {
     marginBottom: 4,
   },
-  priorityChip: {
-    fontSize: 10,
-  },
+
   reason: {
     marginBottom: 8,
   },

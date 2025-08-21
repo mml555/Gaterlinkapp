@@ -52,9 +52,17 @@ export const store = configureStore({
           'persist/FLUSH',
         ],
         // Ignore these field paths in all actions
-        ignoredActionPaths: ['payload.timestamp', 'meta.arg.timestamp'],
+        ignoredActionPaths: [
+          'payload.timestamp', 
+          'meta.arg.timestamp',
+          'payload.scanResult.scannedAt',
+        ],
         // Ignore these paths in the state
-        ignoredPaths: ['auth.user.lastLoginAt', 'doors.lastScanResult.scannedAt'],
+        ignoredPaths: [
+          'auth.user.lastLoginAt', 
+          'doors.lastScanResult.scannedAt',
+          'doors.scanHistory',
+        ],
       },
     }),
 });

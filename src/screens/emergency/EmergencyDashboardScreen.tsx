@@ -41,7 +41,7 @@ type EmergencyDashboardScreenNavigationProp = StackNavigationProp<RootStackParam
 const EmergencyDashboardScreen: React.FC = () => {
   const navigation = useNavigation<EmergencyDashboardScreenNavigationProp>();
   const dispatch = useDispatch();
-  const { activeEmergencies, isLoading, error } = useSelector((state: RootState) => state.emergency);
+  const { activeEmergencies, isLoading, error } = useSelector((state: RootState) => state.emergencies);
   const { sites } = useSelector((state: RootState) => state.sites);
   const { user } = useSelector((state: RootState) => state.auth);
 
@@ -106,7 +106,7 @@ const EmergencyDashboardScreen: React.FC = () => {
           text: 'Resolve',
           onPress: async () => {
             try {
-              await dispatch(resolveEmergency({ emergencyId, resolutionNotes: 'Resolved by user' }) as any);
+              await dispatch(resolveEmergency(emergencyId) as any);
               Alert.alert('Success', 'Emergency resolved successfully');
             } catch (error) {
               Alert.alert('Error', 'Failed to resolve emergency');
@@ -121,11 +121,10 @@ const EmergencyDashboardScreen: React.FC = () => {
     try {
       await dispatch(acknowledgeEmergency({ 
         emergencyId, 
-        userId: user?.uid || '', 
-        acknowledgment: { 
-          acknowledged: true, 
-          timestamp: new Date(),
-          notes: 'Acknowledged by user'
+        acknowledgment:         {
+          userId: user?.id || '',
+          acknowledgedAt: new Date(),
+          deviceInfo: 'Mobile App'
         }
       }) as any);
       Alert.alert('Success', 'Emergency acknowledged');
@@ -261,19 +260,19 @@ const EmergencyDashboardScreen: React.FC = () => {
           </View>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>
-              {activeEmergencies.filter(e => e.severity === EmergencySeverity.CRITICAL).length}
+              {activeEmergencies.filter((e: EmergencyEvent) => e.severity === EmergencySeverity.CRITICAL).length}
             </Text>
             <Text style={styles.statLabel}>Critical</Text>
           </View>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>
-              {activeEmergencies.filter(e => e.severity === EmergencySeverity.HIGH).length}
+              {activeEmergencies.filter((e: EmergencyEvent) => e.severity === EmergencySeverity.HIGH).length}
             </Text>
             <Text style={styles.statLabel}>High</Text>
           </View>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>
-              {activeEmergencies.filter(e => e.severity === EmergencySeverity.MEDIUM).length}
+              {activeEmergencies.filter((e: EmergencyEvent) => e.severity === EmergencySeverity.MEDIUM).length}
             </Text>
             <Text style={styles.statLabel}>Medium</Text>
           </View>
@@ -283,9 +282,9 @@ const EmergencyDashboardScreen: React.FC = () => {
           <View style={styles.typeStats}>
             <Text style={styles.typeStatsTitle}>By Type:</Text>
             <View style={styles.typeChips}>
-              {Object.entries(stats.byType).map(([type, count]) => (
+              {Object.entries(stats.byType).map(([type, count]: [string, unknown]) => (
                 <Chip key={type} style={styles.typeChip}>
-                  {type.replace('_', ' ')}: {count}
+                  {type.replace('_', ' ')}: {String(count)}
                 </Chip>
               ))}
             </View>
@@ -352,7 +351,7 @@ const EmergencyDashboardScreen: React.FC = () => {
         </Button>
         <Button
           mode="outlined"
-          onPress={() => navigation.navigate('EmergencyManagement', {})}
+          onPress={() => navigation.navigate('EmergencyManagement')}
           style={styles.manageButton}
           icon="cog"
         >

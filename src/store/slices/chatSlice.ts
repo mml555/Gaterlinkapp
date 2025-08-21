@@ -139,6 +139,7 @@ const chatSlice = createSlice({
         state.chats = action.payload.map(conversation => ({
           id: conversation.id,
           requestId: conversation.id, // Use conversation id as requestId for now
+          siteId: '', // Default siteId since Conversation doesn't have it
           participants: conversation.participants,
           lastMessage: conversation.lastMessage ? {
             id: conversation.lastMessage.id,

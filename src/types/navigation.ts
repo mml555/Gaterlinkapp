@@ -32,6 +32,10 @@ export type HomeStackParamList = {
   EquipmentDetails: { equipmentId: string };
   EmergencyDashboard: undefined;
   HoldManagement: undefined;
+  Chat: { chatId: string; requestId?: string };
+  SiteManagement: undefined;
+  EmergencyManagement: undefined;
+  NewRequest: undefined;
 };
 
 // Chat Stack

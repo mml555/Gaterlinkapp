@@ -1,15 +1,10 @@
 module.exports = {
-  presets: ['module:@react-native/babel-preset'],
+  presets: [
+    ['@babel/preset-env', { targets: { node: 'current' } }],
+    '@babel/preset-typescript',
+    ['@babel/preset-react', { runtime: 'automatic' }],
+  ],
   plugins: [
-    ['module:react-native-dotenv', {
-      moduleName: '@env',
-      path: '.env',
-    }],
-    [
-      'react-native-reanimated/plugin',
-      {
-        relativeSourceLocation: true,
-      },
-    ],
+    ['@babel/plugin-transform-runtime', { regenerator: true }],
   ],
 };

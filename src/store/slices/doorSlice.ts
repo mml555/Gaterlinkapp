@@ -129,7 +129,7 @@ export const scanQRCode = createAsyncThunk(
       const scanResult: QRCodeScanResult = {
         id: Date.now().toString(),
         qrCode,
-        scannedAt: new Date(),
+        scannedAt: new Date().toISOString(), // Convert to ISO string for serialization
         success: false,
       };
 
@@ -174,7 +174,7 @@ export const scanQRCode = createAsyncThunk(
       const scanResult: QRCodeScanResult = {
         id: Date.now().toString(),
         qrCode,
-        scannedAt: new Date(),
+        scannedAt: new Date().toISOString(), // Convert to ISO string for serialization
         success: false,
         error: error.message,
       };

@@ -189,7 +189,7 @@ class WebSocketService {
     this.callbacks = { ...this.callbacks, ...callbacks };
   }
 
-  unsubscribeFromUpdates(): void {
+  clearAllSubscriptions(): void {
     this.callbacks = {};
   }
 

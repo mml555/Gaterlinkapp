@@ -9,6 +9,7 @@
  */
 
 #include <react/renderer/components/rnscreens/Props.h>
+#include <folly/dynamic.h>
 #include <react/renderer/components/image/conversions.h>
 #include <react/renderer/core/PropsParserContext.h>
 #include <react/renderer/core/propsConversions.h>
@@ -21,23 +22,20 @@ RNSBottomTabsProps::RNSBottomTabsProps(
     const RawProps &rawProps): ViewProps(context, sourceProps, rawProps),
 
     tabBarBackgroundColor(convertRawProp(context, rawProps, "tabBarBackgroundColor", sourceProps.tabBarBackgroundColor, {})),
-    tabBarBlurEffect(convertRawProp(context, rawProps, "tabBarBlurEffect", sourceProps.tabBarBlurEffect, {RNSBottomTabsTabBarBlurEffect::SystemDefault})),
-    tabBarTintColor(convertRawProp(context, rawProps, "tabBarTintColor", sourceProps.tabBarTintColor, {})),
     tabBarItemTitleFontFamily(convertRawProp(context, rawProps, "tabBarItemTitleFontFamily", sourceProps.tabBarItemTitleFontFamily, {})),
     tabBarItemTitleFontSize(convertRawProp(context, rawProps, "tabBarItemTitleFontSize", sourceProps.tabBarItemTitleFontSize, {0.0})),
+    tabBarItemTitleFontSizeActive(convertRawProp(context, rawProps, "tabBarItemTitleFontSizeActive", sourceProps.tabBarItemTitleFontSizeActive, {0.0})),
     tabBarItemTitleFontWeight(convertRawProp(context, rawProps, "tabBarItemTitleFontWeight", sourceProps.tabBarItemTitleFontWeight, {})),
     tabBarItemTitleFontStyle(convertRawProp(context, rawProps, "tabBarItemTitleFontStyle", sourceProps.tabBarItemTitleFontStyle, {})),
     tabBarItemTitleFontColor(convertRawProp(context, rawProps, "tabBarItemTitleFontColor", sourceProps.tabBarItemTitleFontColor, {})),
-    tabBarItemTitlePositionAdjustment(convertRawProp(context, rawProps, "tabBarItemTitlePositionAdjustment", sourceProps.tabBarItemTitlePositionAdjustment, {})),
-    tabBarItemIconColor(convertRawProp(context, rawProps, "tabBarItemIconColor", sourceProps.tabBarItemIconColor, {})),
-    tabBarItemBadgeBackgroundColor(convertRawProp(context, rawProps, "tabBarItemBadgeBackgroundColor", sourceProps.tabBarItemBadgeBackgroundColor, {})),
     tabBarItemTitleFontColorActive(convertRawProp(context, rawProps, "tabBarItemTitleFontColorActive", sourceProps.tabBarItemTitleFontColorActive, {})),
+    tabBarItemIconColor(convertRawProp(context, rawProps, "tabBarItemIconColor", sourceProps.tabBarItemIconColor, {})),
     tabBarItemIconColorActive(convertRawProp(context, rawProps, "tabBarItemIconColorActive", sourceProps.tabBarItemIconColorActive, {})),
-    tabBarItemTitleFontSizeActive(convertRawProp(context, rawProps, "tabBarItemTitleFontSizeActive", sourceProps.tabBarItemTitleFontSizeActive, {0.0})),
     tabBarItemActiveIndicatorColor(convertRawProp(context, rawProps, "tabBarItemActiveIndicatorColor", sourceProps.tabBarItemActiveIndicatorColor, {})),
     tabBarItemActiveIndicatorEnabled(convertRawProp(context, rawProps, "tabBarItemActiveIndicatorEnabled", sourceProps.tabBarItemActiveIndicatorEnabled, {true})),
     tabBarItemRippleColor(convertRawProp(context, rawProps, "tabBarItemRippleColor", sourceProps.tabBarItemRippleColor, {})),
     tabBarItemLabelVisibilityMode(convertRawProp(context, rawProps, "tabBarItemLabelVisibilityMode", sourceProps.tabBarItemLabelVisibilityMode, {RNSBottomTabsTabBarItemLabelVisibilityMode::Auto})),
+    tabBarTintColor(convertRawProp(context, rawProps, "tabBarTintColor", sourceProps.tabBarTintColor, {})),
     tabBarMinimizeBehavior(convertRawProp(context, rawProps, "tabBarMinimizeBehavior", sourceProps.tabBarMinimizeBehavior, {RNSBottomTabsTabBarMinimizeBehavior::Automatic})),
     controlNavigationStateInJS(convertRawProp(context, rawProps, "controlNavigationStateInJS", sourceProps.controlNavigationStateInJS, {false})) {}
     
@@ -61,20 +59,16 @@ folly::dynamic RNSBottomTabsProps::getDiffProps(
     result["tabBarBackgroundColor"] = *tabBarBackgroundColor;
   }
     
-  if (tabBarBlurEffect != oldProps->tabBarBlurEffect) {
-    result["tabBarBlurEffect"] = toDynamic(tabBarBlurEffect);
-  }
-    
-  if (tabBarTintColor != oldProps->tabBarTintColor) {
-    result["tabBarTintColor"] = *tabBarTintColor;
-  }
-    
   if (tabBarItemTitleFontFamily != oldProps->tabBarItemTitleFontFamily) {
     result["tabBarItemTitleFontFamily"] = tabBarItemTitleFontFamily;
   }
     
   if ((tabBarItemTitleFontSize != oldProps->tabBarItemTitleFontSize) && !(std::isnan(tabBarItemTitleFontSize) && std::isnan(oldProps->tabBarItemTitleFontSize))) {
     result["tabBarItemTitleFontSize"] = tabBarItemTitleFontSize;
+  }
+    
+  if ((tabBarItemTitleFontSizeActive != oldProps->tabBarItemTitleFontSizeActive) && !(std::isnan(tabBarItemTitleFontSizeActive) && std::isnan(oldProps->tabBarItemTitleFontSizeActive))) {
+    result["tabBarItemTitleFontSizeActive"] = tabBarItemTitleFontSizeActive;
   }
     
   if (tabBarItemTitleFontWeight != oldProps->tabBarItemTitleFontWeight) {
@@ -89,28 +83,16 @@ folly::dynamic RNSBottomTabsProps::getDiffProps(
     result["tabBarItemTitleFontColor"] = *tabBarItemTitleFontColor;
   }
     
-  if (tabBarItemTitlePositionAdjustment != oldProps->tabBarItemTitlePositionAdjustment) {
-    result["tabBarItemTitlePositionAdjustment"] = toDynamic(tabBarItemTitlePositionAdjustment);
+  if (tabBarItemTitleFontColorActive != oldProps->tabBarItemTitleFontColorActive) {
+    result["tabBarItemTitleFontColorActive"] = *tabBarItemTitleFontColorActive;
   }
     
   if (tabBarItemIconColor != oldProps->tabBarItemIconColor) {
     result["tabBarItemIconColor"] = *tabBarItemIconColor;
   }
     
-  if (tabBarItemBadgeBackgroundColor != oldProps->tabBarItemBadgeBackgroundColor) {
-    result["tabBarItemBadgeBackgroundColor"] = *tabBarItemBadgeBackgroundColor;
-  }
-    
-  if (tabBarItemTitleFontColorActive != oldProps->tabBarItemTitleFontColorActive) {
-    result["tabBarItemTitleFontColorActive"] = *tabBarItemTitleFontColorActive;
-  }
-    
   if (tabBarItemIconColorActive != oldProps->tabBarItemIconColorActive) {
     result["tabBarItemIconColorActive"] = *tabBarItemIconColorActive;
-  }
-    
-  if ((tabBarItemTitleFontSizeActive != oldProps->tabBarItemTitleFontSizeActive) && !(std::isnan(tabBarItemTitleFontSizeActive) && std::isnan(oldProps->tabBarItemTitleFontSizeActive))) {
-    result["tabBarItemTitleFontSizeActive"] = tabBarItemTitleFontSizeActive;
   }
     
   if (tabBarItemActiveIndicatorColor != oldProps->tabBarItemActiveIndicatorColor) {
@@ -127,6 +109,10 @@ folly::dynamic RNSBottomTabsProps::getDiffProps(
     
   if (tabBarItemLabelVisibilityMode != oldProps->tabBarItemLabelVisibilityMode) {
     result["tabBarItemLabelVisibilityMode"] = toDynamic(tabBarItemLabelVisibilityMode);
+  }
+    
+  if (tabBarTintColor != oldProps->tabBarTintColor) {
+    result["tabBarTintColor"] = *tabBarTintColor;
   }
     
   if (tabBarMinimizeBehavior != oldProps->tabBarMinimizeBehavior) {
@@ -146,25 +132,21 @@ RNSBottomTabsScreenProps::RNSBottomTabsScreenProps(
 
     isFocused(convertRawProp(context, rawProps, "isFocused", sourceProps.isFocused, {false})),
     tabKey(convertRawProp(context, rawProps, "tabKey", sourceProps.tabKey, {})),
-    tabBarBackgroundColor(convertRawProp(context, rawProps, "tabBarBackgroundColor", sourceProps.tabBarBackgroundColor, {})),
-    tabBarBlurEffect(convertRawProp(context, rawProps, "tabBarBlurEffect", sourceProps.tabBarBlurEffect, {RNSBottomTabsScreenTabBarBlurEffect::SystemDefault})),
-    tabBarItemTitleFontFamily(convertRawProp(context, rawProps, "tabBarItemTitleFontFamily", sourceProps.tabBarItemTitleFontFamily, {})),
-    tabBarItemTitleFontSize(convertRawProp(context, rawProps, "tabBarItemTitleFontSize", sourceProps.tabBarItemTitleFontSize, {0.0})),
-    tabBarItemTitleFontWeight(convertRawProp(context, rawProps, "tabBarItemTitleFontWeight", sourceProps.tabBarItemTitleFontWeight, {})),
-    tabBarItemTitleFontStyle(convertRawProp(context, rawProps, "tabBarItemTitleFontStyle", sourceProps.tabBarItemTitleFontStyle, {})),
-    tabBarItemTitleFontColor(convertRawProp(context, rawProps, "tabBarItemTitleFontColor", sourceProps.tabBarItemTitleFontColor, {})),
-    tabBarItemTitlePositionAdjustment(convertRawProp(context, rawProps, "tabBarItemTitlePositionAdjustment", sourceProps.tabBarItemTitlePositionAdjustment, {})),
-    tabBarItemIconColor(convertRawProp(context, rawProps, "tabBarItemIconColor", sourceProps.tabBarItemIconColor, {})),
-    tabBarItemBadgeBackgroundColor(convertRawProp(context, rawProps, "tabBarItemBadgeBackgroundColor", sourceProps.tabBarItemBadgeBackgroundColor, {})),
     title(convertRawProp(context, rawProps, "title", sourceProps.title, {})),
+    badgeValue(convertRawProp(context, rawProps, "badgeValue", sourceProps.badgeValue, {})),
+    orientation(convertRawProp(context, rawProps, "orientation", sourceProps.orientation, {RNSBottomTabsScreenOrientation::Inherit})),
     iconResourceName(convertRawProp(context, rawProps, "iconResourceName", sourceProps.iconResourceName, {})),
+    iconResource(convertRawProp(context, rawProps, "iconResource", sourceProps.iconResource, {})),
     tabBarItemBadgeTextColor(convertRawProp(context, rawProps, "tabBarItemBadgeTextColor", sourceProps.tabBarItemBadgeTextColor, {})),
+    tabBarItemBadgeBackgroundColor(convertRawProp(context, rawProps, "tabBarItemBadgeBackgroundColor", sourceProps.tabBarItemBadgeBackgroundColor, {})),
+    standardAppearance(convertRawProp(context, rawProps, "standardAppearance", sourceProps.standardAppearance, {})),
+    scrollEdgeAppearance(convertRawProp(context, rawProps, "scrollEdgeAppearance", sourceProps.scrollEdgeAppearance, {})),
     iconType(convertRawProp(context, rawProps, "iconType", sourceProps.iconType, {RNSBottomTabsScreenIconType::SfSymbol})),
     iconImageSource(convertRawProp(context, rawProps, "iconImageSource", sourceProps.iconImageSource, {})),
     iconSfSymbolName(convertRawProp(context, rawProps, "iconSfSymbolName", sourceProps.iconSfSymbolName, {})),
     selectedIconImageSource(convertRawProp(context, rawProps, "selectedIconImageSource", sourceProps.selectedIconImageSource, {})),
     selectedIconSfSymbolName(convertRawProp(context, rawProps, "selectedIconSfSymbolName", sourceProps.selectedIconSfSymbolName, {})),
-    badgeValue(convertRawProp(context, rawProps, "badgeValue", sourceProps.badgeValue, {})),
+    systemItem(convertRawProp(context, rawProps, "systemItem", sourceProps.systemItem, {RNSBottomTabsScreenSystemItem::None})),
     specialEffects(convertRawProp(context, rawProps, "specialEffects", sourceProps.specialEffects, {})),
     overrideScrollViewContentInsetAdjustmentBehavior(convertRawProp(context, rawProps, "overrideScrollViewContentInsetAdjustmentBehavior", sourceProps.overrideScrollViewContentInsetAdjustmentBehavior, {true})) {}
     
@@ -192,56 +174,40 @@ folly::dynamic RNSBottomTabsScreenProps::getDiffProps(
     result["tabKey"] = tabKey;
   }
     
-  if (tabBarBackgroundColor != oldProps->tabBarBackgroundColor) {
-    result["tabBarBackgroundColor"] = *tabBarBackgroundColor;
-  }
-    
-  if (tabBarBlurEffect != oldProps->tabBarBlurEffect) {
-    result["tabBarBlurEffect"] = toDynamic(tabBarBlurEffect);
-  }
-    
-  if (tabBarItemTitleFontFamily != oldProps->tabBarItemTitleFontFamily) {
-    result["tabBarItemTitleFontFamily"] = tabBarItemTitleFontFamily;
-  }
-    
-  if ((tabBarItemTitleFontSize != oldProps->tabBarItemTitleFontSize) && !(std::isnan(tabBarItemTitleFontSize) && std::isnan(oldProps->tabBarItemTitleFontSize))) {
-    result["tabBarItemTitleFontSize"] = tabBarItemTitleFontSize;
-  }
-    
-  if (tabBarItemTitleFontWeight != oldProps->tabBarItemTitleFontWeight) {
-    result["tabBarItemTitleFontWeight"] = tabBarItemTitleFontWeight;
-  }
-    
-  if (tabBarItemTitleFontStyle != oldProps->tabBarItemTitleFontStyle) {
-    result["tabBarItemTitleFontStyle"] = tabBarItemTitleFontStyle;
-  }
-    
-  if (tabBarItemTitleFontColor != oldProps->tabBarItemTitleFontColor) {
-    result["tabBarItemTitleFontColor"] = *tabBarItemTitleFontColor;
-  }
-    
-  if (tabBarItemTitlePositionAdjustment != oldProps->tabBarItemTitlePositionAdjustment) {
-    result["tabBarItemTitlePositionAdjustment"] = toDynamic(tabBarItemTitlePositionAdjustment);
-  }
-    
-  if (tabBarItemIconColor != oldProps->tabBarItemIconColor) {
-    result["tabBarItemIconColor"] = *tabBarItemIconColor;
-  }
-    
-  if (tabBarItemBadgeBackgroundColor != oldProps->tabBarItemBadgeBackgroundColor) {
-    result["tabBarItemBadgeBackgroundColor"] = *tabBarItemBadgeBackgroundColor;
-  }
-    
   if (title != oldProps->title) {
     result["title"] = title;
+  }
+    
+  if (badgeValue != oldProps->badgeValue) {
+    result["badgeValue"] = badgeValue;
+  }
+    
+  if (orientation != oldProps->orientation) {
+    result["orientation"] = toDynamic(orientation);
   }
     
   if (iconResourceName != oldProps->iconResourceName) {
     result["iconResourceName"] = iconResourceName;
   }
     
+  if (iconResource != oldProps->iconResource) {
+    result["iconResource"] = toDynamic(iconResource);
+  }
+    
   if (tabBarItemBadgeTextColor != oldProps->tabBarItemBadgeTextColor) {
     result["tabBarItemBadgeTextColor"] = *tabBarItemBadgeTextColor;
+  }
+    
+  if (tabBarItemBadgeBackgroundColor != oldProps->tabBarItemBadgeBackgroundColor) {
+    result["tabBarItemBadgeBackgroundColor"] = *tabBarItemBadgeBackgroundColor;
+  }
+    
+  if (standardAppearance != oldProps->standardAppearance) {
+    result["standardAppearance"] = standardAppearance;
+  }
+    
+  if (scrollEdgeAppearance != oldProps->scrollEdgeAppearance) {
+    result["scrollEdgeAppearance"] = scrollEdgeAppearance;
   }
     
   if (iconType != oldProps->iconType) {
@@ -264,8 +230,8 @@ folly::dynamic RNSBottomTabsScreenProps::getDiffProps(
     result["selectedIconSfSymbolName"] = selectedIconSfSymbolName;
   }
     
-  if (badgeValue != oldProps->badgeValue) {
-    result["badgeValue"] = badgeValue;
+  if (systemItem != oldProps->systemItem) {
+    result["systemItem"] = toDynamic(systemItem);
   }
     
   if (specialEffects != oldProps->specialEffects) {
@@ -344,6 +310,7 @@ RNSSplitViewHostProps::RNSSplitViewHostProps(
     showSecondaryToggleButton(convertRawProp(context, rawProps, "showSecondaryToggleButton", sourceProps.showSecondaryToggleButton, {false})),
     displayModeButtonVisibility(convertRawProp(context, rawProps, "displayModeButtonVisibility", sourceProps.displayModeButtonVisibility, {RNSSplitViewHostDisplayModeButtonVisibility::Automatic})),
     columnMetrics(convertRawProp(context, rawProps, "columnMetrics", sourceProps.columnMetrics, {})),
+    orientation(convertRawProp(context, rawProps, "orientation", sourceProps.orientation, {RNSSplitViewHostOrientation::Inherit})),
     presentsWithGesture(convertRawProp(context, rawProps, "presentsWithGesture", sourceProps.presentsWithGesture, {true})),
     showInspector(convertRawProp(context, rawProps, "showInspector", sourceProps.showInspector, {false})) {}
     
@@ -385,6 +352,10 @@ folly::dynamic RNSSplitViewHostProps::getDiffProps(
     
   if (columnMetrics != oldProps->columnMetrics) {
     result["columnMetrics"] = toDynamic(columnMetrics);
+  }
+    
+  if (orientation != oldProps->orientation) {
+    result["orientation"] = toDynamic(orientation);
   }
     
   if (presentsWithGesture != oldProps->presentsWithGesture) {

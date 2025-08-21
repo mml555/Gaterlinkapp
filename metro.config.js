@@ -16,13 +16,13 @@ const config = {
   transformer: {
     // Enable the new transformer for better performance
     unstable_allowRequireContext: true,
+    // Disable Hermes to avoid sandbox issues
+    hermesParser: false,
   },
   // Reduce verbose output and Unicode characters
   reporter: {
     update: () => {},
   },
-  // Enable the new architecture features when available
-  // experimentalNativeHermes: true, // Removed due to validation warning
 };
 
 module.exports = mergeConfig(getDefaultConfig(__dirname), config);

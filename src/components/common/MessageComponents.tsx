@@ -212,7 +212,7 @@ export const ImageMessage: React.FC<ImageMessageProps> = ({ uri, metadata, onPre
           source={{ uri }}
           style={[
             styles.messageImage,
-            loading && styles.hiddenImage
+            loading ? styles.hiddenImage : null
           ]}
           resizeMode="cover"
           onLoad={handleImageLoad}
@@ -472,7 +472,7 @@ export const VoiceMessage: React.FC<VoiceMessageProps> = ({
 const styles = StyleSheet.create({
   statusIcon: {
     fontSize: 12,
-    fontWeight: themeConstants.typography.fontWeight.bold,
+    fontWeight: '700' as const,
   },
   messageTime: {
     fontSize: themeConstants.typography.fontSize.xs,
@@ -531,7 +531,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   fileName: {
-    fontWeight: themeConstants.typography.fontWeight.medium,
+    fontWeight: '500' as const,
   },
   fileSize: {
     marginTop: 2,
@@ -566,7 +566,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   locationTitle: {
-    fontWeight: themeConstants.typography.fontWeight.medium,
+    fontWeight: '500' as const,
   },
   locationCoords: {
     marginTop: 2,

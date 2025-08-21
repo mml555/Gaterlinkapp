@@ -14,24 +14,7 @@ import {
 import { lightTheme } from '../src/utils/theme';
 import { ChatMessage, MessageType } from '../src/types';
 
-// Mock date-fns
-jest.mock('date-fns', () => ({
-  format: jest.fn(() => '14:30'),
-  isToday: jest.fn(() => true),
-  isYesterday: jest.fn(() => false),
-}));
-
-// Mock Linking
-jest.mock('react-native', () => ({
-  ...jest.requireActual('react-native'),
-  Linking: {
-    canOpenURL: jest.fn(() => Promise.resolve(true)),
-    openURL: jest.fn(() => Promise.resolve()),
-  },
-  Alert: {
-    alert: jest.fn(),
-  },
-}));
+// Note: React Native and date-fns are mocked globally in jest.setup.js
 
 const renderWithProvider = (component: React.ReactElement) => {
   return render(

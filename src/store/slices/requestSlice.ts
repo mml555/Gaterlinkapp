@@ -5,6 +5,8 @@ import {
   RequestForm, 
   RequestFilters,
   RequestStatus,
+  RequestPriority,
+  RequestCategory,
   Document,
   DocumentStatus,
   UserRole
@@ -17,9 +19,9 @@ import { requestService } from '../../services/requestService';
 
 export const fetchRequests = createAsyncThunk(
   'requests/fetchRequests',
-  async ({ filters }: { filters?: RequestFilters } = {}, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const requests = await requestService.getRequests(filters as any);
+      const requests = await requestService.getRequests();
       return requests;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to fetch requests');
@@ -29,9 +31,9 @@ export const fetchRequests = createAsyncThunk(
 
 export const fetchUserRequests = createAsyncThunk(
   'requests/fetchUserRequests',
-  async (_, { rejectWithValue }) => {
+  async (userId: string, { rejectWithValue }) => {
     try {
-      const requests = await requestService.getUserRequests();
+      const requests = await requestService.getRequestsByUser(userId);
       return requests;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to fetch user requests');
@@ -94,22 +96,15 @@ export const approveRequest = createAsyncThunk(
       const state = getState() as any;
       const adminUser = state.auth.user;
       
-      const request = await requestService.approveRequest(requestId, {
-        approvedBy: adminUser.id,
-        approvedAt: new Date(),
-        adminNotes,
-        accessToken,
-        accessCode,
-        expiresAt,
-      });
+      const request = await requestService.approveRequest(requestId, adminUser.id, adminNotes);
 
-      // Send notification to the requester
-      await requestService.sendNotification(request.userId, 'ACCESS_GRANTED', {
-        requestId,
-        doorName: request.doorName,
-        accessCode,
-        expiresAt,
-      });
+      // TODO: Implement notification service
+      // await notificationService.sendNotification(request.userId, 'ACCESS_GRANTED', {
+      //   requestId,
+      //   doorName: request.doorName,
+      //   accessCode,
+      //   expiresAt,
+      // });
 
       return request;
     } catch (error: any) {
@@ -131,18 +126,14 @@ export const denyRequest = createAsyncThunk(
       const state = getState() as any;
       const adminUser = state.auth.user;
       
-      const request = await requestService.denyRequest(requestId, {
-        deniedBy: adminUser.id,
-        deniedAt: new Date(),
-        denialReason: reason,
-      });
+      const request = await requestService.denyRequest(requestId, adminUser.id, reason);
 
-      // Send notification to the requester
-      await requestService.sendNotification(request.userId, 'ACCESS_DENIED', {
-        requestId,
-        doorName: request.doorName,
-        reason,
-      });
+      // TODO: Implement notification service
+      // await notificationService.sendNotification(request.userId, 'ACCESS_DENIED', {
+      //   requestId,
+      //   doorName: request.doorName,
+      //   reason,
+      // });
 
       return request;
     } catch (error: any) {
@@ -164,20 +155,15 @@ export const sendMessageToRequest = createAsyncThunk(
       const state = getState() as any;
       const user = state.auth.user;
       
-      const chatMessage = await requestService.sendMessage(requestId, {
-        senderId: user.id,
-        message,
-        timestamp: new Date(),
-      });
+      const chatMessage = await requestService.sendMessage(requestId, message, user.id);
 
-      // Send notification to the other party
-      const request = state.requests.requests.find((r: AccessRequest) => r.id === requestId);
-      const recipientId = user.role === UserRole.ADMIN ? request.userId : request.approvedBy;
-      
-      await requestService.sendNotification(recipientId, 'NEW_MESSAGE', {
-        requestId,
-        message: message.substring(0, 100) + (message.length > 100 ? '...' : ''),
-      });
+      // TODO: Implement notification service
+      // const request = state.requests.requests.find((r: AccessRequest) => r.id === requestId);
+      // const recipientId = user.role === UserRole.ADMIN ? request.userId : request.approvedBy;
+      // await notificationService.sendNotification(recipientId, 'NEW_MESSAGE', {
+      //   requestId,
+      //   message: message.substring(0, 100) + (message.length > 100 ? '...' : ''),
+      // });
 
       return { requestId, message: chatMessage };
     } catch (error: any) {
@@ -193,11 +179,7 @@ export const uploadDocument = createAsyncThunk(
     document 
   }: {
     requestId: string;
-    document: {
-      name: string;
-      type: string;
-      file: File;
-    };
+    document: Partial<Document>;
   }, { rejectWithValue }) => {
     try {
       const uploadedDocument = await requestService.uploadDocument(requestId, document);
@@ -210,15 +192,9 @@ export const uploadDocument = createAsyncThunk(
 
 export const validateDocuments = createAsyncThunk(
   'requests/validateDocuments',
-  async ({ 
-    userId, 
-    requiredDocuments 
-  }: {
-    userId: string;
-    requiredDocuments: string[];
-  }, { rejectWithValue }) => {
+  async (requestId: string, { rejectWithValue }) => {
     try {
-      const validation = await requestService.validateDocuments(userId, requiredDocuments);
+      const validation = await requestService.validateDocuments(requestId);
       return validation;
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to validate documents');
@@ -376,13 +352,13 @@ const requestSlice = createSlice({
         // Transform AccessRequest[] to include missing fields
         state.requests = action.payload.map(request => ({
           ...request,
-          status: request.status as any,
-          userId: request.requesterId,
-          priority: 'medium' as any,
-          category: 'access' as any,
-          title: `Access request for ${request.doorName}`,
+          status: request.status as RequestStatus,
+          userId: request.requesterId || '',
+          priority: RequestPriority.MEDIUM,
+          category: RequestCategory.ACCESS,
+          title: `Access request for ${request.doorName || 'Unknown Door'}`,
           description: request.reason || 'No description provided',
-        }));
+        })) as AccessRequest[];
       })
       .addCase(fetchRequests.rejected, (state, action) => {
         state.isLoading = false;
@@ -429,15 +405,15 @@ const requestSlice = createSlice({
         state.isLoading = false;
         const newRequest = action.payload;
         // Transform newRequest to include missing fields
-        const transformedRequest = {
+        const transformedRequest: AccessRequest = {
           ...newRequest,
-          status: newRequest.status as any,
-          userId: newRequest.requesterId,
-          priority: 'medium' as any,
-          category: 'access' as any,
-          title: `Access request for ${newRequest.doorName}`,
+          status: newRequest.status as RequestStatus,
+          userId: newRequest.requesterId || '',
+          priority: RequestPriority.MEDIUM,
+          category: RequestCategory.ACCESS,
+          title: `Access request for ${newRequest.doorName || 'Unknown Door'}`,
           description: newRequest.reason || 'No description provided',
-        };
+        } as AccessRequest;
         state.requests.unshift(transformedRequest);
         state.userRequests.unshift(transformedRequest);
         
@@ -462,15 +438,15 @@ const requestSlice = createSlice({
         const updatedRequest = action.payload;
         
         // Transform updatedRequest to include missing fields
-        const transformedRequest = {
+        const transformedRequest: AccessRequest = {
           ...updatedRequest,
-          status: updatedRequest.status as any,
-          userId: updatedRequest.requesterId,
-          priority: 'medium' as any,
-          category: 'access' as any,
-          title: `Access request for ${updatedRequest.doorName}`,
+          status: updatedRequest.status as RequestStatus,
+          userId: updatedRequest.requesterId || '',
+          priority: RequestPriority.MEDIUM,
+          category: RequestCategory.ACCESS,
+          title: `Access request for ${updatedRequest.doorName || 'Unknown Door'}`,
           description: updatedRequest.reason || 'No description provided',
-        };
+        } as AccessRequest;
         
         // Update in all arrays
         const requestIndex = state.requests.findIndex(req => req.id === updatedRequest.id);
@@ -516,15 +492,15 @@ const requestSlice = createSlice({
         const approvedRequest = action.payload;
         
         // Transform and update the request
-        const transformedRequest = {
+        const transformedRequest: AccessRequest = {
           ...approvedRequest,
           status: RequestStatus.APPROVED,
-          userId: approvedRequest.requesterId,
-          priority: 'medium' as any,
-          category: 'access' as any,
-          title: `Access request for ${approvedRequest.doorName}`,
+          userId: approvedRequest.requesterId || '',
+          priority: RequestPriority.MEDIUM,
+          category: RequestCategory.ACCESS,
+          title: `Access request for ${approvedRequest.doorName || 'Unknown Door'}`,
           description: approvedRequest.reason || 'No description provided',
-        };
+        } as AccessRequest;
         
         // Update in all arrays
         const requestIndex = state.requests.findIndex(req => req.id === approvedRequest.id);
@@ -564,15 +540,15 @@ const requestSlice = createSlice({
         const deniedRequest = action.payload;
         
         // Transform and update the request
-        const transformedRequest = {
+        const transformedRequest: AccessRequest = {
           ...deniedRequest,
           status: RequestStatus.DENIED,
-          userId: deniedRequest.requesterId,
-          priority: 'medium' as any,
-          category: 'access' as any,
-          title: `Access request for ${deniedRequest.doorName}`,
+          userId: deniedRequest.requesterId || '',
+          priority: RequestPriority.MEDIUM,
+          category: RequestCategory.ACCESS,
+          title: `Access request for ${deniedRequest.doorName || 'Unknown Door'}`,
           description: deniedRequest.reason || 'No description provided',
-        };
+        } as AccessRequest;
         
         // Update in all arrays
         const requestIndex = state.requests.findIndex(req => req.id === deniedRequest.id);

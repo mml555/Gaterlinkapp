@@ -14,8 +14,14 @@
     "pod-install": "cd ios && pod install && cd .."
   },
   "dependencies": {
+    "@notifee/react-native": "^9.1.8",
     "@react-native-async-storage/async-storage": "^2.2.0",
-    "@react-native-community/push-notification-ios": "^1.11.0",
+    "@react-native-firebase/analytics": "^23.1.0",
+    "@react-native-firebase/app": "^23.1.0",
+    "@react-native-firebase/auth": "^23.1.0",
+    "@react-native-firebase/firestore": "^23.1.0",
+    "@react-native-firebase/messaging": "^23.1.0",
+    "@react-native-firebase/perf": "^23.1.0",
     "@react-native-masked-view/masked-view": "^0.3.2",
     "@react-native/new-app-screen": "0.81.0",
     "@react-navigation/bottom-tabs": "^7.4.6",
@@ -24,7 +30,6 @@
     "@reduxjs/toolkit": "^2.8.2",
     "axios": "^1.11.0",
     "date-fns": "^4.1.0",
-    "firebase": "^12.1.0",
     "react": "19.1.0",
     "react-hook-form": "^7.62.0",
     "react-native": "0.81.0",
@@ -38,7 +43,6 @@
     "react-native-modal": "^14.0.0-rc.1",
     "react-native-paper": "^5.14.5",
     "react-native-permissions": "^5.4.2",
-    "react-native-push-notification": "^8.1.1",
     "react-native-reanimated": "^3.19.1",
     "react-native-safe-area-context": "^5.6.1",
     "react-native-screens": "^4.14.1",
@@ -50,8 +54,11 @@
     "socket.io-client": "^4.7.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.25.2",
-    "@babel/preset-env": "^7.25.3",
+    "@babel/core": "^7.28.3",
+    "@babel/plugin-transform-runtime": "^7.28.3",
+    "@babel/preset-env": "^7.28.3",
+    "@babel/preset-react": "^7.27.1",
+    "@babel/preset-typescript": "^7.27.1",
     "@babel/runtime": "^7.25.0",
     "@react-native-community/cli": "latest",
     "@react-native-community/cli-platform-android": "latest",
@@ -66,15 +73,20 @@
     "@types/react-native-push-notification": "^8.1.4",
     "@types/react-native-vector-icons": "^6.4.18",
     "@types/react-test-renderer": "^19.1.0",
+    "babel-jest": "^30.0.5",
     "eslint": "^8.57.1",
     "eslint-plugin-react-hooks": "^5.2.0",
     "jest": "^30.0.5",
     "prettier": "^3.6.2",
     "qrcode": "^1.5.4",
     "react-test-renderer": "19.1.0",
+    "ts-jest": "^29.4.1",
     "typescript": "^5.9.2"
   },
   "engines": {
     "node": ">=18"
+  },
+  "react-native": {
+    "hermes": false
   }
 }

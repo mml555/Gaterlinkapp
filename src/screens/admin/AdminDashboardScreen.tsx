@@ -20,6 +20,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
+import { HomeNavigationProp } from '../../types/navigation';
 import {
   fetchPendingRequests,
   fetchRequests,
@@ -33,7 +34,7 @@ import {
 import { AccessRequest, RequestStatus, UserRole } from '../../types';
 
 const AdminDashboardScreen: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<HomeNavigationProp>();
   const dispatch = useDispatch();
   const theme = useTheme();
   
@@ -59,7 +60,7 @@ const AdminDashboardScreen: React.FC = () => {
     try {
       await Promise.all([
         dispatch(fetchPendingRequests() as any),
-        dispatch(fetchRequests({}) as any),
+        dispatch(fetchRequests() as any),
         dispatch(fetchSites() as any),
         dispatch(fetchDoors() as any),
       ]);
@@ -127,7 +128,7 @@ const AdminDashboardScreen: React.FC = () => {
 
   const handleMessageRequest = (request: AccessRequest) => {
     // Navigate to chat screen
-    navigation.navigate('Chat' as any, { 
+    navigation.navigate('Chat', { 
       chatId: `request_${request.id}`,
       requestId: request.id,
     });
@@ -136,7 +137,7 @@ const AdminDashboardScreen: React.FC = () => {
   const getStatusColor = (status: RequestStatus) => {
     switch (status) {
       case RequestStatus.PENDING:
-        return theme.colors.warning;
+        return theme.colors.tertiary;
       case RequestStatus.APPROVED:
         return theme.colors.primary;
       case RequestStatus.DENIED:
@@ -168,7 +169,7 @@ const AdminDashboardScreen: React.FC = () => {
       case 'urgent':
         return theme.colors.error;
       case 'high':
-        return theme.colors.warning;
+        return theme.colors.tertiary;
       case 'medium':
         return theme.colors.primary;
       case 'low':
@@ -307,7 +308,7 @@ const AdminDashboardScreen: React.FC = () => {
             <Button
               mode="outlined"
               icon="plus"
-              onPress={() => navigation.navigate('SiteManagement' as any)}
+              onPress={() => navigation.navigate('SiteManagement')}
               style={styles.actionButton}
             >
               Add Site
@@ -315,7 +316,7 @@ const AdminDashboardScreen: React.FC = () => {
             <Button
               mode="outlined"
               icon="door"
-              onPress={() => navigation.navigate('DoorDetails' as any, { doorId: 'new' })}
+              onPress={() => navigation.navigate('DoorDetails', { doorId: 'new' })}
               style={styles.actionButton}
             >
               Add Door
@@ -323,7 +324,7 @@ const AdminDashboardScreen: React.FC = () => {
             <Button
               mode="outlined"
               icon="account-multiple"
-              onPress={() => navigation.navigate('UserManagement' as any)}
+              onPress={() => navigation.navigate('UserManagement')}
               style={styles.actionButton}
             >
               Manage Users
@@ -331,7 +332,7 @@ const AdminDashboardScreen: React.FC = () => {
             <Button
               mode="outlined"
               icon="chart-line"
-              onPress={() => navigation.navigate('Analytics' as any)}
+              onPress={() => navigation.navigate('Analytics')}
               style={styles.actionButton}
             >
               View Analytics
@@ -413,7 +414,7 @@ const AdminDashboardScreen: React.FC = () => {
               {pendingRequests.length > 5 && (
                 <Button
                   mode="text"
-                  onPress={() => navigation.navigate('RequestManagement' as any)}
+                  onPress={() => navigation.navigate('RequestManagement')}
                   style={styles.viewAllButton}
                 >
                   View All ({pendingRequests.length})
@@ -469,7 +470,7 @@ const AdminDashboardScreen: React.FC = () => {
           <Button
             mode="outlined"
             icon="alert"
-            onPress={() => navigation.navigate('EmergencyManagement' as any)}
+            onPress={() => navigation.navigate('EmergencyManagement')}
             style={styles.emergencyButton}
           >
             Manage Emergencies

@@ -1,5 +1,5 @@
-import { auth, db } from '../config/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 export interface ServiceStatus {
   firebaseConnected: boolean;
@@ -22,21 +22,23 @@ export async function checkServiceStatus(): Promise<ServiceStatus> {
 
   try {
     // Check Firebase connection
-    if (auth && db) {
+    const authInstance = auth();
+    const firestoreInstance = firestore();
+    if (authInstance && firestoreInstance) {
       status.firebaseConnected = true;
     }
 
     // Check user authentication
-    if (auth.currentUser) {
+    if (authInstance.currentUser) {
       status.userAuthenticated = true;
-      status.userId = auth.currentUser.uid;
-      status.userEmail = auth.currentUser.email || undefined;
+      status.userId = authInstance.currentUser.uid;
+      status.userEmail = authInstance.currentUser.email || undefined;
     }
 
     // Check Firestore access
-    if (auth.currentUser) {
+    if (authInstance.currentUser) {
       try {
-        const userDoc = await getDoc(doc(db, 'users', auth.currentUser.uid));
+        const userDoc = await firestoreInstance.collection('users').doc(authInstance.currentUser.uid).get();
         status.firestoreAccessible = true;
       } catch (error) {
         console.log('Firestore access check failed:', error);

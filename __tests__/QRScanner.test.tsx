@@ -2,54 +2,10 @@ import React from 'react';
 import { render } from '@testing-library/react-native';
 import QRScannerScreen from '../src/screens/main/QRScannerScreen';
 
-// Mock the camera and permissions
-jest.mock('react-native-camera-kit', () => ({
-  CameraScreen: 'CameraScreen',
-}));
+// Note: All dependencies are mocked globally in jest.setup.js
 
 const mockCheck = jest.fn();
 const mockRequest = jest.fn();
-
-jest.mock('react-native-permissions', () => ({
-  check: mockCheck,
-  request: mockRequest,
-  PERMISSIONS: {
-    IOS: { CAMERA: 'ios.permission.CAMERA' },
-    ANDROID: { CAMERA: 'android.permission.CAMERA' },
-  },
-  RESULTS: {
-    UNAVAILABLE: 'unavailable',
-    DENIED: 'denied',
-    LIMITED: 'limited',
-    GRANTED: 'granted',
-    BLOCKED: 'blocked',
-  },
-}));
-
-jest.mock('@react-navigation/native', () => ({
-  useNavigation: () => ({
-    navigate: jest.fn(),
-    goBack: jest.fn(),
-  }),
-}));
-
-jest.mock('react-redux', () => ({
-  useDispatch: () => jest.fn(),
-  useSelector: () => ({
-    isLoading: false,
-    selectedDoor: null,
-  }),
-}));
-
-jest.mock('react-native-paper', () => ({
-  Text: 'Text',
-  Button: 'Button',
-  Card: 'Card',
-  IconButton: 'IconButton',
-  Switch: 'Switch',
-}));
-
-jest.mock('../src/components/common/TestQRCodeDisplay', () => 'TestQRCodeDisplay');
 
 describe('QRScannerScreen', () => {
   beforeEach(() => {

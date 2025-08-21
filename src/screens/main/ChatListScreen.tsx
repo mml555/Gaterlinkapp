@@ -23,6 +23,7 @@ import {
   Button,
 } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
+import { HomeNavigationProp } from '../../types/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../store';
 import { fetchChats, setActiveChat } from '../../store/slices/chatSlice';
@@ -142,7 +143,7 @@ const ChatListItem: React.FC<ChatListItemProps> = ({ chat, onPress, onLongPress 
 
 const ChatListScreen: React.FC = () => {
   const theme = useTheme();
-  const navigation = useNavigation();
+  const navigation = useNavigation<HomeNavigationProp>();
   const dispatch = useDispatch();
   const { user } = useAuth();
   
@@ -214,7 +215,7 @@ const ChatListScreen: React.FC = () => {
 
   const handleChatPress = useCallback((chat: Chat) => {
     dispatch(setActiveChat(chat));
-    navigation.navigate('Chat' as never, { chatId: chat.id } as never);
+    navigation.navigate('Chat', { chatId: chat.id, requestId: chat.requestId });
   }, [dispatch, navigation]);
 
   const handleChatLongPress = useCallback((chat: Chat) => {
@@ -496,7 +497,7 @@ const styles = StyleSheet.create({
   },
   filterChipText: {
     fontSize: themeConstants.typography.fontSize.sm,
-    fontWeight: themeConstants.typography.fontWeight.medium,
+    fontWeight: '500' as const,
   },
   filterBadge: {
     minWidth: 16,
@@ -535,10 +536,10 @@ const styles = StyleSheet.create({
   },
   participantName: {
     flex: 1,
-    fontWeight: themeConstants.typography.fontWeight.medium,
+    fontWeight: '500' as const,
   },
   unreadName: {
-    fontWeight: themeConstants.typography.fontWeight.bold,
+    fontWeight: '700' as const,
   },
   timestamp: {
     fontSize: themeConstants.typography.fontSize.xs,
@@ -548,7 +549,7 @@ const styles = StyleSheet.create({
     fontSize: themeConstants.typography.fontSize.sm,
   },
   unreadMessage: {
-    fontWeight: themeConstants.typography.fontWeight.medium,
+    fontWeight: '500' as const,
   },
   chatActions: {
     justifyContent: 'center',
@@ -566,7 +567,7 @@ const styles = StyleSheet.create({
     marginTop: themeConstants.spacing.lg,
     marginBottom: themeConstants.spacing.sm,
     textAlign: 'center',
-    fontWeight: themeConstants.typography.fontWeight.bold,
+    fontWeight: '700' as const,
   },
   emptySubtitle: {
     textAlign: 'center',

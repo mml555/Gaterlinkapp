@@ -3,7 +3,7 @@
  * Redux requires all state to be serializable, so we convert Date objects to ISO strings
  */
 
-import { User, UserRole } from '../types';
+import { User, UserRole, SiteMembership } from '../types';
 
 export interface SerializableUser {
   id: string;
@@ -25,6 +25,7 @@ export interface SerializableUser {
     soundEnabled: boolean;
     badgeEnabled: boolean;
   };
+  siteMemberships: SiteMembership[];
 }
 
 /**

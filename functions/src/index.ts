@@ -7,6 +7,7 @@ admin.initializeApp();
 // Import free-tier compatible functions
 import { 
   onUserCreated, 
+  onUserUpdated,
   onEmergencyCreated, 
   onAccessRequestCreated, 
   scheduledCleanup 
@@ -15,6 +16,7 @@ import {
 // Export all free-tier compatible functions
 export {
   onUserCreated,
+  onUserUpdated,
   onEmergencyCreated,
   onAccessRequestCreated,
   scheduledCleanup,

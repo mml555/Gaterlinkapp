@@ -33,7 +33,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.markNotificationRead = exports.updateUserClaims = exports.createNotification = exports.api = exports.scheduledCleanup = exports.onAccessRequestCreated = exports.onEmergencyCreated = exports.onUserCreated = void 0;
+exports.markNotificationRead = exports.updateUserClaims = exports.createNotification = exports.api = exports.scheduledCleanup = exports.onAccessRequestCreated = exports.onEmergencyCreated = exports.onUserUpdated = exports.onUserCreated = void 0;
 const functions = __importStar(require("firebase-functions"));
 const admin = __importStar(require("firebase-admin"));
 // Initialize Firebase Admin
@@ -41,6 +41,7 @@ admin.initializeApp();
 // Import free-tier compatible functions
 const free_tier_functions_1 = require("./free-tier-functions");
 Object.defineProperty(exports, "onUserCreated", { enumerable: true, get: function () { return free_tier_functions_1.onUserCreated; } });
+Object.defineProperty(exports, "onUserUpdated", { enumerable: true, get: function () { return free_tier_functions_1.onUserUpdated; } });
 Object.defineProperty(exports, "onEmergencyCreated", { enumerable: true, get: function () { return free_tier_functions_1.onEmergencyCreated; } });
 Object.defineProperty(exports, "onAccessRequestCreated", { enumerable: true, get: function () { return free_tier_functions_1.onAccessRequestCreated; } });
 Object.defineProperty(exports, "scheduledCleanup", { enumerable: true, get: function () { return free_tier_functions_1.scheduledCleanup; } });

@@ -84,7 +84,7 @@ const EquipmentDetailsScreen: React.FC = () => {
     if (!newStatus) return;
 
     try {
-      await dispatch(setEquipmentStatus({ equipmentId, status: newStatus, notes: statusNotes }) as any);
+      await dispatch(setEquipmentStatus({ equipmentId, status: newStatus }) as any);
       setStatusModalVisible(false);
       setNewStatus('');
       setStatusNotes('');

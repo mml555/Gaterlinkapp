@@ -590,7 +590,7 @@ const equipmentSlice = createSlice({
           state.userReservations[userReservationIndex] = updatedReservation;
         }
         
-        if (state.selectedReservation?.id === updatedReservation.id) {
+        if (state.selectedReservation && state.selectedReservation.id === updatedReservation.id) {
           state.selectedReservation = updatedReservation;
         }
       })
@@ -623,7 +623,7 @@ const equipmentSlice = createSlice({
           }
         }
         
-        if (state.selectedReservation?.id === reservationId) {
+        if (state.selectedReservation && state.selectedReservation.id === reservationId) {
           if (checklistResponse.type === 'pre_use') {
             state.selectedReservation.preUseChecklist = checklistResponse;
           } else if (checklistResponse.type === 'post_use') {
@@ -647,7 +647,7 @@ const equipmentSlice = createSlice({
           state.userReservations[userReservationIndex].damageReport = damageReport;
         }
         
-        if (state.selectedReservation?.id === reservationId) {
+        if (state.selectedReservation && state.selectedReservation.id === reservationId) {
           state.selectedReservation.damageReport = damageReport;
         }
       });

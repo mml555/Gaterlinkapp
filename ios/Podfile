@@ -1,132 +1,33 @@
-platform :ios, '16.0' # iOS 16 required for React Native 0.81.0 React-graphics
-
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 
-# Use static frameworks to avoid multiple commands producing same frameworks
-use_frameworks! :linkage => :static
+platform :ios, '15.1'
+prepare_react_native_project!
 
-# Add permissions configuration
-permissions_path = '../node_modules/react-native-permissions/ios'
+# Use modular headers to fix React Native runtime executor compilation issues
+use_modular_headers!
 
 target 'GaterLinkNative' do
+  config = use_native_modules!
+
   use_react_native!(
-    :path => '../node_modules/react-native',
-    :hermes_enabled => true,   # Hermes is default in RN 0.81
-    :fabric_enabled => false   # Keep Old Arch since using Reanimated 3.19.1
+    :path => config[:reactNativePath],
+    # An absolute path to your application root.
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  # Firebase with specific versions to avoid compilation issues
-  pod 'Firebase/Auth', '~> 10.0'
-  pod 'Firebase/Firestore', '~> 10.0'
-  pod 'Firebase/Core', '~> 10.0'
-  pod 'FirebaseCoreInternal', '~> 10.0'
-
-  # React Native Permissions - will be handled by the main package
-
   post_install do |installer|
+    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
     react_native_post_install(
       installer,
+      config[:reactNativePath],
       :mac_catalyst_enabled => false,
-      # Fix Xcode 16 issues
-      :ccache_enabled => false
+      # :ccache_enabled => true
     )
-
-    # Xcode 16: avoid sandboxing failures in RN/Hermes build phases
-    (installer.pods_project.targets + installer.generated_projects.flat_map(&:targets)).each do |t|
-      t.build_configurations.each do |cfg|
-        cfg.build_settings['ENABLE_USER_SCRIPT_SANDBOXING'] = 'NO'
-        
-        # Fix for Xcode 16.4 module compilation issues
-        cfg.build_settings['SWIFT_VERSION'] = '5.0'
-        cfg.build_settings['CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER'] = 'NO'
-        cfg.build_settings['CLANG_WARN_DOCUMENTATION_COMMENTS'] = 'NO'
-        
-        # Fix gRPC module map issues
-        cfg.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
-        cfg.build_settings['DEFINES_MODULE'] = 'YES'
-        
-        # Fix C++ standard and compiler flag conflicts
-        cfg.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++20'
-        cfg.build_settings['GCC_C_LANGUAGE_STANDARD'] = 'gnu11'
-        
-        # Disable problematic warnings
-        cfg.build_settings['GCC_WARN_INHIBIT_ALL_WARNINGS'] = 'YES'
-        cfg.build_settings['CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS'] = 'NO'
-        cfg.build_settings['GCC_WARN_64_TO_32_BIT_CONVERSION'] = 'NO'
-        cfg.build_settings['CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF'] = 'NO'
-        cfg.build_settings['CLANG_WARN_UNREACHABLE_CODE'] = 'NO'
-        cfg.build_settings['GCC_NO_COMMON_BLOCKS'] = 'YES'
-        cfg.build_settings['CLANG_WARN_DIRECT_OBJC_ISA_USAGE'] = 'YES'
-        
-        # Fix architecture issues for ARM64 simulator
-        if cfg.build_settings['SDKROOT'] == 'iphonesimulator'
-          cfg.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = ''
-        end
-      end
-    end
     
-    # Fix gRPC module map specifically
+    # Ensure proper module map generation
     installer.pods_project.targets.each do |target|
-      # Apply C++ standard fix to all targets
       target.build_configurations.each do |config|
-        config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++20'
-        config.build_settings['GCC_C_LANGUAGE_STANDARD'] = 'gnu11'
-      end
-      
-      # Fix Firebase module compilation issues - CRITICAL FIX
-      if target.name.start_with?('Firebase') || 
-         ['FirebaseAppCheckInterop', 'FirebaseAuthInterop', 'FirebaseCore', 'FirebaseCoreExtension', 'FirebaseCoreInternal', 'RecaptchaInterop'].include?(target.name)
-        target.build_configurations.each do |config|
-          config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
-          config.build_settings['DEFINES_MODULE'] = 'YES'
-          config.build_settings['MODULEMAP_FILE'] = ''
-          config.build_settings['SWIFT_INSTALL_OBJC_HEADER'] = 'NO'
-          config.build_settings['CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER'] = 'NO'
-        end
-      end
-      
-      if target.name == 'gRPC-Core'
-        target.build_configurations.each do |config|
-          config.build_settings['DEFINES_MODULE'] = 'NO'
-          config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
-        end
-      end
-      
-      # Fix RCT-Folly compilation issues
-      if target.name == 'RCT-Folly'
-        target.build_configurations.each do |config|
-          config.build_settings['HEADER_SEARCH_PATHS'] ||= '$(inherited)'
-          config.build_settings['HEADER_SEARCH_PATHS'] += ' $(PODS_ROOT)/boost'
-          config.build_settings['HEADER_SEARCH_PATHS'] += ' $(PODS_ROOT)/DoubleConversion'
-          config.build_settings['HEADER_SEARCH_PATHS'] += ' $(PODS_ROOT)/fmt/include'
-        end
-      end
-      
-      # Fix third-party library compilation issues
-      if ['glog', 'leveldb-library', 'abseil', 'Yoga', 'DoubleConversion'].include?(target.name)
-        target.build_configurations.each do |config|
-          config.build_settings['GCC_WARN_INHIBIT_ALL_WARNINGS'] = 'YES'
-          config.build_settings['CLANG_WARN_DOCUMENTATION_COMMENTS'] = 'NO'
-        end
-      end
-      
-      # Fix React Native component compilation
-      if target.name.start_with?('React')
-        target.build_configurations.each do |config|
-          config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++20'
-          config.build_settings['GCC_WARN_INHIBIT_ALL_WARNINGS'] = 'YES'
-        end
-      end
-    end
-    
-    # Remove duplicate module maps that cause redefinition errors
-    installer.pods_project.targets.each do |target|
-      if ['FirebaseAppCheckInterop', 'FirebaseAuthInterop', 'FirebaseCore', 'FirebaseCoreExtension', 'FirebaseCoreInternal', 'RecaptchaInterop'].include?(target.name)
-        target.build_configurations.each do |config|
-          # Clear any existing module map file to prevent redefinition
-          config.build_settings['MODULEMAP_FILE'] = ''
-          config.build_settings['SWIFT_INSTALL_OBJC_HEADER'] = 'NO'
-        end
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.1'
       end
     end
   end

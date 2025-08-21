@@ -4,9 +4,8 @@ import { Text, Card, Button, Surface } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { theme } from '../utils/theme';
-import { auth, db } from '../config/firebase';
-import { signInAnonymously } from 'firebase/auth';
-import { collection, getDocs } from 'firebase/firestore';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 
 const FirebaseTestScreen: React.FC = () => {
   const [status, setStatus] = useState<string>('Testing...');
@@ -21,13 +20,13 @@ const FirebaseTestScreen: React.FC = () => {
 
       // Test Authentication
       setStatus('Testing Authentication...');
-      const userCredential = await signInAnonymously(auth);
+      const userCredential = await auth().signInAnonymously();
       console.log('Auth test successful:', userCredential.user.uid);
       setTestResults((prev: Record<string, string>) => ({ ...prev, auth: '✅ Success' }));
 
       // Test Firestore
       setStatus('Testing Firestore...');
-      const querySnapshot = await getDocs(collection(db, 'users'));
+      const querySnapshot = await firestore().collection('users').get();
       console.log('Firestore test successful:', querySnapshot.size, 'documents found');
       setTestResults((prev: Record<string, string>) => ({ ...prev, firestore: '✅ Success' }));
 

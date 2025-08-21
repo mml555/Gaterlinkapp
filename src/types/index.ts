@@ -190,6 +190,16 @@ export interface AccessRequest {
   accessToken?: string;
   accessCode?: string;
   expiresAt?: Date;
+  // Additional properties used in services
+  userName?: string;
+  doorName?: string;
+  messages?: ChatMessage[];
+  requiredDocuments?: DocumentType[];
+  createdAt: Date;
+  updatedAt: Date;
+  requesterId?: string; // Alias for userId for backward compatibility
+  requesterName?: string; // Display name of the requester
+  requesterEmail?: string; // Email of the requester
 }
 
 export interface Document {
@@ -215,6 +225,8 @@ export enum DocumentStatus {
   EXPIRED = 'expired',
   MISSING = 'missing',
   PENDING_REVIEW = 'pending_review',
+  PENDING = 'pending',
+  REJECTED = 'rejected',
 }
 
 export enum RequestStatus {
@@ -226,6 +238,7 @@ export enum RequestStatus {
   COMPLETED = 'completed',
   CANCELLED = 'cancelled',
   EXPIRED = 'expired',
+  INFO_REQUIRED = 'info_required',
 }
 
 export enum RequestPriority {
@@ -259,6 +272,17 @@ export interface Equipment {
   checklists: Checklist[];
   location?: string;
   specifications?: Record<string, any>;
+  // Additional properties used in UI components
+  siteName?: string;
+  serialNumber?: string;
+  manufacturer?: string;
+  model?: string;
+  year?: number;
+  totalHours?: number;
+  accessCount?: number;
+  lastAccess?: Date;
+  nextAvailable?: Date;
+  notes?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -269,6 +293,14 @@ export enum EquipmentType {
   VEHICLES = 'vehicles',
   SAFETY_EQUIPMENT = 'safety_equipment',
   ELECTRONICS = 'electronics',
+  // Additional equipment types used in UI components
+  EXCAVATOR = 'excavator',
+  BULLDOZER = 'bulldozer',
+  CRANE = 'crane',
+  FORKLIFT = 'forklift',
+  GENERATOR = 'generator',
+  COMPRESSOR = 'compressor',
+  WELDER = 'welder',
   OTHER = 'other',
 }
 
@@ -347,6 +379,10 @@ export interface Reservation {
   preUseChecklist?: ChecklistResponse;
   postUseChecklist?: ChecklistResponse;
   damageReport?: DamageReport;
+  // Additional properties used in UI components
+  userName?: string;
+  purpose?: string;
+  notes?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -418,6 +454,9 @@ export enum EmergencyType {
   MEDICAL = 'medical',
   SECURITY = 'security',
   WEATHER = 'weather',
+  // Additional emergency types used in UI components
+  STRUCTURAL = 'structural',
+  ENVIRONMENTAL = 'environmental',
   OTHER = 'other',
 }
 
@@ -484,6 +523,7 @@ export interface ChatMessage {
   id: string;
   chatId: string;
   senderId: string;
+  senderName?: string;
   messageType: MessageType;
   content: string;
   timestamp: Date;
@@ -625,7 +665,7 @@ export interface QRCodeScanResult {
   qrCode: string;
   doorId?: string;
   equipmentId?: string;
-  scannedAt: Date;
+  scannedAt: string; // Changed from Date to string for Redux serialization
   success: boolean;
   error?: string;
 }

@@ -93,9 +93,9 @@ const ProfileScreen: React.FC = () => {
         return 'Administrator';
       case UserRole.SUPER_ADMIN:
         return 'Super Administrator';
-      case UserRole.CUSTOMER:
+      case UserRole.WORKER:
       default:
-        return 'Customer';
+        return 'Worker';
     }
   };
 
@@ -105,7 +105,7 @@ const ProfileScreen: React.FC = () => {
         return themeConstants.colors.secondary['500'];
       case UserRole.SUPER_ADMIN:
         return themeConstants.colors.accent['500'];
-      case UserRole.CUSTOMER:
+      case UserRole.WORKER:
       default:
         return themeConstants.colors.primary['500'];
     }
@@ -567,13 +567,13 @@ const styles = StyleSheet.create({
   },
   editAvatarText: {
     fontSize: themeConstants.typography.fontSize.sm,
-    fontWeight: themeConstants.typography.fontWeight.medium,
+    fontWeight: '500' as const,
   },
   userInfo: {
     alignItems: 'center',
   },
   userName: {
-    fontWeight: themeConstants.typography.fontWeight.bold,
+    fontWeight: '700' as const,
     marginBottom: themeConstants.spacing.xs,
   },
   userEmail: {
@@ -589,7 +589,7 @@ const styles = StyleSheet.create({
   },
   roleText: {
     fontSize: themeConstants.typography.fontSize.sm,
-    fontWeight: themeConstants.typography.fontWeight.medium,
+    fontWeight: '500' as const,
   },
   card: {
     marginHorizontal: themeConstants.spacing.md,
@@ -604,7 +604,7 @@ const styles = StyleSheet.create({
     marginBottom: themeConstants.spacing.sm,
   },
   cardTitle: {
-    fontWeight: themeConstants.typography.fontWeight.semibold,
+    fontWeight: '600' as const,
     marginBottom: themeConstants.spacing.sm,
   },
   versionContainer: {
@@ -621,7 +621,7 @@ const styles = StyleSheet.create({
     ...themeConstants.shadows.lg,
   },
   modalTitle: {
-    fontWeight: themeConstants.typography.fontWeight.bold,
+    fontWeight: '700' as const,
     marginBottom: themeConstants.spacing.md,
     textAlign: 'center',
   },

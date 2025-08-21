@@ -6,6 +6,10 @@ class HoldService {
 
   async getHolds(): Promise<Hold[]> {
     try {
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       const snapshot = await firebaseService.firestore
         .collection(this.COLLECTION)
         .orderBy('createdAt', 'desc')
@@ -18,14 +22,24 @@ class HoldService {
         endTime: doc.data().endTime?.toDate() || new Date(),
         createdAt: doc.data().createdAt?.toDate() || new Date(),
       })) as Hold[];
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching holds:', error);
-      throw new Error('Failed to fetch holds');
+      // Handle specific error types
+      if (error.code === 'permission-denied') {
+        console.warn('Permission denied for holds. Check Firestore rules.');
+      } else if (error.code === 'failed-precondition') {
+        console.warn('Missing index for holds query. Creating index...');
+      }
+      return [];
     }
   }
 
   async getActiveHolds(): Promise<Hold[]> {
     try {
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       const now = new Date();
       const snapshot = await firebaseService.firestore
         .collection(this.COLLECTION)
@@ -41,14 +55,24 @@ class HoldService {
         endTime: doc.data().endTime?.toDate() || new Date(),
         createdAt: doc.data().createdAt?.toDate() || new Date(),
       })) as Hold[];
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching active holds:', error);
-      throw new Error('Failed to fetch active holds');
+      // Handle specific error types
+      if (error.code === 'permission-denied') {
+        console.warn('Permission denied for active holds. Check Firestore rules.');
+      } else if (error.code === 'failed-precondition') {
+        console.warn('Missing index for active holds query. Creating index...');
+      }
+      return [];
     }
   }
 
   async getHoldsBySite(siteId: string): Promise<Hold[]> {
     try {
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       const snapshot = await firebaseService.firestore
         .collection(this.COLLECTION)
         .where('siteId', '==', siteId)
@@ -62,14 +86,24 @@ class HoldService {
         endTime: doc.data().endTime?.toDate() || new Date(),
         createdAt: doc.data().createdAt?.toDate() || new Date(),
       })) as Hold[];
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching holds by site:', error);
-      throw new Error('Failed to fetch holds by site');
+      // Handle specific error types
+      if (error.code === 'permission-denied') {
+        console.warn('Permission denied for holds by site. Check Firestore rules.');
+      } else if (error.code === 'failed-precondition') {
+        console.warn('Missing index for holds by site query. Creating index...');
+      }
+      return [];
     }
   }
 
   async getHoldsByArea(areaId: string, areaType: 'door' | 'equipment' | 'site'): Promise<Hold[]> {
     try {
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       const snapshot = await firebaseService.firestore
         .collection(this.COLLECTION)
         .where('areaId', '==', areaId)
@@ -84,9 +118,15 @@ class HoldService {
         endTime: doc.data().endTime?.toDate() || new Date(),
         createdAt: doc.data().createdAt?.toDate() || new Date(),
       })) as Hold[];
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching holds by area:', error);
-      throw new Error('Failed to fetch holds by area');
+      // Handle specific error types
+      if (error.code === 'permission-denied') {
+        console.warn('Permission denied for holds by area. Check Firestore rules.');
+      } else if (error.code === 'failed-precondition') {
+        console.warn('Missing index for holds by area query. Creating index...');
+      }
+      return [];
     }
   }
 
@@ -105,6 +145,10 @@ class HoldService {
         notificationsSent: false,
         affectedUsers: holdData.affectedUsers || [],
       };
+
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
 
       const docRef = await firebaseService.firestore
         .collection(this.COLLECTION)
@@ -127,13 +171,17 @@ class HoldService {
         updatedAt: new Date(),
       };
 
-      await firebaseService.firestore
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
+      await firebaseService.firestore!
         .collection(this.COLLECTION)
         .doc(holdId)
         .update(updateData);
 
       // Get updated hold
-      const doc = await firebaseService.firestore
+      const doc = await firebaseService.firestore!
         .collection(this.COLLECTION)
         .doc(holdId)
         .get();
@@ -153,7 +201,11 @@ class HoldService {
 
   async cancelHold(holdId: string): Promise<Hold> {
     try {
-      await firebaseService.firestore
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
+      await firebaseService.firestore!
         .collection(this.COLLECTION)
         .doc(holdId)
         .update({
@@ -162,7 +214,7 @@ class HoldService {
         });
 
       // Get updated hold
-      const doc = await firebaseService.firestore
+      const doc = await firebaseService.firestore!
         .collection(this.COLLECTION)
         .doc(holdId)
         .get();
@@ -182,7 +234,11 @@ class HoldService {
 
   async extendHold(holdId: string, newEndTime: Date): Promise<Hold> {
     try {
-      await firebaseService.firestore
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
+      await firebaseService.firestore!
         .collection(this.COLLECTION)
         .doc(holdId)
         .update({
@@ -191,7 +247,7 @@ class HoldService {
         });
 
       // Get updated hold
-      const doc = await firebaseService.firestore
+      const doc = await firebaseService.firestore!
         .collection(this.COLLECTION)
         .doc(holdId)
         .get();
@@ -233,19 +289,23 @@ class HoldService {
         isRead: false,
       }));
 
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       // Batch write notifications
       const batch = firebaseService.firestore.batch();
       notifications.forEach(notification => {
-        const notificationRef = firebaseService.firestore
-          .collection('notifications')
-          .doc();
-        batch.set(notificationRef, notification);
+        const notificationRef = firebaseService.firestore!.collection('notifications').doc();
+        if (notificationRef) {
+          batch.set(notificationRef, notification);
+        }
       });
 
       await batch.commit();
 
       // Mark hold as notified
-      await firebaseService.firestore
+      await firebaseService.firestore!
         .collection(this.COLLECTION)
         .doc(holdId)
         .update({
@@ -260,7 +320,11 @@ class HoldService {
 
   async getHoldById(holdId: string): Promise<Hold | null> {
     try {
-      const doc = await firebaseService.firestore
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
+      const doc = await firebaseService.firestore!
         .collection(this.COLLECTION)
         .doc(holdId)
         .get();
@@ -284,11 +348,15 @@ class HoldService {
 
   async addAffectedUser(holdId: string, userId: string): Promise<void> {
     try {
-      await firebaseService.firestore
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
+      await firebaseService.firestore!
         .collection(this.COLLECTION)
         .doc(holdId)
         .update({
-          affectedUsers: firebaseService.firestore.FieldValue.arrayUnion(userId),
+          affectedUsers: (firebaseService.firestore as any).FieldValue.arrayUnion(userId),
           updatedAt: new Date(),
         });
     } catch (error) {
@@ -299,11 +367,15 @@ class HoldService {
 
   async removeAffectedUser(holdId: string, userId: string): Promise<void> {
     try {
-      await firebaseService.firestore
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
+      await firebaseService.firestore!
         .collection(this.COLLECTION)
         .doc(holdId)
         .update({
-          affectedUsers: firebaseService.firestore.FieldValue.arrayRemove(userId),
+          affectedUsers: (firebaseService.firestore as any).FieldValue.arrayRemove(userId),
           updatedAt: new Date(),
         });
     } catch (error) {
@@ -315,7 +387,11 @@ class HoldService {
   async checkAreaAvailability(areaId: string, areaType: 'door' | 'equipment' | 'site'): Promise<boolean> {
     try {
       const now = new Date();
-      const snapshot = await firebaseService.firestore
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
+      const snapshot = await firebaseService.firestore!
         .collection(this.COLLECTION)
         .where('areaId', '==', areaId)
         .where('areaType', '==', areaType)
@@ -334,6 +410,10 @@ class HoldService {
   async getExpiredHolds(): Promise<Hold[]> {
     try {
       const now = new Date();
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       const snapshot = await firebaseService.firestore
         .collection(this.COLLECTION)
         .where('status', '==', HoldStatus.ACTIVE)
@@ -357,9 +437,13 @@ class HoldService {
     try {
       const expiredHolds = await this.getExpiredHolds();
       
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       const batch = firebaseService.firestore.batch();
       expiredHolds.forEach(hold => {
-        const holdRef = firebaseService.firestore
+        const holdRef = firebaseService.firestore!
           .collection(this.COLLECTION)
           .doc(hold.id);
         batch.update(holdRef, {
@@ -377,6 +461,10 @@ class HoldService {
 
   async getHoldsByUser(userId: string): Promise<Hold[]> {
     try {
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       const snapshot = await firebaseService.firestore
         .collection(this.COLLECTION)
         .where('affectedUsers', 'array-contains', userId)
@@ -399,6 +487,10 @@ class HoldService {
   async getActiveHoldsByUser(userId: string): Promise<Hold[]> {
     try {
       const now = new Date();
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       const snapshot = await firebaseService.firestore
         .collection(this.COLLECTION)
         .where('affectedUsers', 'array-contains', userId)

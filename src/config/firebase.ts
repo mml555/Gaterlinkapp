@@ -1,9 +1,8 @@
-import { initializeApp } from 'firebase/app';
-import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { getAnalytics, isSupported } from 'firebase/analytics';
 import { Platform } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+import analytics from '@react-native-firebase/analytics';
+import perf from '@react-native-firebase/perf';
 
 // Platform-specific Firebase configuration
 const firebaseConfig = Platform.select({
@@ -36,45 +35,41 @@ const firebaseConfig = Platform.select({
   }
 });
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+// Initialize Firebase services
+// Note: React Native Firebase auto-initializes when the app starts
+// The configuration is handled in the native iOS/Android files
 
-// Initialize Auth with performance optimizations and persistence
-let auth: any;
+// Enable offline persistence for Firestore
+firestore().settings({
+  persistence: true,
+  cacheSizeBytes: firestore.CACHE_SIZE_UNLIMITED
+});
+
+// Initialize Analytics
+let analyticsInstance: any = null;
 try {
-  auth = initializeAuth(app, {
-    persistence: getReactNativePersistence(AsyncStorage)
-  });
+  analyticsInstance = analytics();
+  console.log('Firebase Analytics initialized successfully');
 } catch (error) {
-  // If already initialized, get the existing auth instance
-  if (error.code === 'auth/already-initialized') {
-    const { getAuth } = require('firebase/auth');
-    auth = getAuth(app);
-  } else {
-    throw error;
-  }
+  console.log('Firebase Analytics initialization failed:', error);
 }
 
-// Initialize Firestore with performance optimizations
-const db = getFirestore(app);
-
-// Enable offline persistence for better performance
-import { enableNetwork, disableNetwork } from 'firebase/firestore';
-
-// Initialize Analytics (only in web environment)
-let analytics: any = null;
-if (Platform.OS === 'web') {
-  isSupported().then(yes => yes ? analytics = getAnalytics(app) : null);
-}
-
-// Performance monitoring
-let perf: any = null;
+// Initialize Performance Monitoring
+let perfInstance: any = null;
 try {
-  const { getPerformance } = require('firebase/performance');
-  perf = getPerformance(app);
+  perfInstance = perf();
+  console.log('Firebase Performance initialized successfully');
 } catch (error) {
-  console.log('Firebase Performance not available');
+  console.log('Firebase Performance not available:', error);
 }
 
-export { app, auth, db, analytics };
+// Export the native Firebase instances
+export const app = {
+  auth: () => auth(),
+  firestore: () => firestore(),
+  analytics: () => analyticsInstance,
+  perf: () => perfInstance
+};
+
+export { auth, firestore, analyticsInstance as analytics, perfInstance as perf };
 export default app;

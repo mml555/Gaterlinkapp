@@ -8,6 +8,7 @@ import {
   ReadAcknowledgment
 } from '../../types';
 import { emergencyService } from '../../services/emergencyService';
+import { RootState } from '../index';
 
 // ============================================================================
 // ASYNC THUNKS
@@ -99,10 +100,16 @@ export const broadcastEmergency = createAsyncThunk(
 
 export const acknowledgeEmergency = createAsyncThunk(
   'emergencies/acknowledgeEmergency',
-  async ({ emergencyId, acknowledgment }: { emergencyId: string; acknowledgment: ReadAcknowledgment }, { rejectWithValue }) => {
+  async ({ emergencyId, acknowledgment }: { emergencyId: string; acknowledgment: ReadAcknowledgment }, { rejectWithValue, getState }) => {
     try {
-      const emergency = await emergencyService.acknowledgeEmergency(emergencyId, acknowledgment);
-      return emergency;
+      const state = getState() as RootState;
+      const userId = state.auth.user?.id;
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+      
+      await emergencyService.acknowledgeEmergency(emergencyId, userId, acknowledgment);
+      return { emergencyId, acknowledgment };
     } catch (error: any) {
       return rejectWithValue(error.message || 'Failed to acknowledge emergency');
     }
@@ -358,18 +365,18 @@ const emergencySlice = createSlice({
     // Acknowledge emergency
     builder
       .addCase(acknowledgeEmergency.fulfilled, (state, action) => {
-        const updatedEmergency = action.payload;
+        const { emergencyId, acknowledgment } = action.payload;
         
-        // Update in emergencies array
-        const emergencyIndex = state.emergencies.findIndex(emergency => emergency.id === updatedEmergency.id);
+        // Add acknowledgment to emergency in emergencies array
+        const emergencyIndex = state.emergencies.findIndex(emergency => emergency.id === emergencyId);
         if (emergencyIndex !== -1) {
-          state.emergencies[emergencyIndex] = updatedEmergency;
+          state.emergencies[emergencyIndex].readAcknowledgments.push(acknowledgment);
         }
         
-        // Update in activeEmergencies array
-        const activeEmergencyIndex = state.activeEmergencies.findIndex(emergency => emergency.id === updatedEmergency.id);
+        // Add acknowledgment to emergency in activeEmergencies array
+        const activeEmergencyIndex = state.activeEmergencies.findIndex(emergency => emergency.id === emergencyId);
         if (activeEmergencyIndex !== -1) {
-          state.activeEmergencies[activeEmergencyIndex] = updatedEmergency;
+          state.activeEmergencies[activeEmergencyIndex].readAcknowledgments.push(acknowledgment);
         }
       });
 

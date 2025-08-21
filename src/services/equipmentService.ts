@@ -66,6 +66,10 @@ class EquipmentService {
 
   async getEquipmentById(equipmentId: string): Promise<Equipment> {
     try {
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       const doc = await firebaseService.firestore
         .collection(this.EQUIPMENT_COLLECTION)
         .doc(equipmentId)
@@ -135,6 +139,10 @@ class EquipmentService {
         updatedAt: new Date(),
       };
 
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       await firebaseService.firestore
         .collection(this.EQUIPMENT_COLLECTION)
         .doc(equipmentId)
@@ -149,6 +157,10 @@ class EquipmentService {
 
   async deleteEquipment(equipmentId: string): Promise<void> {
     try {
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       await firebaseService.firestore
         .collection(this.EQUIPMENT_COLLECTION)
         .doc(equipmentId)
@@ -161,6 +173,10 @@ class EquipmentService {
 
   async setEquipmentStatus(equipmentId: string, status: EquipmentStatus): Promise<Equipment> {
     try {
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       await firebaseService.firestore
         .collection(this.EQUIPMENT_COLLECTION)
         .doc(equipmentId)
@@ -179,6 +195,10 @@ class EquipmentService {
   // Reservation Management
   async getReservations(): Promise<Reservation[]> {
     try {
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       const snapshot = await firebaseService.firestore
         .collection(this.RESERVATIONS_COLLECTION)
         .orderBy('createdAt', 'desc')
@@ -205,6 +225,10 @@ class EquipmentService {
       const user = firebaseService.auth.currentUser;
       if (!user) {
         throw new Error('User not authenticated');
+      }
+
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
       }
 
       const snapshot = await firebaseService.firestore
@@ -245,6 +269,10 @@ class EquipmentService {
         needsApproval: true, // Default to requiring approval
       };
 
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       const docRef = await firebaseService.firestore
         .collection(this.RESERVATIONS_COLLECTION)
         .add(newReservation);
@@ -265,6 +293,10 @@ class EquipmentService {
         ...updates,
         updatedAt: new Date(),
       };
+
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
 
       await firebaseService.firestore
         .collection(this.RESERVATIONS_COLLECTION)
@@ -295,6 +327,10 @@ class EquipmentService {
 
   async cancelReservation(reservationId: string): Promise<Reservation> {
     try {
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       await firebaseService.firestore
         .collection(this.RESERVATIONS_COLLECTION)
         .doc(reservationId)
@@ -412,8 +448,9 @@ class EquipmentService {
         throw new Error('User not authenticated');
       }
 
+      const { id, ...checklistResponseData } = checklistResponse;
       const checklistData = {
-        ...checklistResponse,
+        ...checklistResponseData,
         reservationId,
         completedBy: user.uid,
         completedAt: new Date(),

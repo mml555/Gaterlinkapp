@@ -1,4 +1,4 @@
-import { AccessRequest, Document, DocumentType, DocumentStatus } from '../types';
+import { AccessRequest, Document, DocumentType, DocumentStatus, RequestStatus, MessageType } from '../types';
 import { firebaseService } from './firebaseService';
 
 class RequestService {
@@ -28,10 +28,16 @@ class RequestService {
 
   async getRequestById(requestId: string): Promise<AccessRequest | null> {
     try {
-      const doc = await firebaseService.firestore
+      const docRef = firebaseService.firestore
         .collection(this.REQUESTS_COLLECTION)
-        .doc(requestId)
-        .get();
+        .doc(requestId);
+      
+      if (!docRef) {
+        console.warn('Document reference is null for requestId:', requestId);
+        return null;
+      }
+
+      const doc = await docRef.get();
 
       if (!doc.exists) {
         return null;
@@ -93,7 +99,7 @@ class RequestService {
     try {
       const snapshot = await firebaseService.firestore
         .collection(this.REQUESTS_COLLECTION)
-        .where('status', '==', 'pending')
+        .where('status', '==', RequestStatus.PENDING)
         .orderBy('createdAt', 'asc')
         .get();
 
@@ -141,7 +147,7 @@ class RequestService {
         userId: user.uid,
         createdAt: new Date(),
         updatedAt: new Date(),
-        status: 'pending',
+        status: RequestStatus.PENDING,
         documents: requestData.documents || [],
         messages: requestData.messages || [],
       };
@@ -182,19 +188,21 @@ class RequestService {
         
         siteManagers.docs.forEach(doc => {
           const notificationRef = firebaseService.firestore.collection('notifications').doc();
-          batch.set(notificationRef, {
-            userId: doc.data().userId,
-            type: 'access_request',
-            title: 'New Access Request',
-            body: `${request.userName || 'User'} requested access to ${request.doorName || 'door'}`,
-            data: {
-              requestId: request.id,
-              siteId: request.siteId,
-              doorId: request.doorId,
-            },
-            read: false,
-            createdAt: new Date(),
-          });
+          if (notificationRef) {
+            batch.set(notificationRef, {
+              userId: doc.data().userId,
+              type: 'access_request',
+              title: 'New Access Request',
+              body: `${request.userName || 'User'} requested access to ${request.doorName || 'door'}`,
+              data: {
+                requestId: request.id,
+                siteId: request.siteId,
+                doorId: request.doorId,
+              },
+              read: false,
+              createdAt: new Date(),
+            });
+          }
         });
 
         await batch.commit();
@@ -214,22 +222,37 @@ class RequestService {
         updatedAt: new Date(),
       };
 
-      await firebaseService.firestore
+      const docRef = firebaseService.firestore
         .collection(this.REQUESTS_COLLECTION)
-        .doc(requestId)
-        .update(updateData);
+        .doc(requestId);
+      
+      if (!docRef) {
+        throw new Error('Document reference is null');
+      }
+
+      await docRef.update(updateData);
 
       // Get updated request
-      const doc = await firebaseService.firestore
+      const docRef2 = firebaseService.firestore
         .collection(this.REQUESTS_COLLECTION)
-        .doc(requestId)
-        .get();
+        .doc(requestId);
+      
+      if (!docRef2) {
+        throw new Error('Document reference is null when getting updated request');
+      }
 
+      const doc = await docRef2.get();
+
+      if (!doc.exists) {
+        throw new Error('Request not found after update');
+      }
+
+      const data = doc.data();
       return {
         id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data()?.createdAt?.toDate() || new Date(),
-        updatedAt: doc.data()?.updatedAt?.toDate() || new Date(),
+        ...data,
+        createdAt: data?.createdAt?.toDate() || new Date(),
+        updatedAt: data?.updatedAt?.toDate() || new Date(),
       } as AccessRequest;
     } catch (error) {
       console.error('Error updating request:', error);
@@ -239,10 +262,15 @@ class RequestService {
 
   async deleteRequest(requestId: string): Promise<void> {
     try {
-      await firebaseService.firestore
+      const docRef = firebaseService.firestore
         .collection(this.REQUESTS_COLLECTION)
-        .doc(requestId)
-        .delete();
+        .doc(requestId);
+      
+      if (!docRef) {
+        throw new Error('Document reference is null');
+      }
+
+      await docRef.delete();
     } catch (error) {
       console.error('Error deleting request:', error);
       throw new Error('Failed to delete request');
@@ -261,13 +289,13 @@ class RequestService {
       const accessToken = this.generateAccessToken();
       const accessCode = this.generateAccessCode();
 
-      const updates = {
-        status: 'approved',
+      const updates: Partial<AccessRequest> = {
+        status: RequestStatus.APPROVED,
         approvedBy,
         approvedAt: new Date(),
         accessToken,
         accessCode,
-        notes,
+        note: notes,
         updatedAt: new Date(),
       };
 
@@ -280,8 +308,8 @@ class RequestService {
 
   async denyRequest(requestId: string, deniedBy: string, reason: string): Promise<AccessRequest> {
     try {
-      const updates = {
-        status: 'denied',
+      const updates: Partial<AccessRequest> = {
+        status: RequestStatus.DENIED,
         deniedBy,
         deniedAt: new Date(),
         denialReason: reason,
@@ -297,11 +325,9 @@ class RequestService {
 
   async requestMoreInfo(requestId: string, requestedBy: string, infoNeeded: string): Promise<AccessRequest> {
     try {
-      const updates = {
-        status: 'info_required',
-        infoRequestedBy: requestedBy,
-        infoRequestedAt: new Date(),
-        infoNeeded,
+      const updates: Partial<AccessRequest> = {
+        status: RequestStatus.INFO_REQUIRED,
+        note: infoNeeded,
         updatedAt: new Date(),
       };
 
@@ -322,8 +348,10 @@ class RequestService {
 
       const newMessage = {
         id: Date.now().toString(),
-        message,
+        chatId: requestId, // Using requestId as chatId for simplicity
         senderId,
+        messageType: MessageType.TEXT,
+        content: message,
         timestamp: new Date(),
         isRead: false,
       };
@@ -344,7 +372,7 @@ class RequestService {
         throw new Error('Request not found');
       }
 
-      const messages = request.messages?.map(msg => 
+      const messages = request.messages?.map((msg: any) => 
         msg.id === messageId ? { ...msg, isRead: true } : msg
       ) || [];
 
@@ -362,7 +390,7 @@ class RequestService {
         return 0;
       }
 
-      return request.messages?.filter(msg => 
+      return request.messages?.filter((msg: any) => 
         msg.senderId !== userId && !msg.isRead
       ).length || 0;
     } catch (error) {
@@ -381,8 +409,9 @@ class RequestService {
 
       const newDocument: Partial<Document> = {
         ...documentData,
-        requestId,
-        uploadedBy: user.uid,
+        name: documentData.name || 'Untitled Document',
+        type: documentData.type || DocumentType.OTHER,
+        url: documentData.url || '',
         uploadedAt: new Date(),
         status: DocumentStatus.PENDING,
       };
@@ -394,13 +423,24 @@ class RequestService {
       // Add document to request
       const request = await this.getRequestById(requestId);
       if (request) {
-        const documents = [...(request.documents || []), { id: docRef.id, ...newDocument }];
+        const documents = [...(request.documents || []), { 
+          id: docRef.id, 
+          name: newDocument.name!,
+          type: newDocument.type!,
+          url: newDocument.url!,
+          uploadedAt: newDocument.uploadedAt!,
+          status: newDocument.status!,
+        }];
         await this.updateRequest(requestId, { documents });
       }
 
       return {
         id: docRef.id,
-        ...newDocument,
+        name: newDocument.name!,
+        type: newDocument.type!,
+        url: newDocument.url!,
+        uploadedAt: newDocument.uploadedAt!,
+        status: newDocument.status!,
       } as Document;
     } catch (error) {
       console.error('Error uploading document:', error);
@@ -435,21 +475,36 @@ class RequestService {
         reviewedAt: new Date(),
       };
 
-      await firebaseService.firestore
+      const docRef = firebaseService.firestore
         .collection(this.DOCUMENTS_COLLECTION)
-        .doc(documentId)
-        .update(updateData);
+        .doc(documentId);
+      
+      if (!docRef) {
+        throw new Error('Document reference is null');
+      }
+
+      await docRef.update(updateData);
 
       // Get updated document
-      const doc = await firebaseService.firestore
+      const docRef2 = firebaseService.firestore
         .collection(this.DOCUMENTS_COLLECTION)
-        .doc(documentId)
-        .get();
+        .doc(documentId);
+      
+      if (!docRef2) {
+        throw new Error('Document reference is null when getting updated document');
+      }
 
+      const doc = await docRef2.get();
+
+      if (!doc.exists) {
+        throw new Error('Document not found after update');
+      }
+
+      const data = doc.data();
       return {
         id: doc.id,
-        ...doc.data(),
-        uploadedAt: doc.data()?.uploadedAt?.toDate() || new Date(),
+        ...data,
+        uploadedAt: data?.uploadedAt?.toDate() || new Date(),
       } as Document;
     } catch (error) {
       console.error('Error updating document status:', error);
@@ -459,10 +514,15 @@ class RequestService {
 
   async deleteDocument(documentId: string): Promise<void> {
     try {
-      await firebaseService.firestore
+      const docRef = firebaseService.firestore
         .collection(this.DOCUMENTS_COLLECTION)
-        .doc(documentId)
-        .delete();
+        .doc(documentId);
+      
+      if (!docRef) {
+        throw new Error('Document reference is null');
+      }
+
+      await docRef.delete();
     } catch (error) {
       console.error('Error deleting document:', error);
       throw new Error('Failed to delete document');
@@ -487,7 +547,7 @@ class RequestService {
       const invalidDocuments: string[] = [];
 
       // Check for missing required documents
-      requiredDocuments.forEach(requiredDoc => {
+      requiredDocuments.forEach((requiredDoc: any) => {
         const hasDocument = documents.some(doc => doc.type === requiredDoc.type);
         if (!hasDocument) {
           missingDocuments.push(requiredDoc.type);
@@ -514,7 +574,7 @@ class RequestService {
     }
   }
 
-  // Request Statistics
+  // Get request statistics
   async getRequestStats(siteId?: string): Promise<{
     total: number;
     pending: number;
@@ -524,27 +584,32 @@ class RequestService {
     averageProcessingTime: number;
   }> {
     try {
-      let query = firebaseService.firestore.collection(this.REQUESTS_COLLECTION);
+      let query: any = firebaseService.firestore.collection(this.REQUESTS_COLLECTION);
       
       if (siteId) {
         query = query.where('siteId', '==', siteId);
       }
 
       const snapshot = await query.get();
-      const requests = snapshot.docs.map(doc => doc.data()) as AccessRequest[];
+      const requests = snapshot.docs.map((doc: any) => ({
+        id: doc.id,
+        ...doc.data(),
+        createdAt: doc.data().createdAt?.toDate() || new Date(),
+        updatedAt: doc.data().updatedAt?.toDate() || new Date(),
+      })) as AccessRequest[];
 
       const stats = {
         total: requests.length,
-        pending: requests.filter(r => r.status === 'pending').length,
-        approved: requests.filter(r => r.status === 'approved').length,
-        denied: requests.filter(r => r.status === 'denied').length,
-        infoRequired: requests.filter(r => r.status === 'info_required').length,
+        pending: requests.filter(r => r.status === RequestStatus.PENDING).length,
+        approved: requests.filter(r => r.status === RequestStatus.APPROVED).length,
+        denied: requests.filter(r => r.status === RequestStatus.DENIED).length,
+        infoRequired: requests.filter(r => r.status === RequestStatus.INFO_REQUIRED).length,
         averageProcessingTime: 0,
       };
 
       // Calculate average processing time for completed requests
       const completedRequests = requests.filter(r => 
-        r.status === 'approved' || r.status === 'denied'
+        r.status === RequestStatus.APPROVED || r.status === RequestStatus.DENIED
       );
 
       if (completedRequests.length > 0) {
@@ -559,9 +624,22 @@ class RequestService {
       }
 
       return stats;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching request stats:', error);
-      throw new Error('Failed to fetch request stats');
+      // Handle specific error types
+      if (error.code === 'permission-denied') {
+        console.warn('Permission denied for request stats. Check Firestore rules.');
+      } else if (error.code === 'failed-precondition') {
+        console.warn('Missing index for request stats query. Creating index...');
+      }
+      return {
+        total: 0,
+        pending: 0,
+        approved: 0,
+        denied: 0,
+        infoRequired: 0,
+        averageProcessingTime: 0,
+      };
     }
   }
 
@@ -583,7 +661,7 @@ class RequestService {
     dateTo?: Date;
   }): Promise<AccessRequest[]> {
     try {
-      let requestsQuery = firebaseService.firestore.collection(this.REQUESTS_COLLECTION);
+      let requestsQuery: any = firebaseService.firestore.collection(this.REQUESTS_COLLECTION);
 
       // Apply filters
       if (filters?.status) {
@@ -597,7 +675,7 @@ class RequestService {
       }
 
       const snapshot = await requestsQuery.orderBy('createdAt', 'desc').get();
-      let requests = snapshot.docs.map(doc => ({
+      let requests = snapshot.docs.map((doc: any) => ({
         id: doc.id,
         ...doc.data(),
         createdAt: doc.data().createdAt?.toDate() || new Date(),
@@ -617,15 +695,21 @@ class RequestService {
         const searchTerm = query.toLowerCase();
         requests = requests.filter(req => 
           req.reason?.toLowerCase().includes(searchTerm) ||
-          req.notes?.toLowerCase().includes(searchTerm) ||
-          req.doorName?.toLowerCase().includes(searchTerm)
+          req.doorId?.toLowerCase().includes(searchTerm) ||
+          req.siteId?.toLowerCase().includes(searchTerm)
         );
       }
 
       return requests;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error searching requests:', error);
-      throw new Error('Failed to search requests');
+      // Handle specific error types
+      if (error.code === 'permission-denied') {
+        console.warn('Permission denied for request search. Check Firestore rules.');
+      } else if (error.code === 'failed-precondition') {
+        console.warn('Missing index for request search query. Creating index...');
+      }
+      return [];
     }
   }
 

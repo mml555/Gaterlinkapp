@@ -98,7 +98,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
           >
             <View style={styles.fileIcon}>
               <Text style={[styles.fileExtension, { color: theme.colors.primary }]}>
-                {message.metadata?.fileName?.split('.').pop()?.toUpperCase() || 'FILE'}
+                {message.attachments?.[0]?.fileName?.split('.').pop()?.toUpperCase() || 'FILE'}
               </Text>
             </View>
             <View style={styles.fileInfo}>
@@ -107,13 +107,13 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
                 style={[styles.fileName, { color: isOwn ? theme.colors.onPrimary : theme.colors.onSurface }]}
                 numberOfLines={1}
               >
-                {message.metadata?.fileName || 'Unknown file'}
+                {message.attachments?.[0]?.fileName || 'Unknown file'}
               </Text>
               <Text
                 variant="bodySmall"
                 style={[styles.fileSize, { color: isOwn ? theme.colors.onPrimary : theme.colors.onSurfaceVariant }]}
               >
-                {message.metadata?.fileSize ? `${(message.metadata.fileSize / 1024).toFixed(1)} KB` : 'Unknown size'}
+                {message.attachments?.[0]?.fileSize ? `${(message.attachments[0].fileSize / 1024).toFixed(1)} KB` : 'Unknown size'}
               </Text>
             </View>
           </TouchableOpacity>
@@ -158,14 +158,14 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
       onLongPress={() => onLongPress(message)}
       style={[styles.messageContainer, isOwn ? styles.ownMessage : styles.otherMessage]}
       accessible={true}
-      accessibilityLabel={`Message from ${isOwn ? 'you' : message.senderName}: ${message.content}`}
+      accessibilityLabel={`Message from ${isOwn ? 'you' : message.senderName || 'Unknown'}: ${message.content}`}
       accessibilityRole="button"
       accessibilityHint="Long press for more options"
     >
       {!isOwn && showAvatar && (
         <Avatar.Text
           size={32}
-          label={message.senderName.charAt(0).toUpperCase()}
+          label={(message.senderName || 'U').charAt(0).toUpperCase()}
           style={[styles.messageAvatar, { backgroundColor: themeConstants.colors.secondary['500'] }]}
         />
       )}
@@ -597,13 +597,13 @@ const styles = StyleSheet.create({
   },
   fileExtension: {
     fontSize: 10,
-    fontWeight: themeConstants.typography.fontWeight.bold,
+    fontWeight: '700' as const,
   },
   fileInfo: {
     flex: 1,
   },
   fileName: {
-    fontWeight: themeConstants.typography.fontWeight.medium,
+    fontWeight: '500' as const,
   },
   fileSize: {
     marginTop: 2,
@@ -643,7 +643,7 @@ const styles = StyleSheet.create({
   },
   statusIcon: {
     fontSize: 12,
-    fontWeight: themeConstants.typography.fontWeight.bold,
+    fontWeight: '700' as const,
   },
   typingContainer: {
     paddingHorizontal: themeConstants.spacing.md,
@@ -690,7 +690,7 @@ const styles = StyleSheet.create({
     marginTop: themeConstants.spacing.lg,
     marginBottom: themeConstants.spacing.sm,
     textAlign: 'center',
-    fontWeight: themeConstants.typography.fontWeight.bold,
+    fontWeight: '700' as const,
   },
   emptySubtitle: {
     textAlign: 'center',

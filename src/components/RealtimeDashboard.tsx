@@ -25,10 +25,10 @@ import { RootState } from '../store';
 import { websocketService } from '../services/websocketService';
 import { pushNotificationService } from '../services/pushNotificationService';
 import { 
-  fetchActiveEmergencies, 
-  fetchActiveHolds, 
-  fetchPendingRequests 
+  fetchActiveEmergencies
 } from '../store/slices/emergencySlice';
+import { fetchActiveHolds } from '../store/slices/holdSlice';
+import { fetchPendingRequests } from '../store/slices/requestSlice';
 import { fetchEquipment } from '../store/slices/equipmentSlice';
 import { EmergencyEvent, Hold, Equipment, AccessRequest } from '../types';
 
@@ -45,7 +45,7 @@ interface RealtimeUpdate {
 const RealtimeDashboard: React.FC = () => {
   const dispatch = useDispatch();
   const { user } = useSelector((state: RootState) => state.auth);
-  const { activeEmergencies } = useSelector((state: RootState) => state.emergency);
+  const { activeEmergencies } = useSelector((state: RootState) => state.emergencies);
   const { activeHolds } = useSelector((state: RootState) => state.holds);
   const { equipment } = useSelector((state: RootState) => state.equipment);
   const { pendingRequests } = useSelector((state: RootState) => state.requests);
@@ -97,7 +97,11 @@ const RealtimeDashboard: React.FC = () => {
   };
 
   const cleanupRealtimeServices = () => {
-    websocketService.unsubscribeFromUpdates();
+    // Unsubscribe from all update types
+    websocketService.unsubscribeFromUpdates('emergencies');
+    websocketService.unsubscribeFromUpdates('requests');
+    websocketService.unsubscribeFromUpdates('holds');
+    websocketService.unsubscribeFromUpdates('equipment');
   };
 
   const loadInitialData = async () => {
@@ -366,7 +370,7 @@ const RealtimeDashboard: React.FC = () => {
       <Card style={styles.alertsCard}>
         <Card.Content>
           <Title style={styles.alertsTitle}>Active Emergencies</Title>
-          {activeEmergencies.map((emergency) => (
+          {activeEmergencies.map((emergency: EmergencyEvent) => (
             <View key={emergency.id} style={styles.alertItem}>
               <View style={styles.alertHeader}>
                 <Text style={styles.alertIcon}>🚨</Text>

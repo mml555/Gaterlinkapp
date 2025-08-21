@@ -48,11 +48,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               await serviceInitializer.initializeServices();
             } catch (error) {
               console.error('Error initializing services:', error);
+              // Don't block the app if services fail to initialize
             }
           }, 1000);
         }
       } catch (error) {
         console.error('Auth initialization error:', error);
+        // Don't block the app if auth initialization fails
       } finally {
         setIsInitialized(true);
       }
@@ -63,7 +65,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Cleanup services when component unmounts
     return () => {
       console.log('Cleaning up client-side services...');
-      serviceInitializer.cleanupServices();
+      try {
+        serviceInitializer.cleanupServices();
+      } catch (error) {
+        console.error('Error cleaning up services on unmount:', error);
+      }
     };
   }, [dispatch]);
 
@@ -78,12 +84,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           await serviceInitializer.initializeServices();
         } catch (error) {
           console.error('Error initializing services:', error);
+          // Don't block the app if services fail to initialize
         }
       }, 1000);
     } else if (!isAuthenticated) {
       // User is not authenticated, cleanup services
       console.log('User not authenticated, cleaning up services...');
-      serviceInitializer.cleanupServices();
+      try {
+        serviceInitializer.cleanupServices();
+      } catch (error) {
+        console.error('Error cleaning up services:', error);
+      }
     }
   }, [isAuthenticated, user]);
 

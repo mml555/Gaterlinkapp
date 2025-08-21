@@ -18,6 +18,7 @@ import { RootState } from '../../store';
 import { scanQRCode } from '../../store/slices/doorSlice';
 import { Door } from '../../types';
 import TestQRCodeDisplay from '../../components/common/TestQRCodeDisplay';
+import { createCardShadow, createButtonShadow } from '../../utils/shadowUtils';
 
 const { width, height } = Dimensions.get('window');
 
@@ -413,6 +414,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 10,
     borderRadius: 25,
+    ...createButtonShadow('rgba(0,0,0,0.7)', 2),
   },
   backButtonText: {
     color: '#FFFFFF',
@@ -422,10 +424,11 @@ const styles = StyleSheet.create({
   flashlightButton: {
     backgroundColor: 'rgba(0,0,0,0.7)',
     borderRadius: 25,
+    ...createButtonShadow('rgba(0,0,0,0.7)', 2),
   },
   permissionCard: {
     margin: 20,
-    elevation: 4,
+    ...createCardShadow('#FFFFFF', 4),
   },
   permissionIcon: {
     alignSelf: 'center',

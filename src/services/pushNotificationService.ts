@@ -57,6 +57,10 @@ class PushNotificationService {
     try {
       const user = firebaseService.auth.currentUser;
       if (user && this.fcmToken) {
+        if (!firebaseService.firestore) {
+          throw new Error('Firestore not initialized');
+        }
+
         await firebaseService.firestore
           .collection('users')
           .doc(user.uid)
@@ -226,9 +230,9 @@ class PushNotificationService {
       id: notification.id,
       title: notification.title,
       message: notification.body,
-      data: notification.data,
+      userInfo: notification.data,
       channelId: this.getChannelId(notification.data?.type),
-      priority: notification.priority,
+      priority: notification.priority === 'normal' ? 'default' : notification.priority,
       soundName: notification.sound,
       number: notification.badge,
       vibrate: notification.priority === 'high',
@@ -457,7 +461,9 @@ class PushNotificationService {
 
   async getBadgeCount(): Promise<number> {
     try {
-      return await messaging().getBadgeCount();
+      // Badge count is not available in React Native Firebase messaging
+      // Return 0 as fallback
+      return 0;
     } catch (error) {
       console.error('Error getting badge count:', error);
       return 0;
@@ -466,7 +472,9 @@ class PushNotificationService {
 
   async setBadgeCount(count: number): Promise<void> {
     try {
-      await messaging().setBadgeCount(count);
+      // Badge count setting is not available in React Native Firebase messaging
+      // Use PushNotification for badge management
+      PushNotification.setApplicationIconBadgeNumber(count);
     } catch (error) {
       console.error('Error setting badge count:', error);
     }
@@ -475,7 +483,8 @@ class PushNotificationService {
   async clearAllNotifications(): Promise<void> {
     try {
       PushNotification.cancelAllLocalNotifications();
-      await messaging().setBadgeCount(0);
+      // Clear badge count using PushNotification
+      PushNotification.setApplicationIconBadgeNumber(0);
     } catch (error) {
       console.error('Error clearing notifications:', error);
     }

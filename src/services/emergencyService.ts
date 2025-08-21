@@ -6,6 +6,10 @@ class EmergencyService {
 
   async getEmergencies(): Promise<EmergencyEvent[]> {
     try {
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       const snapshot = await firebaseService.firestore
         .collection(this.COLLECTION)
         .orderBy('createdAt', 'desc')
@@ -94,15 +98,19 @@ class EmergencyService {
         throw new Error('User not authenticated');
       }
 
-      const newEmergency: Partial<EmergencyEvent> = {
+      const newEmergency = {
         ...emergencyData,
-        createdBy: user.uid,
+        startTime: new Date(),
         createdAt: new Date(),
         status: EmergencyStatus.ACTIVE,
-        acknowledgments: [],
-        broadcastSent: false,
+        readAcknowledgments: [],
+        notificationsSent: false,
         affectedUsers: emergencyData.affectedUsers || [],
       };
+
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
 
       const docRef = await firebaseService.firestore
         .collection(this.COLLECTION)
@@ -129,8 +137,8 @@ class EmergencyService {
       console.log(`Client-side trigger: New emergency created: ${emergency.id}`);
 
       // Update site status (internal Firebase operation)
-      if (emergency.siteId) {
-        await firebaseService.firestore
+      if (emergency.siteId && firebaseService.firestore) {
+        await firebaseService.firestore!
           .collection('sites')
           .doc(emergency.siteId)
           .update({
@@ -140,12 +148,13 @@ class EmergencyService {
       }
 
       // Create notification records for affected users
-      if (emergency.affectedUsers && emergency.affectedUsers.length > 0) {
-        const batch = firebaseService.firestore.batch();
+      if (emergency.affectedUsers && emergency.affectedUsers.length > 0 && firebaseService.firestore) {
+        const batch = firebaseService.firestore!.batch();
         
         emergency.affectedUsers.forEach((userId: string) => {
-          const notificationRef = firebaseService.firestore.collection('notifications').doc();
-          batch.set(notificationRef, {
+          const notificationRef = firebaseService.firestore!.collection('notifications').doc();
+          if (notificationRef) {
+            batch.set(notificationRef, {
             userId,
             type: 'emergency',
             title: `Emergency: ${emergency.type?.toUpperCase()}`,
@@ -157,7 +166,8 @@ class EmergencyService {
             },
             read: false,
             createdAt: new Date(),
-          });
+            });
+          }
         });
 
         await batch.commit();
@@ -177,13 +187,17 @@ class EmergencyService {
         updatedAt: new Date(),
       };
 
-      await firebaseService.firestore
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
+      await firebaseService.firestore!
         .collection(this.COLLECTION)
         .doc(emergencyId)
         .update(updateData);
 
       // Get updated emergency
-      const doc = await firebaseService.firestore
+      const doc = await firebaseService.firestore!
         .collection(this.COLLECTION)
         .doc(emergencyId)
         .get();
@@ -203,7 +217,11 @@ class EmergencyService {
 
   async resolveEmergency(emergencyId: string, resolutionNotes?: string): Promise<EmergencyEvent> {
     try {
-      await firebaseService.firestore
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
+      await firebaseService.firestore!
         .collection(this.COLLECTION)
         .doc(emergencyId)
         .update({
@@ -214,7 +232,7 @@ class EmergencyService {
         });
 
       // Get updated emergency
-      const doc = await firebaseService.firestore
+      const doc = await firebaseService.firestore!
         .collection(this.COLLECTION)
         .doc(emergencyId)
         .get();
@@ -234,7 +252,11 @@ class EmergencyService {
 
   async cancelEmergency(emergencyId: string, cancellationReason?: string): Promise<EmergencyEvent> {
     try {
-      await firebaseService.firestore
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
+      await firebaseService.firestore!
         .collection(this.COLLECTION)
         .doc(emergencyId)
         .update({
@@ -245,7 +267,7 @@ class EmergencyService {
         });
 
       // Get updated emergency
-      const doc = await firebaseService.firestore
+      const doc = await firebaseService.firestore!
         .collection(this.COLLECTION)
         .doc(emergencyId)
         .get();
@@ -288,23 +310,27 @@ class EmergencyService {
         priority: 'high',
       }));
 
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       // Batch write notifications
       const batch = firebaseService.firestore.batch();
       notifications.forEach(notification => {
-        const notificationRef = firebaseService.firestore
-          .collection('notifications')
-          .doc();
-        batch.set(notificationRef, notification);
+        const notificationRef = firebaseService.firestore!.collection('notifications').doc();
+        if (notificationRef) {
+          batch.set(notificationRef, notification);
+        }
       });
 
       await batch.commit();
 
       // Mark emergency as broadcasted
-      await firebaseService.firestore
+      await firebaseService.firestore!
         .collection(this.COLLECTION)
         .doc(emergencyId)
         .update({
-          broadcastSent: true,
+          notificationsSent: true,
           broadcastTime: new Date(),
           updatedAt: new Date(),
         });
@@ -316,11 +342,15 @@ class EmergencyService {
 
   async acknowledgeEmergency(emergencyId: string, userId: string, acknowledgment: ReadAcknowledgment): Promise<void> {
     try {
-      await firebaseService.firestore
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
+      await firebaseService.firestore!
         .collection(this.COLLECTION)
         .doc(emergencyId)
         .update({
-          acknowledgments: firebaseService.firestore.FieldValue.arrayUnion({
+          readAcknowledgments: (firebaseService.firestore as any).FieldValue.arrayUnion({
             ...acknowledgment,
             userId,
             timestamp: new Date(),
@@ -349,12 +379,16 @@ class EmergencyService {
         createdBy: user.uid,
         createdAt: new Date(),
         status: EmergencyStatus.ACTIVE,
-        acknowledgments: [],
-        broadcastSent: false,
+        readAcknowledgments: [],
+        notificationsSent: false,
         affectedUsers: [], // Will be populated with all site users
       };
 
-      const docRef = await firebaseService.firestore
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
+      const docRef = await firebaseService.firestore!
         .collection(this.COLLECTION)
         .add(evacuationEmergency);
 
@@ -370,7 +404,11 @@ class EmergencyService {
 
   async getEmergencyById(emergencyId: string): Promise<EmergencyEvent | null> {
     try {
-      const doc = await firebaseService.firestore
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
+      const doc = await firebaseService.firestore!
         .collection(this.COLLECTION)
         .doc(emergencyId)
         .get();
@@ -394,11 +432,15 @@ class EmergencyService {
 
   async addAffectedUser(emergencyId: string, userId: string): Promise<void> {
     try {
-      await firebaseService.firestore
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
+      await firebaseService.firestore!
         .collection(this.COLLECTION)
         .doc(emergencyId)
         .update({
-          affectedUsers: firebaseService.firestore.FieldValue.arrayUnion(userId),
+          affectedUsers: (firebaseService.firestore as any).FieldValue.arrayUnion(userId),
           updatedAt: new Date(),
         });
     } catch (error) {
@@ -409,11 +451,15 @@ class EmergencyService {
 
   async removeAffectedUser(emergencyId: string, userId: string): Promise<void> {
     try {
-      await firebaseService.firestore
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
+      await firebaseService.firestore!
         .collection(this.COLLECTION)
         .doc(emergencyId)
         .update({
-          affectedUsers: firebaseService.firestore.FieldValue.arrayRemove(userId),
+          affectedUsers: (firebaseService.firestore as any).FieldValue.arrayRemove(userId),
           updatedAt: new Date(),
         });
     } catch (error) {
@@ -424,7 +470,11 @@ class EmergencyService {
 
   async getEmergenciesByUser(userId: string): Promise<EmergencyEvent[]> {
     try {
-      const snapshot = await firebaseService.firestore
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
+      const snapshot = await firebaseService.firestore!
         .collection(this.COLLECTION)
         .where('affectedUsers', 'array-contains', userId)
         .orderBy('createdAt', 'desc')
@@ -445,7 +495,11 @@ class EmergencyService {
 
   async getActiveEmergenciesByUser(userId: string): Promise<EmergencyEvent[]> {
     try {
-      const snapshot = await firebaseService.firestore
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
+      const snapshot = await firebaseService.firestore!
         .collection(this.COLLECTION)
         .where('affectedUsers', 'array-contains', userId)
         .where('status', '==', EmergencyStatus.ACTIVE)
@@ -474,6 +528,10 @@ class EmergencyService {
     bySeverity: Record<string, number>;
   }> {
     try {
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       let query = firebaseService.firestore.collection(this.COLLECTION);
       
       if (siteId) {
@@ -516,7 +574,7 @@ class EmergencyService {
       const userEmergencies = await this.getActiveEmergenciesByUser(userId);
       
       return userEmergencies.filter(emergency => 
-        !emergency.acknowledgments?.some(ack => ack.userId === userId)
+        !emergency.readAcknowledgments?.some(ack => ack.userId === userId)
       );
     } catch (error) {
       console.error('Error fetching unacknowledged emergencies:', error);
@@ -531,7 +589,7 @@ class EmergencyService {
         return false;
       }
 
-      return emergency.acknowledgments?.some(ack => ack.userId === userId) || false;
+      return emergency.readAcknowledgments?.some(ack => ack.userId === userId) || false;
     } catch (error) {
       console.error('Error checking user acknowledgment:', error);
       throw new Error('Failed to check user acknowledgment');
@@ -550,7 +608,7 @@ class EmergencyService {
       }
 
       const totalUsers = emergency.affectedUsers?.length || 0;
-      const acknowledgedUsers = emergency.acknowledgments?.length || 0;
+      const acknowledgedUsers = emergency.readAcknowledgments?.length || 0;
       const acknowledgmentRate = totalUsers > 0 ? (acknowledgedUsers / totalUsers) * 100 : 0;
 
       return {

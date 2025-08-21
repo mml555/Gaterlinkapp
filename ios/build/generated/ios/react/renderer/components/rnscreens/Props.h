@@ -18,67 +18,6 @@
 
 namespace facebook::react {
 
-enum class RNSBottomTabsTabBarBlurEffect { None, SystemDefault, ExtraLight, Light, Dark, Regular, Prominent, SystemUltraThinMaterial, SystemThinMaterial, SystemMaterial, SystemThickMaterial, SystemChromeMaterial, SystemUltraThinMaterialLight, SystemThinMaterialLight, SystemMaterialLight, SystemThickMaterialLight, SystemChromeMaterialLight, SystemUltraThinMaterialDark, SystemThinMaterialDark, SystemMaterialDark, SystemThickMaterialDark, SystemChromeMaterialDark };
-
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSBottomTabsTabBarBlurEffect &result) {
-  auto string = (std::string)value;
-  if (string == "none") { result = RNSBottomTabsTabBarBlurEffect::None; return; }
-  if (string == "systemDefault") { result = RNSBottomTabsTabBarBlurEffect::SystemDefault; return; }
-  if (string == "extraLight") { result = RNSBottomTabsTabBarBlurEffect::ExtraLight; return; }
-  if (string == "light") { result = RNSBottomTabsTabBarBlurEffect::Light; return; }
-  if (string == "dark") { result = RNSBottomTabsTabBarBlurEffect::Dark; return; }
-  if (string == "regular") { result = RNSBottomTabsTabBarBlurEffect::Regular; return; }
-  if (string == "prominent") { result = RNSBottomTabsTabBarBlurEffect::Prominent; return; }
-  if (string == "systemUltraThinMaterial") { result = RNSBottomTabsTabBarBlurEffect::SystemUltraThinMaterial; return; }
-  if (string == "systemThinMaterial") { result = RNSBottomTabsTabBarBlurEffect::SystemThinMaterial; return; }
-  if (string == "systemMaterial") { result = RNSBottomTabsTabBarBlurEffect::SystemMaterial; return; }
-  if (string == "systemThickMaterial") { result = RNSBottomTabsTabBarBlurEffect::SystemThickMaterial; return; }
-  if (string == "systemChromeMaterial") { result = RNSBottomTabsTabBarBlurEffect::SystemChromeMaterial; return; }
-  if (string == "systemUltraThinMaterialLight") { result = RNSBottomTabsTabBarBlurEffect::SystemUltraThinMaterialLight; return; }
-  if (string == "systemThinMaterialLight") { result = RNSBottomTabsTabBarBlurEffect::SystemThinMaterialLight; return; }
-  if (string == "systemMaterialLight") { result = RNSBottomTabsTabBarBlurEffect::SystemMaterialLight; return; }
-  if (string == "systemThickMaterialLight") { result = RNSBottomTabsTabBarBlurEffect::SystemThickMaterialLight; return; }
-  if (string == "systemChromeMaterialLight") { result = RNSBottomTabsTabBarBlurEffect::SystemChromeMaterialLight; return; }
-  if (string == "systemUltraThinMaterialDark") { result = RNSBottomTabsTabBarBlurEffect::SystemUltraThinMaterialDark; return; }
-  if (string == "systemThinMaterialDark") { result = RNSBottomTabsTabBarBlurEffect::SystemThinMaterialDark; return; }
-  if (string == "systemMaterialDark") { result = RNSBottomTabsTabBarBlurEffect::SystemMaterialDark; return; }
-  if (string == "systemThickMaterialDark") { result = RNSBottomTabsTabBarBlurEffect::SystemThickMaterialDark; return; }
-  if (string == "systemChromeMaterialDark") { result = RNSBottomTabsTabBarBlurEffect::SystemChromeMaterialDark; return; }
-  abort();
-}
-
-static inline std::string toString(const RNSBottomTabsTabBarBlurEffect &value) {
-  switch (value) {
-    case RNSBottomTabsTabBarBlurEffect::None: return "none";
-    case RNSBottomTabsTabBarBlurEffect::SystemDefault: return "systemDefault";
-    case RNSBottomTabsTabBarBlurEffect::ExtraLight: return "extraLight";
-    case RNSBottomTabsTabBarBlurEffect::Light: return "light";
-    case RNSBottomTabsTabBarBlurEffect::Dark: return "dark";
-    case RNSBottomTabsTabBarBlurEffect::Regular: return "regular";
-    case RNSBottomTabsTabBarBlurEffect::Prominent: return "prominent";
-    case RNSBottomTabsTabBarBlurEffect::SystemUltraThinMaterial: return "systemUltraThinMaterial";
-    case RNSBottomTabsTabBarBlurEffect::SystemThinMaterial: return "systemThinMaterial";
-    case RNSBottomTabsTabBarBlurEffect::SystemMaterial: return "systemMaterial";
-    case RNSBottomTabsTabBarBlurEffect::SystemThickMaterial: return "systemThickMaterial";
-    case RNSBottomTabsTabBarBlurEffect::SystemChromeMaterial: return "systemChromeMaterial";
-    case RNSBottomTabsTabBarBlurEffect::SystemUltraThinMaterialLight: return "systemUltraThinMaterialLight";
-    case RNSBottomTabsTabBarBlurEffect::SystemThinMaterialLight: return "systemThinMaterialLight";
-    case RNSBottomTabsTabBarBlurEffect::SystemMaterialLight: return "systemMaterialLight";
-    case RNSBottomTabsTabBarBlurEffect::SystemThickMaterialLight: return "systemThickMaterialLight";
-    case RNSBottomTabsTabBarBlurEffect::SystemChromeMaterialLight: return "systemChromeMaterialLight";
-    case RNSBottomTabsTabBarBlurEffect::SystemUltraThinMaterialDark: return "systemUltraThinMaterialDark";
-    case RNSBottomTabsTabBarBlurEffect::SystemThinMaterialDark: return "systemThinMaterialDark";
-    case RNSBottomTabsTabBarBlurEffect::SystemMaterialDark: return "systemMaterialDark";
-    case RNSBottomTabsTabBarBlurEffect::SystemThickMaterialDark: return "systemThickMaterialDark";
-    case RNSBottomTabsTabBarBlurEffect::SystemChromeMaterialDark: return "systemChromeMaterialDark";
-  }
-}
-
-#ifdef RN_SERIALIZABLE_STATE
-static inline folly::dynamic toDynamic(const RNSBottomTabsTabBarBlurEffect &value) {
-  return toString(value);
-}
-#endif
 enum class RNSBottomTabsTabBarItemLabelVisibilityMode { Auto, Selected, Labeled, Unlabeled };
 
 static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSBottomTabsTabBarItemLabelVisibilityMode &result) {
@@ -129,44 +68,7 @@ static inline folly::dynamic toDynamic(const RNSBottomTabsTabBarMinimizeBehavior
   return toString(value);
 }
 #endif
-struct RNSBottomTabsTabBarItemTitlePositionAdjustmentStruct {
-  Float horizontal{0.0};
-  Float vertical{0.0};
 
-#ifdef RN_SERIALIZABLE_STATE
-  bool operator==(const RNSBottomTabsTabBarItemTitlePositionAdjustmentStruct&) const = default;
-
-  folly::dynamic toDynamic() const {
-    folly::dynamic result = folly::dynamic::object();
-    result["horizontal"] = horizontal;
-    result["vertical"] = vertical;
-    return result;
-  }
-#endif
-};
-
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSBottomTabsTabBarItemTitlePositionAdjustmentStruct &result) {
-  auto map = (std::unordered_map<std::string, RawValue>)value;
-
-  auto tmp_horizontal = map.find("horizontal");
-  if (tmp_horizontal != map.end()) {
-    fromRawValue(context, tmp_horizontal->second, result.horizontal);
-  }
-  auto tmp_vertical = map.find("vertical");
-  if (tmp_vertical != map.end()) {
-    fromRawValue(context, tmp_vertical->second, result.vertical);
-  }
-}
-
-static inline std::string toString(const RNSBottomTabsTabBarItemTitlePositionAdjustmentStruct &value) {
-  return "[Object RNSBottomTabsTabBarItemTitlePositionAdjustmentStruct]";
-}
-
-#ifdef RN_SERIALIZABLE_STATE
-static inline folly::dynamic toDynamic(const RNSBottomTabsTabBarItemTitlePositionAdjustmentStruct &value) {
-  return value.toDynamic();
-}
-#endif
 class RNSBottomTabsProps final : public ViewProps {
  public:
   RNSBottomTabsProps() = default;
@@ -175,23 +77,20 @@ class RNSBottomTabsProps final : public ViewProps {
 #pragma mark - Props
 
   SharedColor tabBarBackgroundColor{};
-  RNSBottomTabsTabBarBlurEffect tabBarBlurEffect{RNSBottomTabsTabBarBlurEffect::SystemDefault};
-  SharedColor tabBarTintColor{};
   std::string tabBarItemTitleFontFamily{};
   Float tabBarItemTitleFontSize{0.0};
+  Float tabBarItemTitleFontSizeActive{0.0};
   std::string tabBarItemTitleFontWeight{};
   std::string tabBarItemTitleFontStyle{};
   SharedColor tabBarItemTitleFontColor{};
-  RNSBottomTabsTabBarItemTitlePositionAdjustmentStruct tabBarItemTitlePositionAdjustment{};
-  SharedColor tabBarItemIconColor{};
-  SharedColor tabBarItemBadgeBackgroundColor{};
   SharedColor tabBarItemTitleFontColorActive{};
+  SharedColor tabBarItemIconColor{};
   SharedColor tabBarItemIconColorActive{};
-  Float tabBarItemTitleFontSizeActive{0.0};
   SharedColor tabBarItemActiveIndicatorColor{};
   bool tabBarItemActiveIndicatorEnabled{true};
   SharedColor tabBarItemRippleColor{};
   RNSBottomTabsTabBarItemLabelVisibilityMode tabBarItemLabelVisibilityMode{RNSBottomTabsTabBarItemLabelVisibilityMode::Auto};
+  SharedColor tabBarTintColor{};
   RNSBottomTabsTabBarMinimizeBehavior tabBarMinimizeBehavior{RNSBottomTabsTabBarMinimizeBehavior::Automatic};
   bool controlNavigationStateInJS{false};
 
@@ -202,64 +101,38 @@ class RNSBottomTabsProps final : public ViewProps {
   #endif
 };
 
-enum class RNSBottomTabsScreenTabBarBlurEffect { None, SystemDefault, ExtraLight, Light, Dark, Regular, Prominent, SystemUltraThinMaterial, SystemThinMaterial, SystemMaterial, SystemThickMaterial, SystemChromeMaterial, SystemUltraThinMaterialLight, SystemThinMaterialLight, SystemMaterialLight, SystemThickMaterialLight, SystemChromeMaterialLight, SystemUltraThinMaterialDark, SystemThinMaterialDark, SystemMaterialDark, SystemThickMaterialDark, SystemChromeMaterialDark };
+enum class RNSBottomTabsScreenOrientation { Inherit, All, AllButUpsideDown, Portrait, PortraitUp, PortraitDown, Landscape, LandscapeLeft, LandscapeRight };
 
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSBottomTabsScreenTabBarBlurEffect &result) {
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSBottomTabsScreenOrientation &result) {
   auto string = (std::string)value;
-  if (string == "none") { result = RNSBottomTabsScreenTabBarBlurEffect::None; return; }
-  if (string == "systemDefault") { result = RNSBottomTabsScreenTabBarBlurEffect::SystemDefault; return; }
-  if (string == "extraLight") { result = RNSBottomTabsScreenTabBarBlurEffect::ExtraLight; return; }
-  if (string == "light") { result = RNSBottomTabsScreenTabBarBlurEffect::Light; return; }
-  if (string == "dark") { result = RNSBottomTabsScreenTabBarBlurEffect::Dark; return; }
-  if (string == "regular") { result = RNSBottomTabsScreenTabBarBlurEffect::Regular; return; }
-  if (string == "prominent") { result = RNSBottomTabsScreenTabBarBlurEffect::Prominent; return; }
-  if (string == "systemUltraThinMaterial") { result = RNSBottomTabsScreenTabBarBlurEffect::SystemUltraThinMaterial; return; }
-  if (string == "systemThinMaterial") { result = RNSBottomTabsScreenTabBarBlurEffect::SystemThinMaterial; return; }
-  if (string == "systemMaterial") { result = RNSBottomTabsScreenTabBarBlurEffect::SystemMaterial; return; }
-  if (string == "systemThickMaterial") { result = RNSBottomTabsScreenTabBarBlurEffect::SystemThickMaterial; return; }
-  if (string == "systemChromeMaterial") { result = RNSBottomTabsScreenTabBarBlurEffect::SystemChromeMaterial; return; }
-  if (string == "systemUltraThinMaterialLight") { result = RNSBottomTabsScreenTabBarBlurEffect::SystemUltraThinMaterialLight; return; }
-  if (string == "systemThinMaterialLight") { result = RNSBottomTabsScreenTabBarBlurEffect::SystemThinMaterialLight; return; }
-  if (string == "systemMaterialLight") { result = RNSBottomTabsScreenTabBarBlurEffect::SystemMaterialLight; return; }
-  if (string == "systemThickMaterialLight") { result = RNSBottomTabsScreenTabBarBlurEffect::SystemThickMaterialLight; return; }
-  if (string == "systemChromeMaterialLight") { result = RNSBottomTabsScreenTabBarBlurEffect::SystemChromeMaterialLight; return; }
-  if (string == "systemUltraThinMaterialDark") { result = RNSBottomTabsScreenTabBarBlurEffect::SystemUltraThinMaterialDark; return; }
-  if (string == "systemThinMaterialDark") { result = RNSBottomTabsScreenTabBarBlurEffect::SystemThinMaterialDark; return; }
-  if (string == "systemMaterialDark") { result = RNSBottomTabsScreenTabBarBlurEffect::SystemMaterialDark; return; }
-  if (string == "systemThickMaterialDark") { result = RNSBottomTabsScreenTabBarBlurEffect::SystemThickMaterialDark; return; }
-  if (string == "systemChromeMaterialDark") { result = RNSBottomTabsScreenTabBarBlurEffect::SystemChromeMaterialDark; return; }
+  if (string == "inherit") { result = RNSBottomTabsScreenOrientation::Inherit; return; }
+  if (string == "all") { result = RNSBottomTabsScreenOrientation::All; return; }
+  if (string == "allButUpsideDown") { result = RNSBottomTabsScreenOrientation::AllButUpsideDown; return; }
+  if (string == "portrait") { result = RNSBottomTabsScreenOrientation::Portrait; return; }
+  if (string == "portraitUp") { result = RNSBottomTabsScreenOrientation::PortraitUp; return; }
+  if (string == "portraitDown") { result = RNSBottomTabsScreenOrientation::PortraitDown; return; }
+  if (string == "landscape") { result = RNSBottomTabsScreenOrientation::Landscape; return; }
+  if (string == "landscapeLeft") { result = RNSBottomTabsScreenOrientation::LandscapeLeft; return; }
+  if (string == "landscapeRight") { result = RNSBottomTabsScreenOrientation::LandscapeRight; return; }
   abort();
 }
 
-static inline std::string toString(const RNSBottomTabsScreenTabBarBlurEffect &value) {
+static inline std::string toString(const RNSBottomTabsScreenOrientation &value) {
   switch (value) {
-    case RNSBottomTabsScreenTabBarBlurEffect::None: return "none";
-    case RNSBottomTabsScreenTabBarBlurEffect::SystemDefault: return "systemDefault";
-    case RNSBottomTabsScreenTabBarBlurEffect::ExtraLight: return "extraLight";
-    case RNSBottomTabsScreenTabBarBlurEffect::Light: return "light";
-    case RNSBottomTabsScreenTabBarBlurEffect::Dark: return "dark";
-    case RNSBottomTabsScreenTabBarBlurEffect::Regular: return "regular";
-    case RNSBottomTabsScreenTabBarBlurEffect::Prominent: return "prominent";
-    case RNSBottomTabsScreenTabBarBlurEffect::SystemUltraThinMaterial: return "systemUltraThinMaterial";
-    case RNSBottomTabsScreenTabBarBlurEffect::SystemThinMaterial: return "systemThinMaterial";
-    case RNSBottomTabsScreenTabBarBlurEffect::SystemMaterial: return "systemMaterial";
-    case RNSBottomTabsScreenTabBarBlurEffect::SystemThickMaterial: return "systemThickMaterial";
-    case RNSBottomTabsScreenTabBarBlurEffect::SystemChromeMaterial: return "systemChromeMaterial";
-    case RNSBottomTabsScreenTabBarBlurEffect::SystemUltraThinMaterialLight: return "systemUltraThinMaterialLight";
-    case RNSBottomTabsScreenTabBarBlurEffect::SystemThinMaterialLight: return "systemThinMaterialLight";
-    case RNSBottomTabsScreenTabBarBlurEffect::SystemMaterialLight: return "systemMaterialLight";
-    case RNSBottomTabsScreenTabBarBlurEffect::SystemThickMaterialLight: return "systemThickMaterialLight";
-    case RNSBottomTabsScreenTabBarBlurEffect::SystemChromeMaterialLight: return "systemChromeMaterialLight";
-    case RNSBottomTabsScreenTabBarBlurEffect::SystemUltraThinMaterialDark: return "systemUltraThinMaterialDark";
-    case RNSBottomTabsScreenTabBarBlurEffect::SystemThinMaterialDark: return "systemThinMaterialDark";
-    case RNSBottomTabsScreenTabBarBlurEffect::SystemMaterialDark: return "systemMaterialDark";
-    case RNSBottomTabsScreenTabBarBlurEffect::SystemThickMaterialDark: return "systemThickMaterialDark";
-    case RNSBottomTabsScreenTabBarBlurEffect::SystemChromeMaterialDark: return "systemChromeMaterialDark";
+    case RNSBottomTabsScreenOrientation::Inherit: return "inherit";
+    case RNSBottomTabsScreenOrientation::All: return "all";
+    case RNSBottomTabsScreenOrientation::AllButUpsideDown: return "allButUpsideDown";
+    case RNSBottomTabsScreenOrientation::Portrait: return "portrait";
+    case RNSBottomTabsScreenOrientation::PortraitUp: return "portraitUp";
+    case RNSBottomTabsScreenOrientation::PortraitDown: return "portraitDown";
+    case RNSBottomTabsScreenOrientation::Landscape: return "landscape";
+    case RNSBottomTabsScreenOrientation::LandscapeLeft: return "landscapeLeft";
+    case RNSBottomTabsScreenOrientation::LandscapeRight: return "landscapeRight";
   }
 }
 
 #ifdef RN_SERIALIZABLE_STATE
-static inline folly::dynamic toDynamic(const RNSBottomTabsScreenTabBarBlurEffect &value) {
+static inline folly::dynamic toDynamic(const RNSBottomTabsScreenOrientation &value) {
   return toString(value);
 }
 #endif
@@ -286,45 +159,49 @@ static inline folly::dynamic toDynamic(const RNSBottomTabsScreenIconType &value)
   return toString(value);
 }
 #endif
-struct RNSBottomTabsScreenTabBarItemTitlePositionAdjustmentStruct {
-  Float horizontal{0.0};
-  Float vertical{0.0};
+enum class RNSBottomTabsScreenSystemItem { None, Bookmarks, Contacts, Downloads, Favorites, Featured, History, More, MostRecent, MostViewed, Recents, Search, TopRated };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSBottomTabsScreenSystemItem &result) {
+  auto string = (std::string)value;
+  if (string == "none") { result = RNSBottomTabsScreenSystemItem::None; return; }
+  if (string == "bookmarks") { result = RNSBottomTabsScreenSystemItem::Bookmarks; return; }
+  if (string == "contacts") { result = RNSBottomTabsScreenSystemItem::Contacts; return; }
+  if (string == "downloads") { result = RNSBottomTabsScreenSystemItem::Downloads; return; }
+  if (string == "favorites") { result = RNSBottomTabsScreenSystemItem::Favorites; return; }
+  if (string == "featured") { result = RNSBottomTabsScreenSystemItem::Featured; return; }
+  if (string == "history") { result = RNSBottomTabsScreenSystemItem::History; return; }
+  if (string == "more") { result = RNSBottomTabsScreenSystemItem::More; return; }
+  if (string == "mostRecent") { result = RNSBottomTabsScreenSystemItem::MostRecent; return; }
+  if (string == "mostViewed") { result = RNSBottomTabsScreenSystemItem::MostViewed; return; }
+  if (string == "recents") { result = RNSBottomTabsScreenSystemItem::Recents; return; }
+  if (string == "search") { result = RNSBottomTabsScreenSystemItem::Search; return; }
+  if (string == "topRated") { result = RNSBottomTabsScreenSystemItem::TopRated; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSBottomTabsScreenSystemItem &value) {
+  switch (value) {
+    case RNSBottomTabsScreenSystemItem::None: return "none";
+    case RNSBottomTabsScreenSystemItem::Bookmarks: return "bookmarks";
+    case RNSBottomTabsScreenSystemItem::Contacts: return "contacts";
+    case RNSBottomTabsScreenSystemItem::Downloads: return "downloads";
+    case RNSBottomTabsScreenSystemItem::Favorites: return "favorites";
+    case RNSBottomTabsScreenSystemItem::Featured: return "featured";
+    case RNSBottomTabsScreenSystemItem::History: return "history";
+    case RNSBottomTabsScreenSystemItem::More: return "more";
+    case RNSBottomTabsScreenSystemItem::MostRecent: return "mostRecent";
+    case RNSBottomTabsScreenSystemItem::MostViewed: return "mostViewed";
+    case RNSBottomTabsScreenSystemItem::Recents: return "recents";
+    case RNSBottomTabsScreenSystemItem::Search: return "search";
+    case RNSBottomTabsScreenSystemItem::TopRated: return "topRated";
+  }
+}
 
 #ifdef RN_SERIALIZABLE_STATE
-  bool operator==(const RNSBottomTabsScreenTabBarItemTitlePositionAdjustmentStruct&) const = default;
-
-  folly::dynamic toDynamic() const {
-    folly::dynamic result = folly::dynamic::object();
-    result["horizontal"] = horizontal;
-    result["vertical"] = vertical;
-    return result;
-  }
-#endif
-};
-
-static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSBottomTabsScreenTabBarItemTitlePositionAdjustmentStruct &result) {
-  auto map = (std::unordered_map<std::string, RawValue>)value;
-
-  auto tmp_horizontal = map.find("horizontal");
-  if (tmp_horizontal != map.end()) {
-    fromRawValue(context, tmp_horizontal->second, result.horizontal);
-  }
-  auto tmp_vertical = map.find("vertical");
-  if (tmp_vertical != map.end()) {
-    fromRawValue(context, tmp_vertical->second, result.vertical);
-  }
-}
-
-static inline std::string toString(const RNSBottomTabsScreenTabBarItemTitlePositionAdjustmentStruct &value) {
-  return "[Object RNSBottomTabsScreenTabBarItemTitlePositionAdjustmentStruct]";
-}
-
-#ifdef RN_SERIALIZABLE_STATE
-static inline folly::dynamic toDynamic(const RNSBottomTabsScreenTabBarItemTitlePositionAdjustmentStruct &value) {
-  return value.toDynamic();
+static inline folly::dynamic toDynamic(const RNSBottomTabsScreenSystemItem &value) {
+  return toString(value);
 }
 #endif
-
 struct RNSBottomTabsScreenSpecialEffectsRepeatedTabSelectionStruct {
   bool popToRoot{true};
   bool scrollToTop{true};
@@ -405,25 +282,21 @@ class RNSBottomTabsScreenProps final : public ViewProps {
 
   bool isFocused{false};
   std::string tabKey{};
-  SharedColor tabBarBackgroundColor{};
-  RNSBottomTabsScreenTabBarBlurEffect tabBarBlurEffect{RNSBottomTabsScreenTabBarBlurEffect::SystemDefault};
-  std::string tabBarItemTitleFontFamily{};
-  Float tabBarItemTitleFontSize{0.0};
-  std::string tabBarItemTitleFontWeight{};
-  std::string tabBarItemTitleFontStyle{};
-  SharedColor tabBarItemTitleFontColor{};
-  RNSBottomTabsScreenTabBarItemTitlePositionAdjustmentStruct tabBarItemTitlePositionAdjustment{};
-  SharedColor tabBarItemIconColor{};
-  SharedColor tabBarItemBadgeBackgroundColor{};
   std::string title{};
+  std::string badgeValue{};
+  RNSBottomTabsScreenOrientation orientation{RNSBottomTabsScreenOrientation::Inherit};
   std::string iconResourceName{};
+  ImageSource iconResource{};
   SharedColor tabBarItemBadgeTextColor{};
+  SharedColor tabBarItemBadgeBackgroundColor{};
+  folly::dynamic standardAppearance{};
+  folly::dynamic scrollEdgeAppearance{};
   RNSBottomTabsScreenIconType iconType{RNSBottomTabsScreenIconType::SfSymbol};
   ImageSource iconImageSource{};
   std::string iconSfSymbolName{};
   ImageSource selectedIconImageSource{};
   std::string selectedIconSfSymbolName{};
-  std::string badgeValue{};
+  RNSBottomTabsScreenSystemItem systemItem{RNSBottomTabsScreenSystemItem::None};
   RNSBottomTabsScreenSpecialEffectsStruct specialEffects{};
   bool overrideScrollViewContentInsetAdjustmentBehavior{true};
 
@@ -566,6 +439,41 @@ static inline folly::dynamic toDynamic(const RNSSplitViewHostDisplayModeButtonVi
   return toString(value);
 }
 #endif
+enum class RNSSplitViewHostOrientation { Inherit, All, AllButUpsideDown, Portrait, PortraitUp, PortraitDown, Landscape, LandscapeLeft, LandscapeRight };
+
+static inline void fromRawValue(const PropsParserContext& context, const RawValue &value, RNSSplitViewHostOrientation &result) {
+  auto string = (std::string)value;
+  if (string == "inherit") { result = RNSSplitViewHostOrientation::Inherit; return; }
+  if (string == "all") { result = RNSSplitViewHostOrientation::All; return; }
+  if (string == "allButUpsideDown") { result = RNSSplitViewHostOrientation::AllButUpsideDown; return; }
+  if (string == "portrait") { result = RNSSplitViewHostOrientation::Portrait; return; }
+  if (string == "portraitUp") { result = RNSSplitViewHostOrientation::PortraitUp; return; }
+  if (string == "portraitDown") { result = RNSSplitViewHostOrientation::PortraitDown; return; }
+  if (string == "landscape") { result = RNSSplitViewHostOrientation::Landscape; return; }
+  if (string == "landscapeLeft") { result = RNSSplitViewHostOrientation::LandscapeLeft; return; }
+  if (string == "landscapeRight") { result = RNSSplitViewHostOrientation::LandscapeRight; return; }
+  abort();
+}
+
+static inline std::string toString(const RNSSplitViewHostOrientation &value) {
+  switch (value) {
+    case RNSSplitViewHostOrientation::Inherit: return "inherit";
+    case RNSSplitViewHostOrientation::All: return "all";
+    case RNSSplitViewHostOrientation::AllButUpsideDown: return "allButUpsideDown";
+    case RNSSplitViewHostOrientation::Portrait: return "portrait";
+    case RNSSplitViewHostOrientation::PortraitUp: return "portraitUp";
+    case RNSSplitViewHostOrientation::PortraitDown: return "portraitDown";
+    case RNSSplitViewHostOrientation::Landscape: return "landscape";
+    case RNSSplitViewHostOrientation::LandscapeLeft: return "landscapeLeft";
+    case RNSSplitViewHostOrientation::LandscapeRight: return "landscapeRight";
+  }
+}
+
+#ifdef RN_SERIALIZABLE_STATE
+static inline folly::dynamic toDynamic(const RNSSplitViewHostOrientation &value) {
+  return toString(value);
+}
+#endif
 struct RNSSplitViewHostColumnMetricsStruct {
   Float minimumPrimaryColumnWidth{-1.0};
   Float maximumPrimaryColumnWidth{-1.0};
@@ -671,6 +579,7 @@ class RNSSplitViewHostProps final : public ViewProps {
   bool showSecondaryToggleButton{false};
   RNSSplitViewHostDisplayModeButtonVisibility displayModeButtonVisibility{RNSSplitViewHostDisplayModeButtonVisibility::Automatic};
   RNSSplitViewHostColumnMetricsStruct columnMetrics{};
+  RNSSplitViewHostOrientation orientation{RNSSplitViewHostOrientation::Inherit};
   bool presentsWithGesture{true};
   bool showInspector{false};
 

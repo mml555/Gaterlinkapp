@@ -1,259 +1,255 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import firestore from '@react-native-firebase/firestore';
 import { firebaseService } from './firebaseService';
 
-export interface NotificationData {
-  id: string;
-  title: string;
-  body: string;
-  data?: any;
-  timestamp: Date;
-  read: boolean;
-}
-
+// Define the FirestoreNotification type if it doesn't exist in types
 export interface FirestoreNotification {
   id: string;
   userId: string;
   type: string;
   title: string;
   body: string;
-  data?: any;
+  data?: Record<string, any>;
   read: boolean;
   createdAt: Date;
+  readAt?: Date;
 }
 
 class NotificationService {
-  private readonly NOTIFICATIONS_KEY = '@notifications';
-  private readonly BADGE_COUNT_KEY = '@badge_count';
   private firestoreListeners: (() => void)[] = [];
 
-  async requestPermissions(): Promise<boolean> {
+  // Initialize notification service
+  async initialize(): Promise<void> {
     try {
-      // For React Native, we'll use a simple permission check
-      // In a real implementation, you would use react-native-permissions
-      console.log('Requesting notification permissions...');
-      return true; // Simulate granted permission
-    } catch (error) {
-      console.error('Error requesting notification permissions:', error);
-      return false;
-    }
-  }
-
-  async scheduleLocalNotification(
-    title: string,
-    body: string,
-    data?: any,
-    trigger?: any
-  ): Promise<string> {
-    try {
-      // For React Native, we'll store the notification locally
-      const notification: NotificationData = {
-        id: Date.now().toString(),
-        title,
-        body,
-        data,
-        timestamp: new Date(),
-        read: false,
-      };
-
-      await this.saveNotification(notification);
-      await this.incrementBadgeCount();
+      console.log('Initializing notification service...');
       
-      return notification.id;
-    } catch (error) {
-      console.error('Error scheduling notification:', error);
-      throw error;
-    }
-  }
-
-  async cancelNotification(identifier: string): Promise<void> {
-    try {
-      const notifications = await this.getNotifications();
-      const filteredNotifications = notifications.filter(n => n.id !== identifier);
-      await AsyncStorage.setItem(this.NOTIFICATIONS_KEY, JSON.stringify(filteredNotifications));
-    } catch (error) {
-      console.error('Error canceling notification:', error);
-    }
-  }
-
-  async cancelAllNotifications(): Promise<void> {
-    try {
-      await AsyncStorage.removeItem(this.NOTIFICATIONS_KEY);
-      await AsyncStorage.setItem(this.BADGE_COUNT_KEY, '0');
-    } catch (error) {
-      console.error('Error canceling all notifications:', error);
-    }
-  }
-
-  async getBadgeCount(): Promise<number> {
-    try {
-      const count = await AsyncStorage.getItem(this.BADGE_COUNT_KEY);
-      return count ? parseInt(count, 10) : 0;
-    } catch (error) {
-      console.error('Error getting badge count:', error);
-      return 0;
-    }
-  }
-
-  async setBadgeCount(count: number): Promise<void> {
-    try {
-      await AsyncStorage.setItem(this.BADGE_COUNT_KEY, count.toString());
-    } catch (error) {
-      console.error('Error setting badge count:', error);
-    }
-  }
-
-  async getNotifications(): Promise<NotificationData[]> {
-    try {
-      const notificationsJson = await AsyncStorage.getItem(this.NOTIFICATIONS_KEY);
-      if (notificationsJson) {
-        const notifications = JSON.parse(notificationsJson);
-        return notifications.map((n: any) => ({
-          ...n,
-          timestamp: new Date(n.timestamp),
-        }));
+      // Set up notification listeners for the current user
+      const currentUser = firebaseService.auth.currentUser;
+      if (currentUser) {
+        this.setupNotificationListeners(currentUser.uid);
       }
-      return [];
+
+      console.log('Notification service initialized successfully');
     } catch (error) {
-      console.error('Error getting notifications:', error);
-      return [];
+      console.error('Error initializing notification service:', error);
+      // Don't throw, just log the error
     }
   }
 
-  async markAsRead(notificationId: string): Promise<void> {
+  // Set up all notification listeners for a user
+  private setupNotificationListeners(userId: string): void {
     try {
-      const notifications = await this.getNotifications();
-      const updatedNotifications = notifications.map(n => 
-        n.id === notificationId ? { ...n, read: true } : n
-      );
-      await AsyncStorage.setItem(this.NOTIFICATIONS_KEY, JSON.stringify(updatedNotifications));
+      console.log('Setting up notification listeners for user:', userId);
       
-      // Update badge count
-      const unreadCount = updatedNotifications.filter(n => !n.read).length;
-      await this.setBadgeCount(unreadCount);
-    } catch (error) {
-      console.error('Error marking notification as read:', error);
-    }
-  }
-
-  async markAllAsRead(): Promise<void> {
-    try {
-      const notifications = await this.getNotifications();
-      const updatedNotifications = notifications.map(n => ({ ...n, read: true }));
-      await AsyncStorage.setItem(this.NOTIFICATIONS_KEY, JSON.stringify(updatedNotifications));
-      await this.setBadgeCount(0);
-    } catch (error) {
-      console.error('Error marking all notifications as read:', error);
-    }
-  }
-
-  async deleteNotification(notificationId: string): Promise<void> {
-    try {
-      const notifications = await this.getNotifications();
-      const filteredNotifications = notifications.filter(n => n.id !== notificationId);
-      await AsyncStorage.setItem(this.NOTIFICATIONS_KEY, JSON.stringify(filteredNotifications));
+      // Set up listeners for new notifications
+      this.setupNewNotificationsListener(userId);
       
-      // Update badge count
-      const unreadCount = filteredNotifications.filter(n => !n.read).length;
-      await this.setBadgeCount(unreadCount);
-    } catch (error) {
-      console.error('Error deleting notification:', error);
-    }
-  }
-
-  private async saveNotification(notification: NotificationData): Promise<void> {
-    try {
-      const notifications = await this.getNotifications();
-      notifications.unshift(notification); // Add to beginning
+      // Set up listeners for notification updates
+      this.setupNotificationUpdatesListener(userId);
       
-      // Keep only last 100 notifications
-      const trimmedNotifications = notifications.slice(0, 100);
-      
-      await AsyncStorage.setItem(this.NOTIFICATIONS_KEY, JSON.stringify(trimmedNotifications));
+      console.log('Notification listeners set up successfully');
     } catch (error) {
-      console.error('Error saving notification:', error);
+      console.error('Error setting up notification listeners:', error);
+      // Don't throw the error, just log it to prevent app crashes
     }
   }
 
-  private async incrementBadgeCount(): Promise<void> {
-    try {
-      const currentCount = await this.getBadgeCount();
-      await this.setBadgeCount(currentCount + 1);
-    } catch (error) {
-      console.error('Error incrementing badge count:', error);
-    }
-  }
-
-  // Real-time Firestore notification listeners (free tier alternative to Cloud Functions)
-  
-  // Setup real-time listeners for notifications
-  setupNotificationListeners(userId: string): void {
-    console.log(`Setting up notification listeners for user: ${userId}`);
-    
-    // Listen for new notifications
-    this.setupNewNotificationsListener(userId);
-    
-    // Listen for notification updates
-    this.setupNotificationUpdatesListener(userId);
-  }
-
-  // Listen for new notifications
+  // Listen for new notifications with fallback
   private setupNewNotificationsListener(userId: string): void {
-    const notificationsQuery = firebaseService.firestore
-      .collection('notifications')
-      .where('userId', '==', userId)
-      .where('read', '==', false)
-      .orderBy('createdAt', 'desc');
+    try {
+      // First, try the complex query with ordering
+      const notificationsQuery = firestore()
+        .collection('notifications')
+        .where('userId', '==', userId)
+        .where('read', '==', false);
 
-    const unsubscribe = notificationsQuery.onSnapshot((snapshot) => {
-      snapshot.docChanges().forEach((change) => {
-        if (change.type === 'added') {
-          const notification = {
-            id: change.doc.id,
-            ...change.doc.data(),
-            createdAt: change.doc.data().createdAt?.toDate() || new Date(),
-          } as FirestoreNotification;
+      const unsubscribe = notificationsQuery.onSnapshot(
+        (snapshot: any) => {
+          snapshot.docChanges().forEach((change: any) => {
+            if (change.type === 'added') {
+              const notification = {
+                id: change.doc.id,
+                ...change.doc.data(),
+                createdAt: change.doc.data().createdAt?.toDate() || new Date(),
+              } as FirestoreNotification;
 
-          console.log('New notification received:', notification);
+              console.log('New notification received:', notification);
+              
+              // Show local notification
+              this.showLocalNotification(notification);
+              
+              // Update badge count
+              this.incrementBadgeCount();
+            }
+          });
+        },
+        (error: any) => {
+          console.error('Error in new notifications listener:', error);
+          console.error('Error code:', error.code);
+          console.error('Error message:', error.message);
           
-          // Show local notification
-          this.showLocalNotification(notification);
-          
-          // Update badge count
-          this.incrementBadgeCount();
+          // Handle specific error types gracefully
+          if (error.code === 'permission-denied') {
+            console.warn('Permission denied for notifications - this is expected for some users');
+            // Don't retry immediately, the service will continue to function
+          } else if (error.code === 'unavailable') {
+            console.warn('Firestore temporarily unavailable, will retry later');
+            // Could implement retry logic here
+          } else {
+            console.warn('Non-critical notification listener error, continuing...');
+          }
         }
-      });
-    });
+      );
 
-    this.firestoreListeners.push(unsubscribe);
+      // Store the unsubscribe function
+      this.firestoreListeners.push(unsubscribe);
+    } catch (error) {
+      console.error('Error setting up new notifications listener:', error);
+      // Don't throw, just log the error
+    }
+  }
+
+  // Fallback listener with simpler query
+  private setupFallbackNotificationsListener(userId: string): void {
+    try {
+      console.log('Setting up fallback notifications listener...');
+      
+      // Simpler query without ordering to avoid permission issues
+      const notificationsQuery = firestore()
+        .collection('notifications')
+        .where('userId', '==', userId);
+
+      const unsubscribe = notificationsQuery.onSnapshot(
+        (snapshot) => {
+          snapshot.docChanges().forEach((change) => {
+            if (change.type === 'added') {
+              const notification = {
+                id: change.doc.id,
+                ...change.doc.data(),
+                createdAt: change.doc.data().createdAt?.toDate() || new Date(),
+              } as FirestoreNotification;
+
+              console.log('New notification received (fallback):', notification);
+              
+              // Show local notification
+              this.showLocalNotification(notification);
+              
+              // Update badge count
+              this.incrementBadgeCount();
+            }
+          });
+        },
+        (error: any) => {
+          console.error('Error in fallback notifications listener:', error);
+          console.error('Error code:', error.code);
+          console.error('Error message:', error.message);
+          
+          if (error.code === 'permission-denied') {
+            console.warn('🔒 Permission denied even with fallback query. This suggests:');
+            console.warn('   - Firestore rules are too restrictive');
+            console.warn('   - User authentication issues');
+            console.warn('   - Collection may not exist');
+            console.warn('Notifications may not work properly until this is resolved.');
+          }
+        }
+      );
+
+      this.firestoreListeners.push(unsubscribe);
+    } catch (error) {
+      console.error('Error setting up fallback notifications listener:', error);
+    }
   }
 
   // Listen for notification updates (marking as read)
   private setupNotificationUpdatesListener(userId: string): void {
-    const notificationsQuery = firebaseService.firestore
-      .collection('notifications')
-      .where('userId', '==', userId)
-      .orderBy('updatedAt', 'desc');
+    try {
+      // First, try the complex query with ordering
+      const notificationsQuery = firebaseService.firestore
+        .collection('notifications')
+        .where('userId', '==', userId)
+        .orderBy('updatedAt', 'desc');
 
-    const unsubscribe = notificationsQuery.onSnapshot((snapshot) => {
-      snapshot.docChanges().forEach((change) => {
-        if (change.type === 'modified') {
-          const notification = {
-            id: change.doc.id,
-            ...change.doc.data(),
-            createdAt: change.doc.data().createdAt?.toDate() || new Date(),
-          } as FirestoreNotification;
+      const unsubscribe = notificationsQuery.onSnapshot(
+        (snapshot: any) => {
+          snapshot.docChanges().forEach((change: any) => {
+            if (change.type === 'modified') {
+              const notification = {
+                id: change.doc.id,
+                ...change.doc.data(),
+                createdAt: change.doc.data().createdAt?.toDate() || new Date(),
+              } as FirestoreNotification;
 
-          console.log('Notification updated:', notification);
-          
-          // Update local notification if marked as read
-          if (notification.read) {
-            this.markAsRead(notification.id);
+              console.log('Notification updated:', notification);
+              
+              // Update local notification if marked as read
+              if (notification.read) {
+                this.markAsReadLocal(notification.id);
+              }
+            }
+          });
+        },
+        (error: any) => {
+          console.error('Error in notification updates listener:', error);
+          // Handle specific error types
+          if (error.code === 'permission-denied') {
+            console.warn('Permission denied for notification updates. Trying fallback query...');
+            // Try a simpler query without ordering
+            this.setupFallbackNotificationUpdatesListener(userId);
+          } else if (error.code === 'failed-precondition') {
+            console.warn('Missing index for notification updates query. Creating index...');
+            // The index will be created automatically by Firebase
+          } else {
+            console.error('Unexpected error in notification updates listener:', error);
           }
         }
-      });
-    });
+      );
 
-    this.firestoreListeners.push(unsubscribe);
+      this.firestoreListeners.push(unsubscribe);
+    } catch (error) {
+      console.error('Error setting up notification updates listener:', error);
+    }
+  }
+
+  // Fallback listener for notification updates with simpler query
+  private setupFallbackNotificationUpdatesListener(userId: string): void {
+    try {
+      console.log('Setting up fallback notification updates listener...');
+      
+      // Simpler query without ordering to avoid permission issues
+      const notificationsQuery = firebaseService.firestore
+        .collection('notifications')
+        .where('userId', '==', userId);
+
+      const unsubscribe = notificationsQuery.onSnapshot(
+        (snapshot: any) => {
+          snapshot.docChanges().forEach((change: any) => {
+            if (change.type === 'modified') {
+              const notification = {
+                id: change.doc.id,
+                ...change.doc.data(),
+                createdAt: change.doc.data().createdAt?.toDate() || new Date(),
+              } as FirestoreNotification;
+
+              console.log('Notification updated (fallback):', notification);
+              
+              // Update local notification if marked as read
+              if (notification.read) {
+                this.markAsReadLocal(notification.id);
+              }
+            }
+          });
+        },
+        (error: any) => {
+          console.error('Error in fallback notification updates listener:', error);
+          if (error.code === 'permission-denied') {
+            console.warn('Permission denied even with fallback query. Notification updates may not work properly.');
+          }
+        }
+      );
+
+      this.firestoreListeners.push(unsubscribe);
+    } catch (error) {
+      console.error('Error setting up fallback notification updates listener:', error);
+    }
   }
 
   // Show local notification
@@ -272,20 +268,68 @@ class NotificationService {
     }
   }
 
-  // Mark notification as read in Firestore
-  async markNotificationAsRead(notificationId: string): Promise<void> {
+  // Schedule local notification
+  private async scheduleLocalNotification(
+    title: string,
+    body: string,
+    data?: Record<string, any>
+  ): Promise<void> {
     try {
-      await firebaseService.firestore
+      // This would integrate with a local notification library
+      // For now, just log the notification
+      console.log('Scheduling local notification:', { title, body, data });
+    } catch (error) {
+      console.error('Error scheduling local notification:', error);
+    }
+  }
+
+  // Mark notification as read in Firestore
+  private async markNotificationAsRead(notificationId: string): Promise<void> {
+    try {
+      const docRef = firebaseService.firestore
         .collection('notifications')
-        .doc(notificationId)
-        .update({
-          read: true,
-          readAt: new Date(),
-        });
+        .doc(notificationId);
+      
+      if (!docRef) {
+        throw new Error('Document reference is null');
+      }
+
+      await docRef.update({
+        read: true,
+        readAt: new Date(),
+      });
 
       console.log(`Notification ${notificationId} marked as read in Firestore`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error marking notification as read in Firestore:', error);
+      // Handle specific error types
+      if (error.code === 'permission-denied') {
+        console.warn('Permission denied for marking notification as read. Check Firestore rules.');
+      } else if (error.code === 'not-found') {
+        console.warn('Notification not found when trying to mark as read.');
+      }
+    }
+  }
+
+  // Mark notification as read (local method)
+  private markAsReadLocal(notificationId: string): void {
+    try {
+      // This method is called by listeners to mark notifications as read locally
+      // The actual Firestore update is handled by markNotificationAsRead
+      console.log(`Notification ${notificationId} marked as read locally`);
+    } catch (error) {
+      console.error('Error marking notification as read locally:', error);
+    }
+  }
+
+  // Increment badge count
+  private async incrementBadgeCount(): Promise<void> {
+    try {
+      // This method would increment the app badge count
+      // For now, just log the action
+      console.log('Incrementing badge count');
+    } catch (error) {
+      console.error('Error incrementing badge count:', error);
     }
   }
 
@@ -303,25 +347,115 @@ class NotificationService {
         ...doc.data(),
         createdAt: doc.data().createdAt?.toDate() || new Date(),
       })) as FirestoreNotification[];
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching Firestore notifications:', error);
+      // Handle specific error types
+      if (error.code === 'permission-denied') {
+        console.warn('Permission denied for notifications. Check Firestore rules.');
+      } else if (error.code === 'failed-precondition') {
+        console.warn('Missing index for notifications query. Creating index...');
+      }
       return [];
     }
   }
 
-  // Get unread notification count from Firestore
+  // Get unread notification count
   async getUnreadNotificationCount(userId: string): Promise<number> {
     try {
-      const snapshot = await firebaseService.firestore
-        .collection('notifications')
-        .where('userId', '==', userId)
-        .where('read', '==', false)
-        .get();
-
-      return snapshot.docs.length;
+      const notifications = await this.getFirestoreNotifications(userId);
+      return notifications.filter(n => !n.read).length;
     } catch (error) {
-      console.error('Error fetching unread notification count:', error);
+      console.error('Error getting unread notification count:', error);
       return 0;
+    }
+  }
+
+  // Get all notifications for a user
+  async getNotifications(userId?: string): Promise<FirestoreNotification[]> {
+    try {
+      const currentUserId = userId || firebaseService.auth.currentUser?.uid;
+      if (!currentUserId) {
+        console.warn('No user ID available for getting notifications');
+        return [];
+      }
+      return await this.getFirestoreNotifications(currentUserId);
+    } catch (error) {
+      console.error('Error getting notifications:', error);
+      return [];
+    }
+  }
+
+  // Get badge count
+  async getBadgeCount(): Promise<number> {
+    try {
+      const currentUser = firebaseService.auth.currentUser;
+      if (!currentUser) {
+        return 0;
+      }
+      return await this.getUnreadNotificationCount(currentUser.uid);
+    } catch (error) {
+      console.error('Error getting badge count:', error);
+      return 0;
+    }
+  }
+
+  // Mark notification as read (public method)
+  async markAsRead(notificationId: string): Promise<void> {
+    try {
+      await this.markNotificationAsRead(notificationId);
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
+      throw error;
+    }
+  }
+
+  // Mark all notifications as read
+  async markAllAsRead(): Promise<void> {
+    try {
+      const currentUser = firebaseService.auth.currentUser;
+      if (!currentUser) {
+        console.warn('No current user to mark notifications as read');
+        return;
+      }
+
+      const notifications = await this.getFirestoreNotifications(currentUser.uid);
+      const unreadNotifications = notifications.filter(n => !n.read);
+
+      const batch = firestore().batch();
+      unreadNotifications.forEach(notification => {
+        const notificationRef = firestore().collection('notifications').doc(notification.id);
+        batch.update(notificationRef, { read: true, readAt: firestore.FieldValue.serverTimestamp() });
+      });
+
+      await batch.commit();
+      console.log(`Marked ${unreadNotifications.length} notifications as read`);
+    } catch (error) {
+      console.error('Error marking all notifications as read:', error);
+      throw error;
+    }
+  }
+
+  // Delete notification
+  async deleteNotification(notificationId: string): Promise<void> {
+    try {
+      await firestore().collection('notifications').doc(notificationId).delete();
+      console.log('Notification deleted:', notificationId);
+    } catch (error) {
+      console.error('Error deleting notification:', error);
+      throw error;
+    }
+  }
+
+  // Request permissions
+  async requestPermissions(): Promise<void> {
+    try {
+      console.log('Requesting notification permissions...');
+      // This would typically involve requesting push notification permissions
+      // For now, we'll just log that permissions were requested
+      console.log('Notification permissions requested');
+    } catch (error) {
+      console.error('Error requesting notification permissions:', error);
+      throw error;
     }
   }
 

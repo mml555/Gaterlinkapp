@@ -6,6 +6,10 @@ class SiteService {
 
   async getSites(): Promise<Site[]> {
     try {
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       const snapshot = await firebaseService.firestore
         .collection(this.COLLECTION)
         .orderBy('createdAt', 'desc')
@@ -25,7 +29,11 @@ class SiteService {
 
   async getSiteById(siteId: string): Promise<Site> {
     try {
-      const doc = await firebaseService.firestore
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
+      const doc = await firebaseService.firestore!
         .collection(this.COLLECTION)
         .doc(siteId)
         .get();
@@ -71,6 +79,10 @@ class SiteService {
         },
       };
 
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       const docRef = await firebaseService.firestore
         .collection(this.COLLECTION)
         .add(newSite);
@@ -92,6 +104,10 @@ class SiteService {
         updatedAt: new Date(),
       };
 
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       await firebaseService.firestore
         .collection(this.COLLECTION)
         .doc(siteId)
@@ -106,6 +122,10 @@ class SiteService {
 
   async deleteSite(siteId: string): Promise<void> {
     try {
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       await firebaseService.firestore
         .collection(this.COLLECTION)
         .doc(siteId)
@@ -123,6 +143,10 @@ class SiteService {
         throw new Error('User not authenticated');
       }
 
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       // Get sites where user is a member
       const snapshot = await firebaseService.firestore
         .collection('userSites')
@@ -137,7 +161,7 @@ class SiteService {
 
       const sitesSnapshot = await firebaseService.firestore
         .collection(this.COLLECTION)
-        .where(firebaseService.firestore.FieldPath.documentId(), 'in', siteIds)
+        .where((firebaseService.firestore as any).FieldPath.documentId(), 'in', siteIds)
         .get();
 
       return sitesSnapshot.docs.map(doc => ({
@@ -154,6 +178,10 @@ class SiteService {
 
   async setSiteStatus(siteId: string, status: SiteStatus): Promise<Site> {
     try {
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       await firebaseService.firestore
         .collection(this.COLLECTION)
         .doc(siteId)
@@ -175,11 +203,15 @@ class SiteService {
       const currentFeatures = site.settings.premiumFeatures || [];
       
       if (!currentFeatures.includes(feature)) {
+        if (!firebaseService.firestore) {
+          throw new Error('Firestore not initialized');
+        }
+
         await firebaseService.firestore
           .collection(this.COLLECTION)
           .doc(siteId)
           .update({
-            'settings.premiumFeatures': firebaseService.firestore.FieldValue.arrayUnion(feature),
+            'settings.premiumFeatures': (firebaseService.firestore as any).FieldValue.arrayUnion(feature),
             updatedAt: new Date(),
           });
       }
@@ -193,6 +225,10 @@ class SiteService {
 
   async addUserToSite(siteId: string, userId: string, role: string): Promise<void> {
     try {
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       await firebaseService.firestore
         .collection('userSites')
         .add({
@@ -209,6 +245,10 @@ class SiteService {
 
   async removeUserFromSite(siteId: string, userId: string): Promise<void> {
     try {
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       const snapshot = await firebaseService.firestore
         .collection('userSites')
         .where('siteId', '==', siteId)
@@ -229,6 +269,10 @@ class SiteService {
 
   async getSiteMembers(siteId: string): Promise<any[]> {
     try {
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       const snapshot = await firebaseService.firestore
         .collection('userSites')
         .where('siteId', '==', siteId)
@@ -242,7 +286,7 @@ class SiteService {
 
       const usersSnapshot = await firebaseService.firestore
         .collection('users')
-        .where(firebaseService.firestore.FieldPath.documentId(), 'in', userIds)
+        .where((firebaseService.firestore as any).FieldPath.documentId(), 'in', userIds)
         .get();
 
       return usersSnapshot.docs.map(doc => ({
@@ -257,6 +301,10 @@ class SiteService {
 
   async updateSiteSettings(siteId: string, settings: any): Promise<Site> {
     try {
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       await firebaseService.firestore
         .collection(this.COLLECTION)
         .doc(siteId)
@@ -277,11 +325,15 @@ class SiteService {
       const site = await this.getSiteById(siteId);
       const currentContacts = site.settings.emergencyContacts || [];
       
+      if (!firebaseService.firestore) {
+        throw new Error('Firestore not initialized');
+      }
+
       await firebaseService.firestore
         .collection(this.COLLECTION)
         .doc(siteId)
         .update({
-          'settings.emergencyContacts': firebaseService.firestore.FieldValue.arrayUnion(contact),
+          'settings.emergencyContacts': (firebaseService.firestore as any).FieldValue.arrayUnion(contact),
           updatedAt: new Date(),
         });
 

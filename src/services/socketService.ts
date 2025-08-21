@@ -173,7 +173,7 @@ class SocketService {
         timestamp: new Date(message.timestamp),
         messageType: message.messageType,
         isRead: message.isRead,
-        metadata: message.metadata,
+        // metadata: message.metadata, // Removed as it's not in ChatMessage type
       },
     }));
 

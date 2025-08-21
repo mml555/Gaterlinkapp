@@ -1,4 +1,4 @@
-framework module React_runtimeexecutor {
+module React_runtimeexecutor {
   umbrella header "React-runtimeexecutor-umbrella.h"
 
   export *

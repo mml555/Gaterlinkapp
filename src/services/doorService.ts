@@ -1,5 +1,6 @@
 import { Door, AccessRequest, AccessAction, DoorStatus, DoorType, LockType } from '../types';
 import { firebaseService } from './firebaseService';
+import firestore from '@react-native-firebase/firestore';
 
 class DoorService {
   private readonly DOORS_COLLECTION = 'doors';
@@ -9,10 +10,8 @@ class DoorService {
   // Door Management
   async getDoors(): Promise<Door[]> {
     try {
-      const snapshot = await firebaseService.firestore
-        .collection(this.DOORS_COLLECTION)
-        .orderBy('name', 'asc')
-        .get();
+      const q = firestore().collection(this.DOORS_COLLECTION).orderBy('name', 'asc');
+      const snapshot = await q.get();
 
       return snapshot.docs.map(doc => ({
         id: doc.id,
@@ -28,11 +27,8 @@ class DoorService {
 
   async getDoorsBySite(siteId: string): Promise<Door[]> {
     try {
-      const snapshot = await firebaseService.firestore
-        .collection(this.DOORS_COLLECTION)
-        .where('siteId', '==', siteId)
-        .orderBy('name', 'asc')
-        .get();
+      const q = firestore().collection(this.DOORS_COLLECTION).where('siteId', '==', siteId).orderBy('name', 'asc');
+      const snapshot = await q.get();
 
       return snapshot.docs.map(doc => ({
         id: doc.id,
@@ -48,20 +44,18 @@ class DoorService {
 
   async getDoorById(doorId: string): Promise<Door | null> {
     try {
-      const doc = await firebaseService.firestore
-        .collection(this.DOORS_COLLECTION)
-        .doc(doorId)
-        .get();
+      const docRef = firestore().collection(this.DOORS_COLLECTION).doc(doorId);
+      const docSnap = await docRef.get();
 
-      if (!doc.exists) {
+      if (!docSnap.exists) {
         return null;
       }
 
       return {
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data()?.createdAt?.toDate() || new Date(),
-        updatedAt: doc.data()?.updatedAt?.toDate() || new Date(),
+        id: docSnap.id,
+        ...docSnap.data(),
+        createdAt: docSnap.data()?.createdAt?.toDate() || new Date(),
+        updatedAt: docSnap.data()?.updatedAt?.toDate() || new Date(),
       } as Door;
     } catch (error) {
       console.error('Error fetching door:', error);
@@ -71,22 +65,19 @@ class DoorService {
 
   async getDoorByQRCode(qrCode: string): Promise<Door | null> {
     try {
-      const snapshot = await firebaseService.firestore
-        .collection(this.DOORS_COLLECTION)
-        .where('qrCode', '==', qrCode)
-        .limit(1)
-        .get();
+      const q = firestore().collection(this.DOORS_COLLECTION).where('qrCode', '==', qrCode).limit(1);
+      const snapshot = await q.get();
 
       if (snapshot.empty) {
         return null;
       }
 
-      const doc = snapshot.docs[0];
+      const docSnap = snapshot.docs[0];
       return {
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data().createdAt?.toDate() || new Date(),
-        updatedAt: doc.data().updatedAt?.toDate() || new Date(),
+        id: docSnap.id,
+        ...docSnap.data(),
+        createdAt: docSnap.data().createdAt?.toDate() || new Date(),
+        updatedAt: docSnap.data().updatedAt?.toDate() || new Date(),
       } as Door;
     } catch (error) {
       console.error('Error fetching door by QR code:', error);
@@ -111,9 +102,7 @@ class DoorService {
         lastAccess: null,
       };
 
-      const docRef = await firebaseService.firestore
-        .collection(this.DOORS_COLLECTION)
-        .add(newDoor);
+      const docRef = await firestore().collection(this.DOORS_COLLECTION).add(newDoor);
 
       return {
         id: docRef.id,
@@ -132,22 +121,16 @@ class DoorService {
         updatedAt: new Date(),
       };
 
-      await firebaseService.firestore
-        .collection(this.DOORS_COLLECTION)
-        .doc(doorId)
-        .update(updateData);
+      await firestore().collection(this.DOORS_COLLECTION).doc(doorId).update(updateData);
 
       // Get updated door
-      const doc = await firebaseService.firestore
-        .collection(this.DOORS_COLLECTION)
-        .doc(doorId)
-        .get();
+      const docSnap = await firestore().collection(this.DOORS_COLLECTION).doc(doorId).get();
 
       return {
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data()?.createdAt?.toDate() || new Date(),
-        updatedAt: doc.data()?.updatedAt?.toDate() || new Date(),
+        id: docSnap.id,
+        ...docSnap.data(),
+        createdAt: docSnap.data()?.createdAt?.toDate() || new Date(),
+        updatedAt: docSnap.data()?.updatedAt?.toDate() || new Date(),
       } as Door;
     } catch (error) {
       console.error('Error updating door:', error);
@@ -157,10 +140,7 @@ class DoorService {
 
   async deleteDoor(doorId: string): Promise<void> {
     try {
-      await firebaseService.firestore
-        .collection(this.DOORS_COLLECTION)
-        .doc(doorId)
-        .delete();
+      await firestore().collection(this.DOORS_COLLECTION).doc(doorId).delete();
     } catch (error) {
       console.error('Error deleting door:', error);
       throw new Error('Failed to delete door');
@@ -169,25 +149,19 @@ class DoorService {
 
   async setDoorStatus(doorId: string, status: DoorStatus): Promise<Door> {
     try {
-      await firebaseService.firestore
-        .collection(this.DOORS_COLLECTION)
-        .doc(doorId)
-        .update({
-          status,
-          updatedAt: new Date(),
-        });
+      await firestore().collection(this.DOORS_COLLECTION).doc(doorId).update({
+        status,
+        updatedAt: new Date(),
+      });
 
       // Get updated door
-      const doc = await firebaseService.firestore
-        .collection(this.DOORS_COLLECTION)
-        .doc(doorId)
-        .get();
+      const docSnap = await firestore().collection(this.DOORS_COLLECTION).doc(doorId).get();
 
       return {
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data()?.createdAt?.toDate() || new Date(),
-        updatedAt: doc.data()?.updatedAt?.toDate() || new Date(),
+        id: docSnap.id,
+        ...docSnap.data(),
+        createdAt: docSnap.data()?.createdAt?.toDate() || new Date(),
+        updatedAt: docSnap.data()?.updatedAt?.toDate() || new Date(),
       } as Door;
     } catch (error) {
       console.error('Error setting door status:', error);
@@ -213,9 +187,7 @@ class DoorService {
         messages: requestData.messages || [],
       };
 
-      const docRef = await firebaseService.firestore
-        .collection(this.ACCESS_REQUESTS_COLLECTION)
-        .add(newRequest);
+      const docRef = await firestore().collection(this.ACCESS_REQUESTS_COLLECTION).add(newRequest);
 
       return {
         id: docRef.id,
@@ -229,20 +201,17 @@ class DoorService {
 
   async getAccessRequestById(requestId: string): Promise<AccessRequest | null> {
     try {
-      const doc = await firebaseService.firestore
-        .collection(this.ACCESS_REQUESTS_COLLECTION)
-        .doc(requestId)
-        .get();
+      const docSnap = await firestore().collection(this.ACCESS_REQUESTS_COLLECTION).doc(requestId).get();
 
-      if (!doc.exists) {
+      if (!docSnap.exists) {
         return null;
       }
 
       return {
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data()?.createdAt?.toDate() || new Date(),
-        updatedAt: doc.data()?.updatedAt?.toDate() || new Date(),
+        id: docSnap.id,
+        ...docSnap.data(),
+        createdAt: docSnap.data()?.createdAt?.toDate() || new Date(),
+        updatedAt: docSnap.data()?.updatedAt?.toDate() || new Date(),
       } as AccessRequest;
     } catch (error) {
       console.error('Error fetching access request:', error);
@@ -252,11 +221,8 @@ class DoorService {
 
   async getAccessRequestsByUser(userId: string): Promise<AccessRequest[]> {
     try {
-      const snapshot = await firebaseService.firestore
-        .collection(this.ACCESS_REQUESTS_COLLECTION)
-        .where('userId', '==', userId)
-        .orderBy('createdAt', 'desc')
-        .get();
+      const q = firestore().collection(this.ACCESS_REQUESTS_COLLECTION).where('userId', '==', userId).orderBy('createdAt', 'desc');
+      const snapshot = await q.get();
 
       return snapshot.docs.map(doc => ({
         id: doc.id,
@@ -272,11 +238,8 @@ class DoorService {
 
   async getPendingAccessRequests(): Promise<AccessRequest[]> {
     try {
-      const snapshot = await firebaseService.firestore
-        .collection(this.ACCESS_REQUESTS_COLLECTION)
-        .where('status', '==', 'pending')
-        .orderBy('createdAt', 'asc')
-        .get();
+      const q = firestore().collection(this.ACCESS_REQUESTS_COLLECTION).where('status', '==', 'pending').orderBy('createdAt', 'asc');
+      const snapshot = await q.get();
 
       return snapshot.docs.map(doc => ({
         id: doc.id,
@@ -297,22 +260,16 @@ class DoorService {
         updatedAt: new Date(),
       };
 
-      await firebaseService.firestore
-        .collection(this.ACCESS_REQUESTS_COLLECTION)
-        .doc(requestId)
-        .update(updateData);
+      await firestore().collection(this.ACCESS_REQUESTS_COLLECTION).doc(requestId).update(updateData);
 
       // Get updated request
-      const doc = await firebaseService.firestore
-        .collection(this.ACCESS_REQUESTS_COLLECTION)
-        .doc(requestId)
-        .get();
+      const docSnap = await firestore().collection(this.ACCESS_REQUESTS_COLLECTION).doc(requestId).get();
 
       return {
-        id: doc.id,
-        ...doc.data(),
-        createdAt: doc.data()?.createdAt?.toDate() || new Date(),
-        updatedAt: doc.data()?.updatedAt?.toDate() || new Date(),
+        id: docSnap.id,
+        ...docSnap.data(),
+        createdAt: docSnap.data()?.createdAt?.toDate() || new Date(),
+        updatedAt: docSnap.data()?.updatedAt?.toDate() || new Date(),
       } as AccessRequest;
     } catch (error) {
       console.error('Error updating access request:', error);
@@ -428,20 +385,15 @@ class DoorService {
         },
       };
 
-      await firebaseService.firestore
-        .collection(this.ACCESS_LOGS_COLLECTION)
-        .add(accessLog);
+      await firestore().collection(this.ACCESS_LOGS_COLLECTION).add(accessLog);
 
       // Update door access count and last access
       if (logData.success && logData.action === AccessAction.ENTER) {
-        await firebaseService.firestore
-          .collection(this.DOORS_COLLECTION)
-          .doc(logData.doorId)
-          .update({
-            accessCount: firebaseService.firestore.FieldValue.increment(1),
-            lastAccess: new Date(),
-            updatedAt: new Date(),
-          });
+        await firestore().collection(this.DOORS_COLLECTION).doc(logData.doorId).update({
+          accessCount: firebaseService.firestore.FieldValue.increment(1),
+          lastAccess: new Date(),
+          updatedAt: new Date(),
+        });
       }
     } catch (error) {
       console.error('Error logging access event:', error);
@@ -451,20 +403,17 @@ class DoorService {
 
   async getAccessLogs(doorId?: string, userId?: string, limit: number = 100): Promise<any[]> {
     try {
-      let query = firebaseService.firestore
-        .collection(this.ACCESS_LOGS_COLLECTION)
-        .orderBy('timestamp', 'desc')
-        .limit(limit);
+      let q = firestore().collection(this.ACCESS_LOGS_COLLECTION).orderBy('timestamp', 'desc').limit(limit);
 
       if (doorId) {
-        query = query.where('doorId', '==', doorId);
+        q = q.where('doorId', '==', doorId);
       }
 
       if (userId) {
-        query = query.where('userId', '==', userId);
+        q = q.where('userId', '==', userId);
       }
 
-      const snapshot = await query.get();
+      const snapshot = await q.get();
 
       return snapshot.docs.map(doc => ({
         id: doc.id,
@@ -542,7 +491,7 @@ class DoorService {
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
-      const todayLogs = await firebaseService.firestore
+      const todayLogs = await firestore()
         .collection(this.ACCESS_LOGS_COLLECTION)
         .where('doorId', '==', doorId)
         .where('action', '==', AccessAction.ENTER)
@@ -592,6 +541,84 @@ class DoorService {
     } catch (error) {
       console.error('Error fetching site door stats:', error);
       throw new Error('Failed to fetch site door stats');
+    }
+  }
+
+  // Saved Doors Management
+  async saveDoor(doorId: string): Promise<Door> {
+    try {
+      const door = await this.getDoorById(doorId);
+      if (!door) {
+        throw new Error('Door not found');
+      }
+      
+      // In a real implementation, this would save to user's saved doors
+      // For now, just return the door
+      return door;
+    } catch (error) {
+      console.error('Error saving door:', error);
+      throw new Error('Failed to save door');
+    }
+  }
+
+  async removeSavedDoor(doorId: string): Promise<void> {
+    try {
+      // In a real implementation, this would remove from user's saved doors
+      // For now, just validate the door exists
+      const door = await this.getDoorById(doorId);
+      if (!door) {
+        throw new Error('Door not found');
+      }
+    } catch (error) {
+      console.error('Error removing saved door:', error);
+      throw new Error('Failed to remove saved door');
+    }
+  }
+
+  // Site Management
+  async getSites(): Promise<any[]> {
+    try {
+      // This would typically come from a siteService
+      // For now, return empty array
+      return [];
+    } catch (error) {
+      console.error('Error fetching sites:', error);
+      throw new Error('Failed to fetch sites');
+    }
+  }
+
+  async getSiteById(siteId: string): Promise<any> {
+    try {
+      // This would typically come from a siteService
+      // For now, return null
+      return null;
+    } catch (error) {
+      console.error('Error fetching site:', error);
+      throw new Error('Failed to fetch site');
+    }
+  }
+
+  // Work Orders Management
+  async getWorkOrdersByTrade(tradeType: any): Promise<any[]> {
+    try {
+      // This would typically come from a workOrderService
+      // For now, return empty array
+      return [];
+    } catch (error) {
+      console.error('Error fetching work orders:', error);
+      throw new Error('Failed to fetch work orders');
+    }
+  }
+
+  // Equipment Management
+  async getEquipmentByQRCode(qrCode: string): Promise<any> {
+    try {
+      // This would typically come from an equipmentService
+      // For now, return null
+      return null;
+    } catch (error) {
+      console.error('Error fetching equipment by QR code:', error);
+      throw new Error('Failed to fetch equipment by QR code');
     }
   }
 }

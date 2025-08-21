@@ -10,66 +10,88 @@ service cloud.firestore {
       return request.auth.uid == userId;
     }
     
+    // Check role from custom claims (if available) or allow authenticated users
     function isAdmin() {
-      return request.auth.token.role == 'admin';
+      return request.auth.token.role == 'admin' || 
+             request.auth.token.role == 'Admin' ||
+             request.auth.token.role == 'ADMIN';
     }
     
     function isEmergencyResponder() {
-      return request.auth.token.role == 'emergency_responder';
+      return request.auth.token.role == 'emergency_responder' || 
+             request.auth.token.role == 'EmergencyResponder' ||
+             request.auth.token.role == 'EMERGENCY_RESPONDER';
     }
     
     function isEquipmentManager() {
-      return request.auth.token.role == 'equipment_manager';
+      return request.auth.token.role == 'equipment_manager' || 
+             request.auth.token.role == 'EquipmentManager' ||
+             request.auth.token.role == 'EQUIPMENT_MANAGER';
     }
     
-               function isSiteManager() {
-             return request.auth.token.role == 'site_manager';
-           }
-           
-           function isValidNotification() {
-             return request.resource.data.keys().hasAll(['userId', 'type', 'title', 'body']) &&
-                    request.resource.data.userId is string &&
-                    request.resource.data.type is string &&
-                    request.resource.data.title is string &&
-                    request.resource.data.body is string &&
-                    request.resource.data.read is bool;
-           }
-           
-           function isValidEmergency() {
-             return request.resource.data.keys().hasAll(['type', 'description', 'siteId', 'severity']) &&
-                    request.resource.data.type is string &&
-                    request.resource.data.description is string &&
-                    request.resource.data.siteId is string &&
-                    request.resource.data.severity in ['low', 'medium', 'high', 'critical'];
-           }
-           
-           function isValidAccessRequest() {
-             return request.resource.data.keys().hasAll(['userId', 'siteId', 'doorId']) &&
-                    request.resource.data.userId is string &&
-                    request.resource.data.siteId is string &&
-                    request.resource.data.doorId is string &&
-                    request.resource.data.status in ['pending', 'approved', 'rejected', 'cancelled'];
-           }
-    
-    function hasValidRequest() {
-      return request.auth.token.request_id != null;
+    function isSiteManager() {
+      return request.auth.token.role == 'site_manager' || 
+             request.auth.token.role == 'SiteManager' ||
+             request.auth.token.role == 'SITE_MANAGER';
     }
     
-    // Users collection
+    function isCustomer() {
+      return request.auth.token.role == 'customer' || 
+             request.auth.token.role == 'Customer' ||
+             request.auth.token.role == 'CUSTOMER' ||
+             request.auth.token.role == 'user' ||
+             request.auth.token.role == 'User';
+    }
+    
+    function hasValidRole() {
+      return isAdmin() || isEmergencyResponder() || isEquipmentManager() || isSiteManager() || isCustomer();
+    }
+    
+    // More permissive role check that allows authenticated users even without custom claims
+    function hasValidRoleOrAuthenticated() {
+      return hasValidRole() || isAuthenticated();
+    }
+    
+    function isValidNotification() {
+      return request.resource.data.keys().hasAll(['userId', 'type', 'title', 'body']) &&
+             request.resource.data.userId is string &&
+             request.resource.data.type is string &&
+             request.resource.data.title is string &&
+             request.resource.data.body is string &&
+             request.resource.data.read is bool;
+    }
+    
+    function isValidEmergency() {
+      return request.resource.data.keys().hasAll(['type', 'description', 'siteId', 'severity']) &&
+             request.resource.data.type is string &&
+             request.resource.data.description is string &&
+             request.resource.data.siteId is string &&
+             request.resource.data.severity in ['low', 'medium', 'high', 'critical'];
+    }
+    
+    function isValidAccessRequest() {
+      return request.resource.data.keys().hasAll(['userId', 'siteId', 'doorId']) &&
+             request.resource.data.userId is string &&
+             request.resource.data.siteId is string &&
+             request.resource.data.doorId is string &&
+             request.resource.data.status in ['pending', 'approved', 'rejected', 'cancelled'];
+    }
+    
+    // Users collection - More permissive for authenticated users
     match /users/{userId} {
-      allow read: if isAuthenticated() && (isOwner(userId) || isAdmin());
+      allow read: if isAuthenticated();
       allow create: if isAuthenticated() && isOwner(userId);
       allow update: if isAuthenticated() && (isOwner(userId) || isAdmin());
       allow delete: if isAuthenticated() && isAdmin();
     }
     
-    // Sites collection
+    // Sites collection - Allow read for all authenticated users
     match /sites/{siteId} {
       allow read: if isAuthenticated();
       allow create, update, delete: if isAuthenticated() && (isAdmin() || isSiteManager());
     }
     
-    // Doors collection
+    // Doors collection - Allow read for all authenticated users
     match /doors/{doorId} {
       allow read: if isAuthenticated();
       allow create, update, delete: if isAuthenticated() && (isAdmin() || isSiteManager());
@@ -82,7 +104,7 @@ service cloud.firestore {
       }
     }
     
-    // Access requests collection
+    // Access requests collection - More permissive for authenticated users
     match /accessRequests/{requestId} {
       allow read: if isAuthenticated() && (
         isOwner(resource.data.userId) || 
@@ -99,7 +121,7 @@ service cloud.firestore {
       allow delete: if isAuthenticated() && isAdmin();
     }
     
-    // Equipment collection
+    // Equipment collection - Allow read for all authenticated users
     match /equipment/{equipmentId} {
       allow read: if isAuthenticated();
       allow create, update, delete: if isAuthenticated() && (isAdmin() || isEquipmentManager());
@@ -121,7 +143,7 @@ service cloud.firestore {
       }
     }
     
-    // Emergency collection
+    // Emergency collection - Allow read for all authenticated users
     match /emergencies/{emergencyId} {
       allow read: if isAuthenticated();
       allow create: if isAuthenticated() && isValidEmergency();
@@ -133,13 +155,13 @@ service cloud.firestore {
       allow delete: if isAuthenticated() && isAdmin();
     }
     
-    // Holds collection
+    // Holds collection - Allow read for all authenticated users
     match /holds/{holdId} {
       allow read: if isAuthenticated();
       allow create, update, delete: if isAuthenticated() && (isAdmin() || isSiteManager());
     }
     
-    // Chat messages collection
+    // Chat messages collection - More permissive for authenticated users
     match /chats/{chatId} {
       allow read: if isAuthenticated() && (
         request.auth.uid in resource.data.participants
@@ -165,12 +187,34 @@ service cloud.firestore {
       }
     }
     
-    // Notifications collection
+    // Notifications collection - Much more permissive for authenticated users
     match /notifications/{notificationId} {
-      allow read: if isAuthenticated() && isOwner(resource.data.userId);
+      allow read: if isAuthenticated() && (
+        isOwner(resource.data.userId) || 
+        isAdmin() ||
+        // Allow users to read their own notifications even if role is not set
+        (request.auth.uid == resource.data.userId)
+      );
       allow create: if isAuthenticated() && isValidNotification();
-      allow update: if isAuthenticated() && isOwner(resource.data.userId);
+      allow update: if isAuthenticated() && (
+        isOwner(resource.data.userId) || 
+        isAdmin() ||
+        // Allow users to update their own notifications even if role is not set
+        (request.auth.uid == resource.data.userId)
+      );
       allow delete: if isAuthenticated() && (isOwner(resource.data.userId) || isAdmin());
+    }
+    
+    // Site memberships collection - Allow read for authenticated users
+    match /siteMemberships/{membershipId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAuthenticated() && (isAdmin() || isSiteManager());
+    }
+    
+    // User sites collection - Allow read for authenticated users
+    match /userSites/{userSiteId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAuthenticated() && (isAdmin() || isSiteManager());
     }
     
     // System settings collection (admin only)

@@ -25,7 +25,9 @@ import { HomeNavigationProp } from '../../types/navigation';
 import { RootState } from '../../store';
 import { UserRole } from '../../types';
 import { authService } from '../../services/authService';
+import { firebaseService } from '../../services/firebaseService';
 import Logo from '../../components/common/Logo';
+import { ServiceStatusIndicator } from '../../components/common/ServiceStatusIndicator';
 
 const HomeScreen: React.FC = () => {
   const theme = useTheme();
@@ -60,6 +62,14 @@ const HomeScreen: React.FC = () => {
       onPress: () => navigation.navigate('RequestHistory'),
     },
     {
+      id: 'test',
+      title: 'Test Firebase',
+      subtitle: 'Check permissions',
+      icon: 'database',
+      color: theme.colors.tertiary,
+      onPress: () => testFirebasePermissions(),
+    },
+    {
       id: 'admin',
       title: 'Admin',
       subtitle: 'Manage access',
@@ -87,6 +97,25 @@ const HomeScreen: React.FC = () => {
     },
   ];
 
+  const testFirebasePermissions = async () => {
+    try {
+      console.log('🧪 Testing Firebase permissions from HomeScreen...');
+      await firebaseService.testFirestorePermissions();
+      showMessage({
+        message: 'Firebase Test Complete',
+        description: 'Check console for results',
+        type: 'info',
+      });
+    } catch (error) {
+      console.error('Error testing Firebase permissions:', error);
+      showMessage({
+        message: 'Firebase Test Failed',
+        description: 'Check console for details',
+        type: 'danger',
+      });
+    }
+  };
+
   const onRefresh = async () => {
     setRefreshing(true);
     try {
@@ -102,14 +131,12 @@ const HomeScreen: React.FC = () => {
       showMessage({
         message: 'Updated successfully',
         type: 'success',
-        icon: 'success',
       });
     } catch (error: any) {
       showMessage({
         message: 'Failed to refresh',
         description: error.message || 'Please try again',
         type: 'danger',
-        icon: 'danger',
       });
     } finally {
       setRefreshing(false);
@@ -160,6 +187,9 @@ const HomeScreen: React.FC = () => {
             <Logo size={40} variant="icon" />
           </View>
         </Surface>
+
+        {/* Service Status Indicator */}
+        <ServiceStatusIndicator showDetails={true} />
 
         {/* Quick Actions */}
         <View style={styles.section}>
@@ -257,10 +287,10 @@ const HomeScreen: React.FC = () => {
               </Text>
             </Surface>
             <Surface style={[styles.statCard, { backgroundColor: theme.colors.surface }]} elevation={1}>
-              <View style={[styles.statIconContainer, { backgroundColor: theme.colors.success + '15' }]}>
-                <Icon name="check-circle" size={24} color={theme.colors.success} />
+              <View style={[styles.statIconContainer, { backgroundColor: theme.colors.primary + '15' }]}>
+                <Icon name="check-circle" size={24} color={theme.colors.primary} />
               </View>
-              <Text variant="headlineMedium" style={[styles.statNumber, { color: theme.colors.success }]}>
+              <Text variant="headlineMedium" style={[styles.statNumber, { color: theme.colors.primary }]}>
                 48
               </Text>
               <Text variant="bodySmall" style={[styles.statLabel, { color: theme.colors.onSurface }]}>
