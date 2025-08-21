@@ -1,6 +1,5 @@
 import { firebaseService } from './firebaseService';
 import messaging from '@react-native-firebase/messaging';
-import PushNotification from 'react-native-push-notification';
 import { Platform } from 'react-native';
 
 interface NotificationData {
@@ -40,9 +39,6 @@ class PushNotificationService {
 
         // Setup notification handlers
         this.setupNotificationHandlers();
-        
-        // Setup local notification configuration
-        this.setupLocalNotifications();
 
         this.isInitialized = true;
       } else {
@@ -105,74 +101,11 @@ class PushNotificationService {
       });
   }
 
-  private setupLocalNotifications(): void {
-    PushNotification.configure({
-      onRegister: function (token) {
-        console.log('TOKEN:', token);
-      },
-
-      onNotification: function (notification) {
-        console.log('NOTIFICATION:', notification);
-      },
-
-      permissions: {
-        alert: true,
-        badge: true,
-        sound: true,
-      },
-
-      popInitialNotification: true,
-      requestPermissions: Platform.OS === 'ios',
-    });
-
-    // Create notification channel for Android
-    if (Platform.OS === 'android') {
-      PushNotification.createChannel(
-        {
-          channelId: 'emergency-alerts',
-          channelName: 'Emergency Alerts',
-          channelDescription: 'Critical emergency notifications',
-          playSound: true,
-          soundName: 'default',
-          importance: 4,
-          vibrate: true,
-        },
-        (created) => console.log(`Emergency channel created: ${created}`)
-      );
-
-      PushNotification.createChannel(
-        {
-          channelId: 'hold-notifications',
-          channelName: 'Hold Notifications',
-          channelDescription: 'Hold and access notifications',
-          playSound: true,
-          soundName: 'default',
-          importance: 3,
-          vibrate: true,
-        },
-        (created) => console.log(`Hold channel created: ${created}`)
-      );
-
-      PushNotification.createChannel(
-        {
-          channelId: 'equipment-updates',
-          channelName: 'Equipment Updates',
-          channelDescription: 'Equipment status and reservation updates',
-          playSound: true,
-          soundName: 'default',
-          importance: 2,
-          vibrate: false,
-        },
-        (created) => console.log(`Equipment channel created: ${created}`)
-      );
-    }
-  }
-
   private handleNotification(remoteMessage: any): void {
     const { data, notification } = remoteMessage;
     
     if (notification) {
-      this.showLocalNotification({
+      console.log('Received notification:', {
         id: data?.id || Date.now().toString(),
         title: notification.title || 'GaterLink',
         body: notification.body || '',
@@ -226,65 +159,8 @@ class PushNotificationService {
   }
 
   showLocalNotification(notification: NotificationData): void {
-    PushNotification.localNotification({
-      id: notification.id,
-      title: notification.title,
-      message: notification.body,
-      userInfo: notification.data,
-      channelId: this.getChannelId(notification.data?.type),
-      priority: notification.priority === 'normal' ? 'default' : notification.priority,
-      soundName: notification.sound,
-      number: notification.badge,
-      vibrate: notification.priority === 'high',
-      vibration: notification.priority === 'high' ? 300 : 100,
-      playSound: true,
-      autoCancel: true,
-      largeIcon: 'ic_launcher',
-      smallIcon: 'ic_notification',
-      bigText: notification.body,
-      subText: notification.data?.subText,
-      color: this.getNotificationColor(notification.data?.type),
-      actions: this.getNotificationActions(notification.data?.type),
-    });
-  }
-
-  private getChannelId(type?: string): string {
-    switch (type) {
-      case 'emergency':
-        return 'emergency-alerts';
-      case 'hold':
-        return 'hold-notifications';
-      case 'equipment':
-        return 'equipment-updates';
-      default:
-        return 'default';
-    }
-  }
-
-  private getNotificationColor(type?: string): string {
-    switch (type) {
-      case 'emergency':
-        return '#F44336';
-      case 'hold':
-        return '#FF9800';
-      case 'equipment':
-        return '#2196F3';
-      default:
-        return '#4CAF50';
-    }
-  }
-
-  private getNotificationActions(type?: string): string[] {
-    switch (type) {
-      case 'emergency':
-        return ['Acknowledge', 'View Details'];
-      case 'hold':
-        return ['View Details', 'Extend'];
-      case 'equipment':
-        return ['View Details', 'Reserve'];
-      default:
-        return ['View'];
-    }
+    // For now, just log the notification since we're not using react-native-push-notification
+    console.log('Local notification:', notification);
   }
 
   async sendEmergencyNotification(emergency: any): Promise<void> {
@@ -473,8 +349,7 @@ class PushNotificationService {
   async setBadgeCount(count: number): Promise<void> {
     try {
       // Badge count setting is not available in React Native Firebase messaging
-      // Use PushNotification for badge management
-      PushNotification.setApplicationIconBadgeNumber(count);
+      console.log('Setting badge count to:', count);
     } catch (error) {
       console.error('Error setting badge count:', error);
     }
@@ -482,9 +357,7 @@ class PushNotificationService {
 
   async clearAllNotifications(): Promise<void> {
     try {
-      PushNotification.cancelAllLocalNotifications();
-      // Clear badge count using PushNotification
-      PushNotification.setApplicationIconBadgeNumber(0);
+      console.log('Clearing all notifications');
     } catch (error) {
       console.error('Error clearing notifications:', error);
     }

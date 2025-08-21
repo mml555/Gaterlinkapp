@@ -128,6 +128,12 @@
 			buildRules = (
 			);
 			dependencies = (
+				AD5CE6C12E57D45100A531BE /* PBXTargetDependency */,
+				AD5CE6BF2E57D44A00A531BE /* PBXTargetDependency */,
+				AD5CE6BD2E57D44300A531BE /* PBXTargetDependency */,
+				AD5CE6BB2E57D43600A531BE /* PBXTargetDependency */,
+				AD5CE6B92E57D43000A531BE /* PBXTargetDependency */,
+				AD5CE6B72E57D42D00A531BE /* PBXTargetDependency */,
 			);
 			name = GaterLinkNative;
 			productName = GaterLinkNative;
@@ -140,7 +146,8 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1210;
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1640;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
 						LastSwiftMigration = 1120;
@@ -228,9 +235,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-GaterLinkNative/Pods-GaterLinkNative-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-GaterLinkNative/Pods-GaterLinkNative-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -245,9 +256,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-GaterLinkNative/Pods-GaterLinkNative-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-GaterLinkNative/Pods-GaterLinkNative-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -266,6 +281,33 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		AD5CE6B72E57D42D00A531BE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = AD5CE6B62E57D42D00A531BE /* FirebaseAnalytics */;
+		};
+		AD5CE6B92E57D43000A531BE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = AD5CE6B82E57D43000A531BE /* FirebaseAuth */;
+		};
+		AD5CE6BB2E57D43600A531BE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = AD5CE6BA2E57D43600A531BE /* FirebaseCore */;
+		};
+		AD5CE6BD2E57D44300A531BE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = AD5CE6BC2E57D44300A531BE /* FirebaseCrashlytics */;
+		};
+		AD5CE6BF2E57D44A00A531BE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = AD5CE6BE2E57D44A00A531BE /* FirebaseMessaging */;
+		};
+		AD5CE6C12E57D45100A531BE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = AD5CE6C02E57D45100A531BE /* FirebasePerformance */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
@@ -353,8 +395,10 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = HAG426Y5FK;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -440,8 +484,10 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
+				DEVELOPMENT_TEAM = HAG426Y5FK;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -483,6 +529,7 @@
 				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
 				USE_HERMES = true;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -549,6 +596,36 @@
 			productName = FirebaseMessaging;
 		};
 		AD5CE6B42E57BA1100A531BE /* FirebasePerformance */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AD5CE6A92E57BA1100A531BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebasePerformance;
+		};
+		AD5CE6B62E57D42D00A531BE /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AD5CE6A92E57BA1100A531BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		AD5CE6B82E57D43000A531BE /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AD5CE6A92E57BA1100A531BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		AD5CE6BA2E57D43600A531BE /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AD5CE6A92E57BA1100A531BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		AD5CE6BC2E57D44300A531BE /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AD5CE6A92E57BA1100A531BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+		AD5CE6BE2E57D44A00A531BE /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = AD5CE6A92E57BA1100A531BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+		AD5CE6C02E57D45100A531BE /* FirebasePerformance */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = AD5CE6A92E57BA1100A531BE /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebasePerformance;
