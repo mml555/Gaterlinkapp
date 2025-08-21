@@ -9,8 +9,8 @@
 /* Begin PBXBuildFile section */
 		08E3C724757957345AA93C6D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
-		6E182DC4D0AB0B05635A88B1 /* libPods-GaterLinkNative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 28752B3A758E1F6AF2A18CEA /* libPods-GaterLinkNative.a */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
+		81894FB25800B7A64D70BDC1 /* libPods-GaterLinkNative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0FCA0B3C455FF7F2FC0188B6 /* libPods-GaterLinkNative.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		AD5CE6AB2E57BA1100A531BE /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = AD5CE6AA2E57BA1100A531BE /* FirebaseAnalytics */; };
 		AD5CE6AD2E57BA1100A531BE /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = AD5CE6AC2E57BA1100A531BE /* FirebaseAuth */; };
@@ -21,15 +21,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0FCA0B3C455FF7F2FC0188B6 /* libPods-GaterLinkNative.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GaterLinkNative.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07F961A680F5B00A75B9A /* GaterLinkNative.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GaterLinkNative.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = GaterLinkNative/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = GaterLinkNative/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = GaterLinkNative/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		28752B3A758E1F6AF2A18CEA /* libPods-GaterLinkNative.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GaterLinkNative.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		3B4392A12AC88292D35C810B /* Pods-GaterLinkNative.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GaterLinkNative.debug.xcconfig"; path = "Target Support Files/Pods-GaterLinkNative/Pods-GaterLinkNative.debug.xcconfig"; sourceTree = "<group>"; };
-		5709B34CF0A7D63546082F79 /* Pods-GaterLinkNative.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GaterLinkNative.release.xcconfig"; path = "Target Support Files/Pods-GaterLinkNative/Pods-GaterLinkNative.release.xcconfig"; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = GaterLinkNative/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = GaterLinkNative/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		8657B6AEE94781C2901C8CB8 /* Pods-GaterLinkNative.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GaterLinkNative.release.xcconfig"; path = "Target Support Files/Pods-GaterLinkNative/Pods-GaterLinkNative.release.xcconfig"; sourceTree = "<group>"; };
+		9D5D330CF8E5E69CFDCEE6F9 /* Pods-GaterLinkNative.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GaterLinkNative.debug.xcconfig"; path = "Target Support Files/Pods-GaterLinkNative/Pods-GaterLinkNative.debug.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -44,7 +44,7 @@
 				AD5CE6AF2E57BA1100A531BE /* FirebaseCrashlytics in Frameworks */,
 				AD5CE6AD2E57BA1100A531BE /* FirebaseAuth in Frameworks */,
 				AD5CE6B12E57BA1100A531BE /* FirebaseFirestore in Frameworks */,
-				6E182DC4D0AB0B05635A88B1 /* libPods-GaterLinkNative.a in Frameworks */,
+				81894FB25800B7A64D70BDC1 /* libPods-GaterLinkNative.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -67,7 +67,7 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				28752B3A758E1F6AF2A18CEA /* libPods-GaterLinkNative.a */,
+				0FCA0B3C455FF7F2FC0188B6 /* libPods-GaterLinkNative.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -104,8 +104,8 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				3B4392A12AC88292D35C810B /* Pods-GaterLinkNative.debug.xcconfig */,
-				5709B34CF0A7D63546082F79 /* Pods-GaterLinkNative.release.xcconfig */,
+				9D5D330CF8E5E69CFDCEE6F9 /* Pods-GaterLinkNative.debug.xcconfig */,
+				8657B6AEE94781C2901C8CB8 /* Pods-GaterLinkNative.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -117,13 +117,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "GaterLinkNative" */;
 			buildPhases = (
-				C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */,
+				5D240BAB671AF9C1550DBDED /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */,
-				E235C05ADACE081382539298 /* [CP] Copy Pods Resources */,
+				85A418742E2D9CB0A3F1FE1C /* [CP] Embed Pods Frameworks */,
+				D3C142B9BCEF4C2FE4579083 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -198,24 +198,7 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"$REACT_NATIVE_PATH/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
-		00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-GaterLinkNative/Pods-GaterLinkNative-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-GaterLinkNative/Pods-GaterLinkNative-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-GaterLinkNative/Pods-GaterLinkNative-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */ = {
+		5D240BAB671AF9C1550DBDED /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -237,7 +220,24 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		E235C05ADACE081382539298 /* [CP] Copy Pods Resources */ = {
+		85A418742E2D9CB0A3F1FE1C /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-GaterLinkNative/Pods-GaterLinkNative-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-GaterLinkNative/Pods-GaterLinkNative-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-GaterLinkNative/Pods-GaterLinkNative-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		D3C142B9BCEF4C2FE4579083 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -270,7 +270,7 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3B4392A12AC88292D35C810B /* Pods-GaterLinkNative.debug.xcconfig */;
+			baseConfigurationReference = 9D5D330CF8E5E69CFDCEE6F9 /* Pods-GaterLinkNative.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -298,7 +298,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5709B34CF0A7D63546082F79 /* Pods-GaterLinkNative.release.xcconfig */;
+			baseConfigurationReference = 8657B6AEE94781C2901C8CB8 /* Pods-GaterLinkNative.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;

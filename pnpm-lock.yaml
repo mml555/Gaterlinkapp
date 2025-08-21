@@ -20,7 +20,9 @@ specifiers:
   '@react-native-firebase/perf': ^23.1.0
   '@react-native-masked-view/masked-view': ^0.3.2
   '@react-native/babel-preset': 0.81.0
+  '@react-native/codegen': ^0.81.0
   '@react-native/eslint-config': 0.81.0
+  '@react-native/gradle-plugin': ^0.81.0
   '@react-native/metro-config': 0.81.0
   '@react-native/new-app-screen': 0.81.0
   '@react-native/typescript-config': 0.81.0
@@ -78,6 +80,8 @@ dependencies:
   '@react-native-firebase/messaging': 23.1.0_4dg7v7h6nwgibx57nsnzpemfei
   '@react-native-firebase/perf': 23.1.0_4dg7v7h6nwgibx57nsnzpemfei
   '@react-native-masked-view/masked-view': 0.3.2_tp5uhhutw7urscqf3nrvviheom
+  '@react-native/codegen': 0.81.0_@babel+core@7.28.3
+  '@react-native/gradle-plugin': 0.81.0
   '@react-native/new-app-screen': 0.81.0_maegtblnks5e6pdllqp637ldhq
   '@react-navigation/bottom-tabs': 7.4.6_mjquh67kw33bsqcv5bipfmfxau
   '@react-navigation/native': 7.1.17_tp5uhhutw7urscqf3nrvviheom
