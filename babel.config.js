@@ -1,8 +1,6 @@
 module.exports = {
   presets: [
-    ['@babel/preset-env', { targets: { node: 'current' } }],
-    '@babel/preset-typescript',
-    ['@babel/preset-react', { runtime: 'automatic' }],
+    '@react-native/babel-preset',
   ],
   plugins: [
     ['@babel/plugin-transform-runtime', { regenerator: true }],
